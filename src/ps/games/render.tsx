@@ -116,3 +116,56 @@ export function Table<T>({
 		</table>
 	);
 }
+
+function Pip({ style }: { style?: CSSProperties }): ReactElement {
+	return <div style={{ background: 'black', borderRadius: 99, width: 10, height: 10, position: 'absolute', ...style }} />;
+}
+
+export function Dice({ value, style }: { value: number; style?: CSSProperties }): ReactElement | null {
+	if (!value || value > 6) return null;
+	return (
+		<center style={{ position: 'relative', background: 'white', height: 42, width: 42, borderRadius: 4, ...style }}>
+			{value === 1 ? <Pip style={{ top: 16, left: 16 }} /> : null}
+			{value === 2 ? (
+				<>
+					<Pip style={{ top: 16, left: 7 }} />
+					<Pip style={{ top: 16, right: 7 }} />
+				</>
+			) : null}
+			{value === 3 ? (
+				<>
+					<Pip style={{ top: 5, right: 5 }} />
+					<Pip style={{ top: 16, left: 16 }} />
+					<Pip style={{ bottom: 5, left: 5 }} />
+				</>
+			) : null}
+			{value === 4 ? (
+				<>
+					<Pip style={{ top: 7, left: 7 }} />
+					<Pip style={{ top: 7, right: 7 }} />
+					<Pip style={{ bottom: 7, left: 7 }} />
+					<Pip style={{ bottom: 7, right: 7 }} />
+				</>
+			) : null}
+			{value === 5 ? (
+				<>
+					<Pip style={{ top: 5, left: 5 }} />
+					<Pip style={{ top: 5, right: 5 }} />
+					<Pip style={{ top: 16, left: 16 }} />
+					<Pip style={{ bottom: 5, left: 5 }} />
+					<Pip style={{ bottom: 5, right: 5 }} />
+				</>
+			) : null}
+			{value === 6 ? (
+				<>
+					<Pip style={{ top: 4, left: 8 }} />
+					<Pip style={{ top: 4, right: 8 }} />
+					<Pip style={{ top: 16, left: 8 }} />
+					<Pip style={{ top: 16, right: 8 }} />
+					<Pip style={{ bottom: 4, left: 8 }} />
+					<Pip style={{ bottom: 4, right: 8 }} />
+				</>
+			) : null}
+		</center>
+	);
+}

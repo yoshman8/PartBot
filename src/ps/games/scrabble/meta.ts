@@ -9,8 +9,8 @@ export const meta: Meta = {
 	name: 'Scrabble',
 	id: GamesList.Scrabble,
 	aliases: ['scrab'],
-	players: 'many',
 
+	players: 'many',
 	minSize: 2,
 	maxSize: 4,
 
