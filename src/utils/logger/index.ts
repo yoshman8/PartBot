@@ -21,7 +21,7 @@ const dispatchLog = debounce((_logs: string[]): void => {
 	const logs = _logs.length > 100 ? [..._logs.slice(0, 50), ..._logs.slice(-50)] : _logs;
 	const embeds = logs.group(50).map(logGroup => {
 		const embed = new EmbedBuilder();
-		logGroup.group(10).forEach(set => embed.addFields({ name: '\u200b', value: set.join('\n') }));
+		logGroup.group(10).forEach(set => embed.addFields({ name: '\u200b', value: set.join('\n').slice(0, 1024) }));
 		return embed;
 	});
 	LogClient.send({ embeds }).catch();
@@ -33,14 +33,16 @@ const dispatchError = debounce((_errors: Error[]): void => {
 		const errors = _errors.length > 20 ? [..._errors.slice(0, 10), ..._errors.slice(-10)] : _errors;
 		const embeds = errors.group(10).map(errorGroup => {
 			const embed = new EmbedBuilder().setColor('Red');
-			errorGroup.forEach(err => embed.addFields({ name: err.toString() ?? '[no error message]', value: err.stack ?? '[no stack]' }));
+			errorGroup.forEach(err =>
+				embed.addFields({ name: err.toString() ?? '[no error message]', value: err.stack?.slice(0, 1024) ?? '[no stack]' })
+			);
 			return embed;
 		});
 		ErrorLogClient.send({ embeds }).catch();
 	} catch (err) {
 		if (err instanceof Error) {
 			const timestamp = `[${new Date().toISOString()}]`;
-			errLogStream.write(`${timestamp} ${err.toString()}\n${err.stack || '[no stack]'}\n`);
+			errLogStream.write(`${timestamp} ${err.toString()}\n${err.stack?.slice(0, 1024) || '[no stack]'}\n`);
 		}
 	}
 }, 1_000);

@@ -406,7 +406,7 @@ export class BaseGame<State extends BaseState> {
 		user.pageHTML(html, { name: this.id, room: this.room });
 	}
 
-	update(user?: string) {
+	update(user?: string): void {
 		if (!this.started) return;
 		if (user) {
 			const asPlayer = Object.values(this.players).find(player => player.id === user);
