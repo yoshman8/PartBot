@@ -62,9 +62,7 @@ export function renderBoard(this: This, ctx: RenderCtx) {
 			labels={null}
 			Cell={Cell}
 			style={{
-				backgroundImage:
-					"url('https://media.discordapp.net/attachments/762324232948023316/1394031132718399589/main.png?ex=68755429&is=687402a9&hm=49fc8d3b452214d44ab9e100a85ee9c22ebbd205e3783882f8041389de877001&=&format=webp&quality=lossless&width=700&height=700')",
-				// TODO
+				backgroundImage: `url('${process.env.WEB_URL}/static/snakesladders/main.png')`,
 				backgroundSize: 'contain',
 			}}
 		/>
