@@ -6,7 +6,7 @@ import type { Meta } from '@/ps/games/types';
 export const meta: Meta = {
 	name: 'Snakes & Ladders',
 	id: GamesList.SnakesLadders,
-	aliases: ['sl', 'snakesandladders', 'snakes'],
+	aliases: ['sl', 'snakesandladders', 'snakesnladders', 'snakes', 'snek'],
 
 	players: 'many',
 	minSize: 2,
