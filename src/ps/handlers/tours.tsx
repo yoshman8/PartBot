@@ -188,51 +188,44 @@ export function tourHandler(this: Client, roomId: string, line: string, isIntro?
 				}
 
 				case 'capproject': {
-					const currentTime = Temporal.Now.instant().toZonedDateTimeISO(TimeZone.AST).toPlainTime();
+					if (json.generator !== 'Single Elimination') return;
 
-					if (
-						inRange(currentTime, [new Temporal.PlainTime(11), new Temporal.PlainTime(13)]) ||
-						inRange(currentTime, [new Temporal.PlainTime(23), new Temporal.PlainTime(1)])
-					) {
-						if (json.generator !== 'Single Elimination') return;
+					const winners = getTopFour();
+					const pointsToAdd: Record<string, number> = {};
 
-						const winners = getTopFour();
-						const pointsToAdd: Record<string, number> = {};
-
-						[3, 2, 1, 1].forEach((amt, index) => {
-							if (winners[index]) {
-								pointsToAdd[winners[index]] = amt;
-							}
-						});
-
-						const pointsType = PSRoomConfigs[roomId]?.points?.types.tournight;
-						if (!pointsType) {
-							room.send("Hi for some reason Tour Nights don't exist, someone go poke PartMan");
-							Logger.errorLog(new Error(`CAP room points: ${JSON.stringify(PSRoomConfigs[roomId])}`));
-							return;
+					[3, 2, 1, 1].forEach((amt, index) => {
+						if (winners[index]) {
+							pointsToAdd[winners[index]] = amt;
 						}
+					});
 
-						const nonce = randomString();
-						PSPointsNonce[nonce] = labelPoints(pointsToAdd, pointsType.id);
-
-						room.sendHTML(
-							<div className="infobox">
-								<p>
-									<b>{pointsType.plural}</b>
-									{': '}
-									{Object.entries(pointsToAdd)
-										.map(([user, amount]) => `+${amount} ${user}`)
-										.join(', ')}
-								</p>
-								<p>
-									<Form value={`/botmsg ${this.status.username},${prefix}@${roomId} addnonce ${nonce}`}>
-										<button>Add Points!</button>
-									</Form>
-								</p>
-							</div>,
-							{ rank: '%' }
-						);
+					const pointsType = PSRoomConfigs[roomId]?.points?.types.tournight;
+					if (!pointsType) {
+						room.send("Hi for some reason Tour Nights don't exist, someone go poke PartMan");
+						Logger.errorLog(new Error(`CAP room points: ${JSON.stringify(PSRoomConfigs[roomId])}`));
+						return;
 					}
+
+					const nonce = randomString();
+					PSPointsNonce[nonce] = labelPoints(pointsToAdd, pointsType.id);
+
+					room.sendHTML(
+						<div className="infobox">
+							<p>
+								<b>{pointsType.plural}</b>
+								{': '}
+								{Object.entries(pointsToAdd)
+									.map(([user, amount]) => `+${amount} ${user}`)
+									.join(', ')}
+							</p>
+							<p>
+								<Form value={`/botmsg ${this.status.username},${prefix}@${roomId} addnonce ${nonce}`}>
+									<button>Add Points!</button>
+								</Form>
+							</p>
+						</div>,
+						{ rank: '%' }
+					);
 					break;
 				}
 
