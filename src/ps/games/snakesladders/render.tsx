@@ -64,7 +64,7 @@ export function renderBoard(this: This, ctx: RenderCtx) {
 			Cell={Cell}
 			style={{
 				backgroundImage: `url('${process.env.WEB_URL}/static/snakesladders/main.png')`,
-				backgroundSize: 'contain',
+				backgroundSize: 'cover',
 				zoom: '80%',
 			}}
 		/>
