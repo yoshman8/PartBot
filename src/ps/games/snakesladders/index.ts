@@ -146,12 +146,9 @@ export class SnakesLadders extends BaseGame<State> {
 			ctx.header = `${this.turn} rolled a ${this.state.lastRoll}...`;
 		} else if (side === this.turn) {
 			ctx.header = this.$T('GAME.YOUR_TURN');
-		} else if (side) {
-			ctx.header = this.$T('GAME.WAITING_FOR_OPPONENT');
-			ctx.dimHeader = true;
 		} else if (this.turn) {
-			const current = this.players[this.turn];
-			ctx.header = this.$T('GAME.WAITING_FOR_PLAYER', { player: `${current.name}${this.sides ? ` (${this.turn})` : ''}` });
+			ctx.header = this.$T('GAME.WAITING_FOR_PLAYER', { player: this.players[this.turn].name });
+			if (side) ctx.dimHeader = true;
 		}
 		return render.bind(this.renderCtx)(ctx);
 	}
