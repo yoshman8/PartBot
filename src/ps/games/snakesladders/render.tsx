@@ -30,6 +30,7 @@ function Players({ players }: { players: { pos: number; color: string }[] }): Re
 		<table>
 			<tbody>
 				<tr>
+					{players.length === 1 ? <td style={{ width: 6 }} /> : null}
 					{players.slice(0, 2).map(player => (
 						<Player color={player.color} />
 					))}
