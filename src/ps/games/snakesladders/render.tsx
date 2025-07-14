@@ -64,6 +64,7 @@ export function renderBoard(this: This, ctx: RenderCtx) {
 			style={{
 				backgroundImage: `url('${process.env.WEB_URL}/static/snakesladders/main.png')`,
 				backgroundSize: 'contain',
+				zoom: '80%',
 			}}
 		/>
 	);
