@@ -136,6 +136,7 @@ export class SnakesLadders extends BaseGame<State> {
 				override && this.turn
 					? { ...this.state.board, [this.turn]: { ...this.state.board[this.turn], pos: override } }
 					: this.state.board,
+			turns: this.turns,
 			lastRoll: this.state.lastRoll,
 			id: this.id,
 			active: side === this.turn && !!side,

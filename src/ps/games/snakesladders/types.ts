@@ -8,6 +8,7 @@ export type State = {
 
 export type RenderCtx = {
 	id: string;
+	turns: string[];
 	board: Board;
 	lastRoll: number;
 	active?: boolean;

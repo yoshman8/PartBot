@@ -91,7 +91,8 @@ export function render(this: This, ctx: RenderCtx): ReactElement {
 			) : null}
 			<br />
 			<br />
-			{Object.values(ctx.board)
+			{ctx.turns
+				.map(id => ctx.board[id])
 				.map(player => (
 					<>
 						<Player color={player.color} as="div" /> <Username name={player.name} clickable />
