@@ -14,6 +14,11 @@ export const ScrabbleModData: Record<
 		name: 'CSW21',
 		dict: DICTIONARY.CSW21,
 	},
+	[ScrabbleMods.CSW24]: {
+		name: 'CSW24',
+		dict: DICTIONARY.CSW24,
+		aliases: ['current'],
+	},
 	[ScrabbleMods.ODS8]: {
 		name: 'ODS8',
 		dict: DICTIONARY.ODS8,
@@ -83,12 +88,12 @@ export const ScrabbleModData: Record<
 	},
 	[ScrabbleMods.POKEMON]: {
 		name: 'Pokémon',
-		dict: DICTIONARY.CSW21,
+		dict: DICTIONARY.CSW24,
 		aliases: ['pokemod', 'pokmon', 'pkmn', 'mons'],
 	},
 	[ScrabbleMods.CRAZYMONS]: {
 		name: 'CRAZYMONS',
-		dict: DICTIONARY.CSW21,
+		dict: DICTIONARY.CSW24,
 		aliases: ['crazy'],
 	},
 };

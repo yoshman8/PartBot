@@ -16,7 +16,7 @@ export const command: PSCommand[] = [
 		aliases: ['cw'],
 		categories: ['game'],
 		async run({ broadcast, arg, $T }) {
-			const [word, input = ScrabbleMods.CSW21] = arg
+			const [word, input = ScrabbleMods.CSW24] = arg
 				.toLowerCase()
 				.replace(/[^a-z0-9,]/g, '')
 				.lazySplit(',', 1);

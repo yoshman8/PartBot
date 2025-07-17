@@ -14,7 +14,7 @@ function isPokeWord(word: string): boolean {
 }
 
 export function checkWord(word: string, appliedMod: ScrabbleMods | null): WordScore | null {
-	const mod = appliedMod ?? ScrabbleMods.CSW21;
+	const mod = appliedMod ?? ScrabbleMods.CSW24;
 	const modData = ScrabbleModData[mod];
 	const dictionary = Dictionaries[modData.dict];
 	if (!dictionary) throw new Error(`Unrecognized dictionary ${modData.dict}`);
