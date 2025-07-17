@@ -55,6 +55,14 @@ export class SnakesLadders extends BaseGame<State> {
 		return { success: true, data: null };
 	}
 
+	onReplacePlayer(turn: string, withPlayer: User): ActionResponse {
+		const oldBoardPlayer = this.state.board[turn];
+		if (!oldBoardPlayer) return { success: false, error: 'Could not find old player' as ToTranslate };
+		delete this.state.board[turn];
+		this.state.board[withPlayer.id] = { ...oldBoardPlayer, name: withPlayer.name };
+		return { success: true, data: null };
+	}
+
 	action(user: User): void {
 		if (!this.started) this.throw('GAME.NOT_STARTED');
 		if (user.id !== this.players[this.turn!].id) this.throw('GAME.IMPOSTOR_ALERT');
