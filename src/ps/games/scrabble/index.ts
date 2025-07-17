@@ -136,10 +136,9 @@ export class Scrabble extends BaseGame<State> {
 			return !existingTile;
 		});
 		if (!playedTiles.length) this.throw('GAME.SCRABBLE.MUST_PLAY_TILES');
-		const playedTilesCount = playedTiles.count(true);
+		const playedTilesCount = playedTiles.map(tile => (tile.blank ? '_' : tile.letter)).count(true);
 
-		for (const [tile, count] of playedTilesCount.entries()) {
-			const letter = tile.blank ? '_' : tile.letter;
+		for (const [letter, count] of playedTilesCount.entries()) {
 			if (!rackCount[letter]) this.throw('GAME.SCRABBLE.MISSING_LETTER', { letter });
 			if (rackCount[letter] < count) {
 				this.throw('GAME.SCRABBLE.INSUFFICIENT_LETTERS', { letter, actual: rackCount[letter], required: count });
