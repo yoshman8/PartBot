@@ -2,6 +2,7 @@ import { PSAltCache, PSGames, PSSeenCache } from '@/cache';
 import { rename } from '@/database/alts';
 import { seeUser } from '@/database/seens';
 import { fromHumanTime, toId } from '@/tools';
+import { ChatError } from '@/utils/chatError';
 import { debounce } from '@/utils/debounce';
 
 import type { Client } from 'ps-client';
@@ -18,7 +19,12 @@ export function joinHandler(this: Client, room: string, user: string, isIntro: b
 		.filter(game => game.roomid === room);
 
 	roomGames.forEach(game => {
-		if (game.hasPlayerOrSpectator(user)) game.update(toId(user));
+		if (game.hasPlayerOrSpectator(user))
+			try {
+				game.update(toId(user));
+			} catch (err) {
+				if (!(err instanceof ChatError)) throw err;
+			}
 	});
 }
 
