@@ -1,3 +1,4 @@
+import { PSRoomConfigs } from '@/cache';
 import { prefix } from '@/config/ps';
 import { LanguageMap, i18n } from '@/i18n';
 import { getLanguage } from '@/i18n/language';
@@ -86,6 +87,18 @@ export async function commandHandler(message: PSMessage, indirect: IndirectCtx |
 		const conceal = sourceCommand.flags?.conceal ? $T('CMD_NOT_FOUND') : null;
 		if (!usePermissions(cascade.perms, context.command, message)) {
 			throw new ChatError(conceal ?? $T('ACCESS_DENIED'));
+		}
+		if (message.type === 'chat') {
+			const roomConfig = PSRoomConfigs[message.target.id];
+			if (roomConfig?.blacklist?.includes(context.command.join('.'))) {
+				throw new ChatError($T('BLACKLISTED_COMMAND', { room: message.target.title }));
+			}
+			const blacklistedCategories = roomConfig?.blacklist
+				? sourceCommand.categories.filter(category => roomConfig.blacklist!.includes(`cat:${category}`))
+				: [];
+			if (blacklistedCategories.length > 0) {
+				throw new ChatError($T('BLACKLISTED_CATEGORIES', { room: message.target.title, categories: blacklistedCategories.list($T) }));
+			}
 		}
 		if (!cascade.flags.routePMs && indirect?.type === 'spoof') {
 			throw new ChatError(conceal ?? $T('NO_DMS_COMMAND'));

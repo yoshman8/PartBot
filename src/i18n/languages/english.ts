@@ -23,6 +23,8 @@ export default {
 	WRONG_ROOM: 'Wrong room.',
 	INVALID_ARGUMENTS: 'Invalid number of arguments.',
 	ENTRY_NOT_FOUND: 'Entry not found.',
+	BLACKLISTED_COMMAND: '{{room}} has disabled this command.',
+	BLACKLISTED_CATEGORIES: '{{room}} has disabled {{categories}} commands.',
 
 	DISABLED: {
 		DB: 'The database is currently disabled.',
