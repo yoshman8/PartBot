@@ -66,6 +66,7 @@ async function Hangman(this: Client) {
 
 		gamesDone++;
 		await sleep('20s');
+		room.send('/hangman end');
 	}
 
 	_postGGSSEvent.call(this);
