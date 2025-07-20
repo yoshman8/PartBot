@@ -90,14 +90,19 @@ export async function commandHandler(message: PSMessage, indirect: IndirectCtx |
 		}
 		if (message.type === 'chat') {
 			const roomConfig = PSRoomConfigs[message.target.id];
-			if (roomConfig?.blacklist?.includes(context.command.join('.'))) {
+			const lookup = context.command.join('.');
+			if (roomConfig?.blacklist?.includes(lookup) && !roomConfig?.whitelist?.includes(lookup)) {
 				throw new ChatError($T('BLACKLISTED_COMMAND', { room: message.target.title }));
 			}
 			const blacklistedCategories = roomConfig?.blacklist
 				? sourceCommand.categories.filter(category => roomConfig.blacklist!.includes(`cat:${category}`))
 				: [];
 			if (blacklistedCategories.length > 0) {
-				throw new ChatError($T('BLACKLISTED_CATEGORIES', { room: message.target.title, categories: blacklistedCategories.list($T) }));
+				if (!(roomConfig?.whitelist && sourceCommand.categories.some(category => roomConfig.whitelist!.includes(`cat:${category}`)))) {
+					throw new ChatError(
+						$T('BLACKLISTED_CATEGORIES', { room: message.target.title, categories: blacklistedCategories.list($T) })
+					);
+				}
 			}
 		}
 		if (!cascade.flags.routePMs && indirect?.type === 'spoof') {
