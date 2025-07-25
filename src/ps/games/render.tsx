@@ -63,7 +63,7 @@ export function Table<T>({
 	style = {},
 	labels,
 	Cell,
-	children: _children,
+	children,
 	...props
 }: {
 	board: T[][];
@@ -113,6 +113,7 @@ export function Table<T>({
 					</tr>
 				) : null}
 			</tbody>
+			{children}
 		</table>
 	);
 }

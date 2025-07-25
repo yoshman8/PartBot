@@ -67,7 +67,11 @@ export function renderBoard(this: This, ctx: RenderCtx) {
 				backgroundSize: 'cover',
 				zoom: '75%',
 			}}
-		/>
+		>
+			<caption style={{ textAlign: 'right', color: '#555', padding: 4 }}>
+				Art by <a href="https://cara.app/aurumii">Audiino</a>
+			</caption>
+		</Table>
 	);
 }
 
