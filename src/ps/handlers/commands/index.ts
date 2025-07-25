@@ -92,7 +92,7 @@ export async function commandHandler(message: PSMessage, indirect: IndirectCtx |
 			const roomConfig = PSRoomConfigs[message.target.id];
 			const lookup = context.command.join('.');
 			const isWhitelisted =
-				roomConfig.whitelist &&
+				roomConfig?.whitelist &&
 				(roomConfig.whitelist?.includes(lookup) ||
 					sourceCommand.categories.some(category => roomConfig.whitelist!.includes(`cat:${category}`)));
 			if (roomConfig?.blacklist?.includes(lookup) && !isWhitelisted) {
