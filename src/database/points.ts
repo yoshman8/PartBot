@@ -42,7 +42,8 @@ export async function addPoints(user: string, points: Record<string, number>, ro
 	if (!IS_ENABLED.DB) return;
 	const userId = toId(user);
 	const id = `${roomId}-${userId}`;
-	const roomConfig = PSRoomConfigs[roomId].points!;
+	const roomConfig = PSRoomConfigs[roomId]?.points;
+	if (!roomConfig) return;
 	const document = (await model.findOne({ id })) ?? (await model.create({ id, userId, roomId, name: user, points: new Map() }));
 	document.name = user;
 	Object.keys(roomConfig.types).forEach(type => document.points.set(type, document.points.get(type) ?? 0));
@@ -53,7 +54,9 @@ export async function addPoints(user: string, points: Record<string, number>, ro
 
 export async function bulkAddPoints(bulkData: BulkPointsDataInput, roomId: string): Promise<boolean | undefined> {
 	if (!IS_ENABLED.DB) return;
-	const roomConfig = PSRoomConfigs[roomId].points!;
+	const roomConfig = PSRoomConfigs[roomId]?.points;
+
+	if (!roomConfig) return false;
 
 	const bulkQueries = Object.values(bulkData).map(({ id, name, points }) => ({
 		updateOne: {

@@ -8,7 +8,6 @@ import { getChannel } from '@/discord/loaders/channels';
 import { IS_ENABLED } from '@/enabled';
 import { i18n } from '@/i18n';
 import { getLanguage } from '@/i18n/language';
-import { TimeZone } from '@/ps/handlers/cron/constants';
 import getSecretFunction from '@/secrets/functions';
 import { toId } from '@/tools';
 import { Username } from '@/utils/components';

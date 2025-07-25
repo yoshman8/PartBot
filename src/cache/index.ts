@@ -11,17 +11,17 @@ import type { SlashCommandBuilder } from 'discord.js';
 export const Timers: { [key: string]: Timer } = {};
 
 // Showdown cache
-export const PSRoomConfigs: { [key: string]: PSRoomConfig } = {};
+export const PSRoomConfigs: Partial<{ [key: string]: PSRoomConfig }> = {};
 export const PSCommands: { [key: string]: PSCommand & { path: string } } = {};
 export const PSAliases: { [key: string]: string } = {};
-export const PSAltCache: { [key: string]: { from: string; to: string; at: Date } } = {};
-export const PSSeenCache: { [key: string]: { id: string; name: string; at: Date; seenIn: string[] } } = {};
+export const PSAltCache: Partial<{ [key: string]: { from: string; to: string; at: Date } }> = {};
+export const PSSeenCache: Partial<{ [key: string]: { id: string; name: string; at: Date; seenIn: string[] } }> = {};
 export const PSCronJobs: { manager: PSCronJobManager | null } = { manager: null };
 
-export const PSNoPrefixHelp: { [key: string]: Date } = {};
-export const PSQuoteRoomPrefs: { [key: string]: { room: string; at: Date } } = {};
-export const PSKuncInProgress: { [key: string]: boolean } = {};
-export const PSPointsNonce: { [key: string]: Record<string, Record<string, number>> | null } = {};
+export const PSNoPrefixHelp: Partial<{ [key: string]: Date }> = {};
+export const PSQuoteRoomPrefs: Partial<{ [key: string]: { room: string; at: Date } }> = {};
+export const PSKuncInProgress: Partial<{ [key: string]: boolean }> = {};
+export const PSPointsNonce: Partial<{ [key: string]: Record<string, Record<string, number>> | null }> = {};
 
 // Games
 export const PSGames: { [key in keyof Games]?: Record<string, CommonGame> } = {};

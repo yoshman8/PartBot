@@ -99,7 +99,7 @@ export const command: PSCommand[] = [
 			const { message, arg, $T, originalCommand, broadcast } = ctx;
 			if (!IS_ENABLED.DB) throw new ChatError($T('DISABLED.DB'));
 			const roomConfig = PSRoomConfigs[message.target.id];
-			if (!roomConfig.points) throw new ChatError($T('COMMANDS.POINTS.ROOM_NO_POINTS', { room: message.target.title }));
+			if (!roomConfig?.points) throw new ChatError($T('COMMANDS.POINTS.ROOM_NO_POINTS', { room: message.target.title }));
 
 			const args = arg.split(',').map(term => term.trim());
 			// If command is not explicitly 'add' or 'remove', use the first declared points type
@@ -144,7 +144,7 @@ export const command: PSCommand[] = [
 			if (!IS_ENABLED.DB) throw new ChatError($T('DISABLED.DB'));
 
 			const roomConfig = PSRoomConfigs[message.target.id];
-			if (!roomConfig.points) throw new ChatError($T('COMMANDS.POINTS.ROOM_NO_POINTS', { room: message.target.title }));
+			if (!roomConfig?.points) throw new ChatError($T('COMMANDS.POINTS.ROOM_NO_POINTS', { room: message.target.title }));
 
 			const nonce = arg.trim();
 			if (!nonce) throw new ChatError('Nonce not provided.' as ToTranslate);

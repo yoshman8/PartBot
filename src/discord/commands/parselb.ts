@@ -27,7 +27,7 @@ export const command: DiscCommand = {
 		const pointsData = scoringAlgo(jsonData);
 		if (!pointsData) return interaction.reply('Unable to add data - no response / invalid input!');
 
-		const pointsType = PSRoomConfigs[ROOM].points?.priority[0];
+		const pointsType = PSRoomConfigs[ROOM]?.points?.priority[0];
 		if (!pointsType) throw new ChatError("Didn't find points data for Hindi..." as NoTranslate);
 
 		const bulkPointsData = Object.fromEntries(
