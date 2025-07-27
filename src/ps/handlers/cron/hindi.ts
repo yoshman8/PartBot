@@ -77,7 +77,7 @@ async function Hangman(this: Client) {
 export function register(this: Client, Jobs: PSCronJobManager): void {
 	// Main room
 	Jobs.register('hindi-automodchat-enable', '0 0 * * *', TimeZone.IST, () => {
-		this.getRoom('hindi')?.send('/automodchat 10, +');
+		this.getRoom('hindi')?.send('/automodchat 5, +');
 	});
 	Jobs.register('hindi-automodchat-disable', '0 7 * * *', TimeZone.IST, () => {
 		const room = this.getRoom('hindi');
