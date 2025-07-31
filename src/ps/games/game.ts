@@ -20,7 +20,20 @@ import type { EmbedBuilder } from 'discord.js';
 import type { Client, User } from 'ps-client';
 import type { ReactElement } from 'react';
 
-const backupKeys = ['state', 'started', 'turn', 'turns', 'seed', 'players', 'mod', 'theme', 'log', 'startedAt', 'createdAt'] as const;
+const backupKeys = [
+	'state',
+	'started',
+	'turn',
+	'turns',
+	'seed',
+	'prngCalls',
+	'players',
+	'mod',
+	'theme',
+	'log',
+	'startedAt',
+	'createdAt',
+] as const;
 
 /**
  * This is the shared code for all games. To check the game-specific code, refer to the
@@ -31,7 +44,11 @@ export class BaseGame<State extends BaseState> {
 	id: string;
 	$T: TranslationFn;
 	seed: number = sample(1e12);
-	prng: () => number = useRNG(this.seed);
+	prngCalls = 0;
+	prng: () => number = (prng => {
+		this.prngCalls++;
+		return prng;
+	})(useRNG(this.seed));
 	room: PSRoomTranslated;
 	parent: Client;
 	roomid: string;
@@ -78,11 +95,14 @@ export class BaseGame<State extends BaseState> {
 
 	external?(user: User, ctx: string): void;
 
-	onAddPlayer?(user: User, ctx: string): ActionResponse<Record<string, unknown>>;
+	onAddPlayer?(user: User, ctx: string): ActionResponse;
+	onAfterAddPlayer?(player: Player): void;
 	onLeavePlayer?(player: Player, ctx: string | User): ActionResponse;
 	onForfeitPlayer?(player: Player, ctx: string | User): ActionResponse;
-	onReplacePlayer?(turn: BaseState['turn'], withPlayer: User): ActionResponse<null>;
+	onReplacePlayer?(turn: BaseState['turn'], withPlayer: User): ActionResponse;
+	onAfterReplacePlayer?(player: Player): void;
 	onStart?(): ActionResponse;
+	onAfterStart?(): void;
 	onEnd(type?: EndType): TranslatedText;
 	onEnd() {
 		return this.$T('GAME.GAME_ENDED');
@@ -144,7 +164,19 @@ export class BaseGame<State extends BaseState> {
 					}
 					case 'seed': {
 						this.seed = parsedBackup.seed;
-						this.prng = useRNG(this.seed);
+						const prng = useRNG(this.seed);
+						this.prng = () => {
+							this.prngCalls++;
+							return prng();
+						};
+						// Call prng() the required number of times
+						this.prngCalls.times(() => prng());
+						break;
+					}
+					case 'prngCalls': {
+						this.prngCalls = parsedBackup.prngCalls;
+						// Call prng() the required number of times
+						this.prngCalls.times(() => this.prng());
 						break;
 					}
 					case 'players': {
@@ -245,6 +277,11 @@ export class BaseGame<State extends BaseState> {
 		if (closeSignupsHTML) this.room.sendHTML(closeSignupsHTML, { name: this.id, change });
 	}
 
+	getPlayer(user: User | string): Player | null {
+		const userId = typeof user === 'string' ? toId(user) : user.id;
+		return Object.values(this.players).find(player => player.id === userId) ?? null;
+	}
+
 	addPlayer(user: User, ctx: string | null): ActionResponse<{ started: boolean; as: BaseState['turn'] }> {
 		if (this.started) return { success: false, error: this.$T('GAME.ALREADY_STARTED') };
 		if (this.meta.players === 'single' && Object.keys(this.players).length >= 1) this.throw('GAME.IS_FULL');
@@ -270,18 +307,19 @@ export class BaseGame<State extends BaseState> {
 			newPlayer.turn = turn;
 		}
 		if (this.onAddPlayer) {
-			const extraData = this.onAddPlayer(user, ctx as string);
-			if (!extraData.success) return extraData;
-			Object.assign(newPlayer, extraData.data);
+			const onAddPlayer = this.onAddPlayer(user, ctx as string);
+			if (!onAddPlayer.success) return onAddPlayer;
 		}
 		this.players[newPlayer.turn] = newPlayer;
 		if (this.meta.players === 'single' || (Array.isArray(availableSlots) && availableSlots.length === 1) || availableSlots === 1) {
 			// Join was successful and game is now full
 			if (this.meta.players === 'single' || this.meta.autostart) this.start();
+			this.onAfterAddPlayer?.(newPlayer);
 			this.backup();
 			return { success: true, data: { started: true, as: newPlayer.turn } };
 		}
 		this.backup();
+		this.onAfterAddPlayer?.(newPlayer);
 		return { success: true, data: { started: false, as: newPlayer.turn } };
 	}
 
@@ -336,6 +374,7 @@ export class BaseGame<State extends BaseState> {
 		if (!this.meta.turns) this.turns.splice(this.turns.indexOf(turn), 1, newTurn);
 		if (this.turn === turn) this.turn = newTurn;
 		this.spectators.remove(oldPlayer.id);
+		this.onAfterReplacePlayer?.(this.players[newTurn]);
 		this.backup();
 		return { success: true, data: this.$T('GAME.SUB', { in: withPlayer.name, out: oldPlayer.name }) };
 	}
@@ -366,10 +405,11 @@ export class BaseGame<State extends BaseState> {
 		const tryStart = this.onStart?.();
 		if (tryStart?.success === false) return tryStart;
 		this.started = true;
-		if (!this.turns.length) this.turns = Object.keys(this.players).shuffle();
+		if (!this.turns.length) this.turns = Object.keys(this.players).shuffle(this.prng);
 		this.nextPlayer();
 		this.startedAt = new Date();
 		this.setTimer('Game started');
+		this.onAfterStart?.();
 		this.backup();
 		return { success: true, data: null };
 	}
@@ -418,8 +458,10 @@ export class BaseGame<State extends BaseState> {
 		Object.entries(this.players).forEach(([side, player]) => {
 			if (!player.out) this.sendHTML(player.id, this.render(side));
 		});
-		this.room.send(`/highlighthtmlpage ${this.players[this.turn!].id}, ${this.id}, ${this.$T('GAME.YOUR_TURN')}` as TranslatedText);
-		if (this.spectators.length > 0) this.room.pageHTML(this.spectators, this.render(null), { name: this.id });
+		if (this.turn) {
+			this.room.send(`/highlighthtmlpage ${this.players[this.turn].id}, ${this.id}, ${this.$T('GAME.YOUR_TURN')}` as TranslatedText);
+			if (this.spectators.length > 0) this.room.pageHTML(this.spectators, this.render(null), { name: this.id });
+		}
 	}
 
 	getURL(): Promise<string | null> | string | null {

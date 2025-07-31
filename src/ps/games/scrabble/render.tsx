@@ -20,7 +20,7 @@ export function renderMove(logEntry: Log, { id, players, $T, renderCtx: { msg } 
 			<hr />
 			{children}
 			<Button name="send" value={`${msg} watch`} style={{ float: 'right' }}>
-				Watch!
+				{$T('GAME.LABELS.WATCH')}
 			</Button>
 			<hr />
 		</>
@@ -34,7 +34,7 @@ export function renderMove(logEntry: Log, { id, players, $T, renderCtx: { msg } 
 			const words = Object.entries(logEntry.ctx.words);
 			return [
 				<Wrapper>
-					<Username name={playerName} /> played{' '}
+					<Username name={playerName} clickable /> played{' '}
 					{words.length === 1 && !logEntry.ctx.points.bingo
 						? words[0][0]
 						: words.map(([word, points]) => `${word} (${points})`).list($T)}{' '}
@@ -46,14 +46,14 @@ export function renderMove(logEntry: Log, { id, players, $T, renderCtx: { msg } 
 		case 'exchange':
 			return [
 				<Wrapper>
-					<Username name={playerName} /> exchanged {logEntry.ctx.tiles.length} tiles.
+					<Username name={playerName} clickable /> exchanged {logEntry.ctx.tiles.length} tiles.
 				</Wrapper>,
 				opts,
 			];
 		case 'pass':
 			return [
 				<Wrapper>
-					<Username name={playerName} /> passed.
+					<Username name={playerName} clickable /> passed.
 				</Wrapper>,
 				opts,
 			];
