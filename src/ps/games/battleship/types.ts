@@ -1,16 +1,19 @@
 import type { ShipType } from '@/ps/games/battleship/constants';
 import type { Player } from '@/ps/games/types';
-import type { Point } from '@/utils/grid';
 
 export type Turn = 'A' | 'B';
 
 export type ShipBoard = (ShipType | null)[][];
-export type AttackBoard = (ShipType | null)[][];
+export type AttackBoard = (ShipType | false | null)[][];
 export type Boards = { ships: Record<Turn, ShipBoard>; attacks: Record<Turn, AttackBoard> };
+
+export type SelectionInProgressState = { type: 'valid'; board: ShipBoard; input: string[] };
+export type SelectionErrorState = { type: 'invalid'; input: string[]; message: string };
 
 export type State = {
 	turn: Turn;
-	ready: Record<Turn, boolean | Record<ShipType, [Point, Point]>>; // object only when previewing ships but not ready yet
+	// object only when previewing ships but not ready yet
+	ready: Record<Turn, boolean | SelectionInProgressState | SelectionErrorState>;
 	board: Boards;
 };
 
@@ -19,7 +22,7 @@ export type RenderCtx = {
 	header?: string;
 	dimHeader?: boolean;
 } & (
-	| { type: 'player'; attack: AttackBoard; defense: AttackBoard; actual: ShipBoard | null }
-	| { type: 'spectator'; boards: Boards['attacks'] }
+	| { type: 'player'; attack: AttackBoard; defense: AttackBoard; actual: ShipBoard; active: boolean }
+	| { type: 'spectator'; boards: Boards['attacks']; players: Record<Turn, Player>; active?: false }
 );
-export type WinCtx = ({ type: 'win' } & Record<'winner' | 'loser', Player>) | { type: 'draw' };
+export type WinCtx = { type: 'win' } & Record<'winner' | 'loser', Player>;

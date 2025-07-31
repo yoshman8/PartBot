@@ -7,9 +7,11 @@ export type Log = Satisfies<
 	{
 		time: Date;
 		turn: Turn;
-		action: 'play';
-		ctx: number;
-	}
+	} & (
+		| { action: 'hit'; ctx: { ship: string; point: string } }
+		| { action: 'miss'; ctx: { point: string } }
+		| { action: 'set'; ctx: string[] }
+	)
 >;
 
 export type APILog = SerializedInstance<Log | CommonLog>;

@@ -42,6 +42,10 @@ declare global {
 	}
 
 	interface Number {
+		/**
+		 * Converts a number to a letter.
+		 * @example (2).toLetter(); // 'B'
+		 */
 		toLetter(): string;
 		times(callback: (i: number) => void): void;
 	}

@@ -389,7 +389,7 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 							aliases: ['#'],
 							help: 'Modifies a given game.',
 							perms: Symbol.for('games.create'),
-							syntax: 'CMD [game ref] [mod]',
+							syntax: 'CMD [game ref], [mod]',
 							async run({ message, arg, $T }) {
 								const { game, ctx } = getGame(arg, { action: 'mod', user: message.author.id }, { room: message.target, $T });
 								if (!game.moddable?.() || !game.applyMod) throw new ChatError($T('GAME.CANNOT_MOD'));
@@ -408,7 +408,7 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 							aliases: ['t'],
 							help: "Customizes a game's theme.",
 							perms: Symbol.for('games.create'),
-							syntax: 'CMD [game ref] [theme name]',
+							syntax: 'CMD [game ref], [theme name]',
 							async run({ message, arg, $T }) {
 								const { game, ctx } = getGame(arg, { action: 'any' }, { room: message.target, $T });
 								const result = game.setTheme(ctx);
