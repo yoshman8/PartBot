@@ -164,9 +164,13 @@ export class BaseGame<State extends BaseState> {
 					}
 					case 'seed': {
 						this.seed = parsedBackup.seed;
-						this.prng = useRNG(this.seed);
+						const prng = useRNG(this.seed);
+						this.prng = () => {
+							this.prngCalls++;
+							return prng();
+						};
 						// Call prng() the required number of times
-						this.prngCalls.times(() => this.prng());
+						this.prngCalls.times(() => prng());
 						break;
 					}
 					case 'prngCalls': {
