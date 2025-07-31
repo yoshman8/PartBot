@@ -162,6 +162,7 @@ export default {
 			USER_NO_POINTS: '[[]]{{user}} não tem pontos na sala.',
 			USER_POINTS: '[[]]{{user}} tem {{pointsList}} em {{roomName}}.',
 			USER_POINTS_RANKED: '[[]]{{user}} está classificado #{{rank}} com {{pointsList}} em {{roomName}}.',
+			ADDED_POINTS_TO_USERS: 'Adicionado {{pointsText}} para {{users}}.',
 			HEADERS: {
 				USER: 'Usuário',
 			},
