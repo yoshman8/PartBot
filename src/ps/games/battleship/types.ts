@@ -14,6 +14,7 @@ export type State = {
 	turn: Turn;
 	// object only when previewing ships but not ready yet
 	ready: Record<Turn, boolean | SelectionInProgressState | SelectionErrorState>;
+	allReady?: boolean;
 	board: Boards;
 };
 

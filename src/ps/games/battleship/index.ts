@@ -19,13 +19,13 @@ const HITS_TO_WIN = Ships.map(ship => ship.size).sum();
 
 export class Battleship extends BaseGame<State> {
 	winCtx?: WinCtx | { type: EndType };
-	allReady = false;
 	constructor(ctx: BaseContext) {
 		super(ctx);
 		super.persist(ctx);
 
 		if (ctx.backup) return;
 		this.state.ready = { A: false, B: false };
+		this.state.allReady = false;
 		this.state.board = {
 			ships: { A: createGrid(10, 10, () => null), B: createGrid(10, 10, () => null) },
 			attacks: { A: createGrid(10, 10, () => null), B: createGrid(10, 10, () => null) },
@@ -65,6 +65,7 @@ export class Battleship extends BaseGame<State> {
 					} else throw err;
 				}
 				this.update(player.id);
+				this.backup();
 				break;
 			}
 			case 'confirm-set': {
@@ -77,15 +78,16 @@ export class Battleship extends BaseGame<State> {
 				this.log.push(logEntry);
 				this.room.sendHTML(...renderMove(logEntry, this));
 				if (this.state.ready.A === true && this.state.ready.B === true) {
-					this.allReady = true;
+					this.state.allReady = true;
 					this.nextPlayer();
 				} else {
 					this.update(player.id);
 				}
+				this.backup();
 				break;
 			}
 			case 'hit': {
-				if (!this.allReady) this.throw('GAME.NOT_STARTED');
+				if (!this.state.allReady) this.throw('GAME.NOT_STARTED');
 				const targeted = parsePointA1(ctx);
 				if (!targeted) this.throw();
 				const [x, y] = targeted;
@@ -150,7 +152,7 @@ export class Battleship extends BaseGame<State> {
 			const readyState = this.state.ready[side];
 			if (readyState === false) return renderSelection.bind(this.renderCtx)();
 			if (readyState && typeof readyState !== 'boolean') return renderSelection.bind(this.renderCtx)(readyState);
-			if (!this.allReady)
+			if (!this.state.allReady)
 				return renderSelection.bind(this.renderCtx)({ type: 'valid', board: this.state.board.ships[side], input: [] }, true);
 		}
 
