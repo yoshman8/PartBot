@@ -228,7 +228,7 @@ export class Battleship extends BaseGame<State> {
 			if (givenSize !== ship.size)
 				throw new ChatError(`${ship.name} has size ${ship.size} but you put it in ${givenSize} cells!` as ToTranslate);
 			if ([from, to].some(([x, y]) => x < 0 || x >= 10 || y < 0 || y >= 10))
-				throw new ChatError(`Points given out of range!` as ToTranslate);
+				throw new ChatError(`Points given for ${ship.name} out of range!` as ToTranslate);
 			rangePoints(from, to).forEach(pointInRange => {
 				const point = pointToA1(pointInRange);
 				if (occupied[point]) {
