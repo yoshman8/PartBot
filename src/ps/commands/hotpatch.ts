@@ -1,4 +1,5 @@
 import Sentinel from '@/sentinel';
+import { ChatError } from '@/utils/chatError';
 
 import type { NoTranslate } from '@/i18n/types';
 import type { PSCommand } from '@/types/chat';
@@ -20,7 +21,7 @@ export const command: PSCommand = {
 				} catch (err) {
 					if (err instanceof Error) {
 						err.message = `${type}: ${err.message}`;
-						throw err;
+						if (!(err instanceof ChatError)) throw err;
 					}
 					return err as string;
 				}

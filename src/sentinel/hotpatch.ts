@@ -125,7 +125,6 @@ export async function hotpatch(this: Sentinel, hotpatchType: HotpatchType, by: s
 			Logger.log('Failed to hotpatch', hotpatchType, by, error.message);
 			Logger.errorLog(error);
 		}
-		if (error instanceof ChatError) return;
 		throw error;
 	}
 }
