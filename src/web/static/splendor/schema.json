@@ -1,0 +1,81 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Splendor Schema",
+	"description": "Schema for Splendor card metadata",
+	"type": "object",
+	"properties": {
+		"pokemon": {
+			"patternProperties": {
+				".*": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"tier": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 3
+						},
+						"points": {
+							"type": "number"
+						},
+						"cost": {
+							"type": "object",
+							"properties": {
+								"fire": { "type": "number" },
+								"water": { "type": "number" },
+								"grass": { "type": "number" },
+								"colorless": { "type": "number" },
+								"dark": { "type": "number" }
+							},
+							"minProperties": 1
+						},
+						"art": {
+							"type": "string"
+						}
+					},
+					"patternProperties": {
+						"^type$": {
+							"enum": ["fire", "water", "grass", "colorless", "dark"]
+						}
+					},
+					"required": ["name", "tier", "type", "points", "cost", "art"]
+				}
+			}
+		},
+		"trainers": {
+			"patternProperties": {
+				".*": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"types": {
+							"type": "object",
+							"properties": {
+								"fire": { "type": "number" },
+								"water": { "type": "number" },
+								"grass": { "type": "number" },
+								"colorless": { "type": "number" },
+								"dark": { "type": "number" }
+							},
+							"minProperties": 2,
+							"maxProperties": 3
+						},
+						"points": {
+							"type": "number",
+							"minimum": 3,
+							"maximum": 3
+						},
+						"art": {
+							"type": "string"
+						}
+					},
+					"required": ["name", "types", "points", "art"]
+				}
+			}
+		}
+	}
+}

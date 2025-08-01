@@ -1,0 +1,29 @@
+{
+	"$schema": "./schema.json",
+	"pokemon": {
+		"eevee": {
+			"name": "Eevee",
+			"tier": 1,
+			"type": "colorless",
+			"points": 0,
+			"cost": {
+				"fire": 1,
+				"water": 1,
+				"grass": 1,
+				"dark": 1
+			},
+			"art": "eevee.png"
+		}
+	},
+	"trainers": {
+		"larry": {
+			"name": "Larry",
+			"points": 3,
+			"types": {
+				"colorless": 4,
+				"dark": 4
+			},
+			"art": "larry.png"
+		}
+	}
+}
