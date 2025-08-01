@@ -29,7 +29,8 @@
 								"colorless": { "type": "number" },
 								"dark": { "type": "number" }
 							},
-							"minProperties": 1
+							"minProperties": 1,
+							"additionalProperties": false
 						},
 						"art": {
 							"type": "string"
@@ -62,7 +63,8 @@
 								"dark": { "type": "number" }
 							},
 							"minProperties": 2,
-							"maxProperties": 3
+							"maxProperties": 3,
+							"additionalProperties": false
 						},
 						"points": {
 							"type": "number",
