@@ -9,7 +9,7 @@ import type { ToTranslate, TranslatedText } from '@/i18n/types';
 import type { ShipType } from '@/ps/games/battleship/constants';
 import type { Log } from '@/ps/games/battleship/logs';
 import type { RenderCtx, SelectionInProgressState, ShipBoard, State, Turn, WinCtx } from '@/ps/games/battleship/types';
-import type { ActionResponse, BaseState, EndType, Player } from '@/ps/games/types';
+import type { ActionResponse, EndType, Player } from '@/ps/games/types';
 import type { User } from 'ps-client';
 import type { ReactElement } from 'react';
 
@@ -35,8 +35,8 @@ export class Battleship extends BaseGame<State> {
 	onAfterAddPlayer(player: Player): void {
 		this.update(player.id);
 	}
-	onReplacePlayer(_turn: BaseState['turn'], withPlayer: User): ActionResponse {
-		this.update(withPlayer.id);
+	onAfterReplacePlayer(newPlayer: Player): ActionResponse {
+		this.update(newPlayer.id);
 		return { success: true, data: null };
 	}
 
@@ -227,6 +227,8 @@ export class Battleship extends BaseGame<State> {
 			const givenSize = taxicab(from, to) + 1;
 			if (givenSize !== ship.size)
 				throw new ChatError(`${ship.name} has size ${ship.size} but you put it in ${givenSize} cells!` as ToTranslate);
+			if ([from, to].some(([x, y]) => x < 0 || x >= 10 || y < 0 || y >= 10))
+				throw new ChatError(`Points given out of range!` as ToTranslate);
 			rangePoints(from, to).forEach(pointInRange => {
 				const point = pointToA1(pointInRange);
 				if (occupied[point]) {
