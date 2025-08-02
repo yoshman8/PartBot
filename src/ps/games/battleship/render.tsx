@@ -244,10 +244,12 @@ export function render(this: { msg: string }, ctx: RenderCtx): ReactElement {
 				<>
 					<div>
 						<Username name={ctx.players.A.name} clickable />
+						's ships
 						<ShipGrid boards={ctx.boards.A} />
 					</div>
 					<div>
 						<Username name={ctx.players.B.name} clickable />
+						's ships
 						<ShipGrid boards={ctx.boards.B} />
 					</div>
 				</>
