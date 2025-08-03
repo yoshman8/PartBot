@@ -1,18 +1,1030 @@
 {
 	"$schema": "./schema.json",
 	"pokemon": {
+		"aipom": {
+			"name": "Aipom",
+			"tier": 1,
+			"type": "colorless",
+			"points": 0,
+			"cost": {
+				"water": 3
+			},
+			"art": "aipom.png"
+		},
+		"arrokuda": {
+			"name": "Arrokuda",
+			"tier": 1,
+			"type": "water",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"dark": 1,
+				"fire": 1,
+				"grass": 1
+			},
+			"art": "arrokuda.png"
+		},
+		"articuno": {
+			"name": "Articuno",
+			"tier": 3,
+			"type": "water",
+			"points": 4,
+			"cost": {
+				"colorless": 6,
+				"dark": 3,
+				"water": 3
+			},
+			"art": "articuno.png"
+		},
+		"audino": {
+			"name": "Audino",
+			"tier": 2,
+			"type": "colorless",
+			"points": 2,
+			"cost": {
+				"dark": 3,
+				"fire": 5
+			},
+			"art": "audino.png"
+		},
+		"banette": {
+			"name": "Banette",
+			"tier": 2,
+			"type": "dark",
+			"points": 3,
+			"cost": {
+				"dark": 6
+			},
+			"art": "banette.png"
+		},
+		"blissey": {
+			"name": "Blissey",
+			"tier": 3,
+			"type": "colorless",
+			"points": 5,
+			"cost": {
+				"colorless": 3,
+				"dark": 7
+			},
+			"art": "blissey.png"
+		},
+		"bulbasaur": {
+			"name": "Bulbasaur",
+			"tier": 1,
+			"type": "grass",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"dark": 1,
+				"fire": 1,
+				"water": 1
+			},
+			"art": "bulbasaur.png"
+		},
+		"carkol": {
+			"name": "Carkol",
+			"tier": 2,
+			"type": "fire",
+			"points": 2,
+			"cost": {
+				"dark": 5
+			},
+			"art": "carkol.png"
+		},
+		"carvanha": {
+			"name": "Carvanha",
+			"tier": 1,
+			"type": "dark",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"fire": 1,
+				"grass": 1,
+				"water": 1
+			},
+			"art": "carvanha.png"
+		},
+		"celebi": {
+			"name": "Celebi",
+			"tier": 3,
+			"type": "grass",
+			"points": 5,
+			"cost": {
+				"grass": 3,
+				"water": 7
+			},
+			"art": "celebi.png"
+		},
+		"chandelure": {
+			"name": "Chandelure",
+			"tier": 3,
+			"type": "dark",
+			"points": 4,
+			"cost": {
+				"dark": 3,
+				"fire": 6,
+				"grass": 3
+			},
+			"art": "chandelure.png"
+		},
+		"chansey": {
+			"name": "Chansey",
+			"tier": 2,
+			"type": "colorless",
+			"points": 3,
+			"cost": {
+				"colorless": 6
+			},
+			"art": "chansey.png"
+		},
+		"cherubi": {
+			"name": "Cherubi",
+			"tier": 1,
+			"type": "grass",
+			"points": 0,
+			"cost": {
+				"fire": 3
+			},
+			"art": "cherubi.png"
+		},
+		"chimchar": {
+			"name": "Chimchar",
+			"tier": 1,
+			"type": "fire",
+			"points": 0,
+			"cost": {
+				"colorless": 2,
+				"dark": 1,
+				"grass": 1,
+				"water": 1
+			},
+			"art": "chimchar.png"
+		},
+		"chiyu": {
+			"name": "Chi-Yu",
+			"tier": 3,
+			"type": "fire",
+			"points": 4,
+			"cost": {
+				"fire": 3,
+				"grass": 6,
+				"water": 3
+			},
+			"art": "chiyu.png"
+		},
+		"cinccino": {
+			"name": "Cinccino",
+			"tier": 2,
+			"type": "colorless",
+			"points": 2,
+			"cost": {
+				"dark": 2,
+				"fire": 4,
+				"grass": 1
+			},
+			"art": "cinccino.png"
+		},
+		"comfey": {
+			"name": "Comfey",
+			"tier": 2,
+			"type": "water",
+			"points": 1,
+			"cost": {
+				"fire": 3,
+				"grass": 2,
+				"water": 2
+			},
+			"art": "comfey.png"
+		},
+		"decidueye": {
+			"name": "Decidueye",
+			"tier": 3,
+			"type": "dark",
+			"points": 3,
+			"cost": {
+				"colorless": 3,
+				"fire": 3,
+				"grass": 5,
+				"water": 3
+			},
+			"art": "decidueye.png"
+		},
+		"deino": {
+			"name": "Deino",
+			"tier": 1,
+			"type": "dark",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"fire": 1,
+				"grass": 1,
+				"water": 2
+			},
+			"art": "deino.png"
+		},
+		"dewpider": {
+			"name": "Dewpider",
+			"tier": 1,
+			"type": "grass",
+			"points": 0,
+			"cost": {
+				"colorless": 2,
+				"water": 1
+			},
+			"art": "dewpider.png"
+		},
+		"drampa": {
+			"name": "Drampa",
+			"tier": 2,
+			"type": "colorless",
+			"points": 2,
+			"cost": {
+				"fire": 5
+			},
+			"art": "drampa.png"
+		},
 		"eevee": {
 			"name": "Eevee",
 			"tier": 1,
 			"type": "colorless",
 			"points": 0,
 			"cost": {
+				"dark": 1,
 				"fire": 1,
-				"water": 1,
 				"grass": 1,
-				"dark": 1
+				"water": 1
 			},
 			"art": "eevee.png"
+		},
+		"eldegoss": {
+			"name": "Eldegoss",
+			"tier": 2,
+			"type": "grass",
+			"points": 2,
+			"cost": {
+				"grass": 3,
+				"water": 5
+			},
+			"art": "eldegoss.png"
+		},
+		"empoleon": {
+			"name": "Empoleon",
+			"tier": 2,
+			"type": "water",
+			"points": 2,
+			"cost": {
+				"colorless": 2,
+				"dark": 4,
+				"fire": 1
+			},
+			"art": "empoleon.png"
+		},
+		"flareon": {
+			"name": "Flareon",
+			"tier": 2,
+			"type": "fire",
+			"points": 3,
+			"cost": {
+				"fire": 6
+			},
+			"art": "flareon.png"
+		},
+		"foongus": {
+			"name": "Foongus",
+			"tier": 1,
+			"type": "grass",
+			"points": 0,
+			"cost": {
+				"dark": 2,
+				"fire": 2,
+				"water": 1
+			},
+			"art": "foongus.png"
+		},
+		"frillish": {
+			"name": "Frillish",
+			"tier": 1,
+			"type": "dark",
+			"points": 1,
+			"cost": {
+				"water": 4
+			},
+			"art": "frillish.png"
+		},
+		"glaceon": {
+			"name": "Glaceon",
+			"tier": 2,
+			"type": "water",
+			"points": 2,
+			"cost": {
+				"colorless": 5,
+				"water": 3
+			},
+			"art": "glaceon.png"
+		},
+		"grimeralola": {
+			"name": "Grimer-Alola",
+			"tier": 1,
+			"type": "dark",
+			"points": 0,
+			"cost": {
+				"fire": 1,
+				"grass": 2
+			},
+			"art": "grimeralola.png"
+		},
+		"grovyle": {
+			"name": "Grovyle",
+			"tier": 2,
+			"type": "grass",
+			"points": 3,
+			"cost": {
+				"grass": 6
+			},
+			"art": "grovyle.png"
+		},
+		"growlithehisui": {
+			"name": "Growlithe-Hisui",
+			"tier": 1,
+			"type": "fire",
+			"points": 0,
+			"cost": {
+				"colorless": 3
+			},
+			"art": "growlithehisui.png"
+		},
+		"jellicent": {
+			"name": "Jellicent",
+			"tier": 2,
+			"type": "water",
+			"points": 3,
+			"cost": {
+				"water": 6
+			},
+			"art": "jellicent.png"
+		},
+		"jolteon": {
+			"name": "Jolteon",
+			"tier": 2,
+			"type": "grass",
+			"points": 2,
+			"cost": {
+				"colorless": 4,
+				"dark": 1,
+				"water": 2
+			},
+			"art": "jolteon.png"
+		},
+		"kangaskhan": {
+			"name": "Kangaskhan",
+			"tier": 3,
+			"type": "colorless",
+			"points": 4,
+			"cost": {
+				"colorless": 3,
+				"dark": 6,
+				"fire": 3
+			},
+			"art": "kangaskhan.png"
+		},
+		"klang": {
+			"name": "Klang",
+			"tier": 2,
+			"type": "colorless",
+			"points": 1,
+			"cost": {
+				"dark": 2,
+				"fire": 2,
+				"grass": 3
+			},
+			"art": "klang.png"
+		},
+		"klink": {
+			"name": "Klink",
+			"tier": 1,
+			"type": "colorless",
+			"points": 0,
+			"cost": {
+				"dark": 1,
+				"grass": 2,
+				"water": 2
+			},
+			"art": "klink.png"
+		},
+		"klinklang": {
+			"name": "Klinklang",
+			"tier": 3,
+			"type": "colorless",
+			"points": 4,
+			"cost": {
+				"dark": 7
+			},
+			"art": "klinklang.png"
+		},
+		"krabby": {
+			"name": "Krabby",
+			"tier": 1,
+			"type": "water",
+			"points": 1,
+			"cost": {
+				"fire": 4
+			},
+			"art": "krabby.png"
+		},
+		"lampent": {
+			"name": "Lampent",
+			"tier": 2,
+			"type": "fire",
+			"points": 2,
+			"cost": {
+				"colorless": 1,
+				"grass": 2,
+				"water": 4
+			},
+			"art": "lampent.png"
+		},
+		"lapras": {
+			"name": "Lapras",
+			"tier": 2,
+			"type": "water",
+			"points": 1,
+			"cost": {
+				"dark": 3,
+				"grass": 3,
+				"water": 2
+			},
+			"art": "lapras.png"
+		},
+		"larvesta": {
+			"name": "Larvesta",
+			"tier": 1,
+			"type": "fire",
+			"points": 0,
+			"cost": {
+				"colorless": 2,
+				"dark": 2,
+				"grass": 1
+			},
+			"art": "larvesta.png"
+		},
+		"latias": {
+			"name": "Latias",
+			"tier": 3,
+			"type": "fire",
+			"points": 5,
+			"cost": {
+				"fire": 3,
+				"grass": 7
+			},
+			"art": "latias.png"
+		},
+		"latios": {
+			"name": "Latios",
+			"tier": 3,
+			"type": "water",
+			"points": 5,
+			"cost": {
+				"colorless": 7,
+				"water": 3
+			},
+			"art": "latios.png"
+		},
+		"leafeon": {
+			"name": "Leafeon",
+			"tier": 2,
+			"type": "grass",
+			"points": 2,
+			"cost": {
+				"grass": 5
+			},
+			"art": "leafeon.png"
+		},
+		"lileep": {
+			"name": "Lileep",
+			"tier": 1,
+			"type": "grass",
+			"points": 0,
+			"cost": {
+				"fire": 2,
+				"water": 2
+			},
+			"art": "lileep.png"
+		},
+		"linoonegalar": {
+			"name": "Linoone-Galar",
+			"tier": 2,
+			"type": "dark",
+			"points": 1,
+			"cost": {
+				"colorless": 3,
+				"grass": 2,
+				"water": 2
+			},
+			"art": "linoonegalar.png"
+		},
+		"litten": {
+			"name": "Litten",
+			"tier": 1,
+			"type": "fire",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"dark": 3,
+				"fire": 1
+			},
+			"art": "litten.png"
+		},
+		"litwick": {
+			"name": "Litwick",
+			"tier": 1,
+			"type": "fire",
+			"points": 1,
+			"cost": {
+				"colorless": 4
+			},
+			"art": "litwick.png"
+		},
+		"lotad": {
+			"name": "Lotad",
+			"tier": 1,
+			"type": "water",
+			"points": 0,
+			"cost": {
+				"fire": 1,
+				"grass": 3,
+				"water": 1
+			},
+			"art": "lotad.png"
+		},
+		"magby": {
+			"name": "Magby",
+			"tier": 1,
+			"type": "fire",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"dark": 1,
+				"grass": 1,
+				"water": 1
+			},
+			"art": "magby.png"
+		},
+		"magikarp": {
+			"name": "Magikarp",
+			"tier": 1,
+			"type": "water",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"dark": 1,
+				"fire": 2,
+				"grass": 1
+			},
+			"art": "magikarp.png"
+		},
+		"marshadow": {
+			"name": "Marshadow",
+			"tier": 3,
+			"type": "dark",
+			"points": 4,
+			"cost": {
+				"fire": 7
+			},
+			"art": "marshadow.png"
+		},
+		"minccino": {
+			"name": "Minccino",
+			"tier": 1,
+			"type": "colorless",
+			"points": 1,
+			"cost": {
+				"grass": 4
+			},
+			"art": "minccino.png"
+		},
+		"mudkip": {
+			"name": "Mudkip",
+			"tier": 1,
+			"type": "water",
+			"points": 0,
+			"cost": {
+				"dark": 2,
+				"grass": 2
+			},
+			"art": "mudkip.png"
+		},
+		"nuzleaf": {
+			"name": "Nuzleaf",
+			"tier": 1,
+			"type": "dark",
+			"points": 0,
+			"cost": {
+				"grass": 3
+			},
+			"art": "nuzleaf.png"
+		},
+		"obstagoon": {
+			"name": "Obstagoon",
+			"tier": 2,
+			"type": "dark",
+			"points": 2,
+			"cost": {
+				"colorless": 5
+			},
+			"art": "obstagoon.png"
+		},
+		"oddish": {
+			"name": "Oddish",
+			"tier": 1,
+			"type": "grass",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"grass": 1,
+				"water": 3
+			},
+			"art": "oddish.png"
+		},
+		"ogerponhearthflame": {
+			"name": "Ogerpon-Hearthflame",
+			"tier": 3,
+			"type": "fire",
+			"points": 4,
+			"cost": {
+				"grass": 7
+			},
+			"art": "ogerponhearthflame.png"
+		},
+		"phantump": {
+			"name": "Phantump",
+			"tier": 1,
+			"type": "grass",
+			"points": 1,
+			"cost": {
+				"dark": 4
+			},
+			"art": "phantump.png"
+		},
+		"pichu": {
+			"name": "Pichu",
+			"tier": 1,
+			"type": "water",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"dark": 2
+			},
+			"art": "pichu.png"
+		},
+		"poochyena": {
+			"name": "Poochyena",
+			"tier": 1,
+			"type": "dark",
+			"points": 0,
+			"cost": {
+				"colorless": 2,
+				"fire": 1,
+				"water": 2
+			},
+			"art": "poochyena.png"
+		},
+		"porygon": {
+			"name": "Porygon",
+			"tier": 1,
+			"type": "colorless",
+			"points": 0,
+			"cost": {
+				"colorless": 3,
+				"dark": 1,
+				"water": 1
+			},
+			"art": "porygon.png"
+		},
+		"porygon2": {
+			"name": "Porygon2",
+			"tier": 2,
+			"type": "colorless",
+			"points": 1,
+			"cost": {
+				"colorless": 2,
+				"fire": 3,
+				"water": 3
+			},
+			"art": "porygon2.png"
+		},
+		"porygonz": {
+			"name": "Porygon-Z",
+			"tier": 3,
+			"type": "colorless",
+			"points": 3,
+			"cost": {
+				"dark": 3,
+				"fire": 5,
+				"grass": 3,
+				"water": 3
+			},
+			"art": "porygonz.png"
+		},
+		"primarina": {
+			"name": "Primarina",
+			"tier": 3,
+			"type": "water",
+			"points": 4,
+			"cost": {
+				"colorless": 7
+			},
+			"art": "primarina.png"
+		},
+		"raticatealola": {
+			"name": "Raticate-Alola",
+			"tier": 2,
+			"type": "dark",
+			"points": 1,
+			"cost": {
+				"colorless": 3,
+				"dark": 2,
+				"grass": 3
+			},
+			"art": "raticatealola.png"
+		},
+		"rayquaza": {
+			"name": "Rayquaza",
+			"tier": 3,
+			"type": "grass",
+			"points": 4,
+			"cost": {
+				"colorless": 3,
+				"grass": 3,
+				"water": 6
+			},
+			"art": "rayquaza.png"
+		},
+		"scorbunny": {
+			"name": "Scorbunny",
+			"tier": 1,
+			"type": "fire",
+			"points": 0,
+			"cost": {
+				"colorless": 2,
+				"fire": 2
+			},
+			"art": "scorbunny.png"
+		},
+		"scovillain": {
+			"name": "Scovillain",
+			"tier": 2,
+			"type": "grass",
+			"points": 1,
+			"cost": {
+				"colorless": 3,
+				"fire": 3,
+				"grass": 2
+			},
+			"art": "scovillain.png"
+		},
+		"seedot": {
+			"name": "Seedot",
+			"tier": 1,
+			"type": "grass",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"dark": 2,
+				"fire": 1,
+				"water": 1
+			},
+			"art": "seedot.png"
+		},
+		"sentret": {
+			"name": "Sentret",
+			"tier": 1,
+			"type": "colorless",
+			"points": 0,
+			"cost": {
+				"dark": 2,
+				"water": 2
+			},
+			"art": "sentret.png"
+		},
+		"sharpedo": {
+			"name": "Sharpedo",
+			"tier": 3,
+			"type": "water",
+			"points": 3,
+			"cost": {
+				"colorless": 3,
+				"dark": 5,
+				"fire": 3,
+				"grass": 3
+			},
+			"art": "sharpedo.png"
+		},
+		"shaymin": {
+			"name": "Shaymin",
+			"tier": 3,
+			"type": "grass",
+			"points": 3,
+			"cost": {
+				"colorless": 5,
+				"dark": 3,
+				"fire": 3,
+				"water": 3
+			},
+			"art": "shaymin.png"
+		},
+		"shuckle": {
+			"name": "Shuckle",
+			"tier": 2,
+			"type": "fire",
+			"points": 1,
+			"cost": {
+				"dark": 3,
+				"fire": 2,
+				"water": 3
+			},
+			"art": "shuckle.png"
+		},
+		"sneasel": {
+			"name": "Sneasel",
+			"tier": 1,
+			"type": "dark",
+			"points": 0,
+			"cost": {
+				"dark": 1,
+				"fire": 3,
+				"grass": 1
+			},
+			"art": "sneasel.png"
+		},
+		"snover": {
+			"name": "Snover",
+			"tier": 1,
+			"type": "water",
+			"points": 0,
+			"cost": {
+				"colorless": 1,
+				"fire": 2,
+				"grass": 2
+			},
+			"art": "snover.png"
+		},
+		"stufful": {
+			"name": "Stufful",
+			"tier": 1,
+			"type": "colorless",
+			"points": 0,
+			"cost": {
+				"dark": 1,
+				"fire": 2
+			},
+			"art": "stufful.png"
+		},
+		"swadloon": {
+			"name": "Swadloon",
+			"tier": 2,
+			"type": "grass",
+			"points": 1,
+			"cost": {
+				"colorless": 2,
+				"dark": 2,
+				"water": 3
+			},
+			"art": "swadloon.png"
+		},
+		"sylveon": {
+			"name": "Sylveon",
+			"tier": 2,
+			"type": "fire",
+			"points": 1,
+			"cost": {
+				"colorless": 2,
+				"dark": 3,
+				"fire": 2
+			},
+			"art": "sylveon.png"
+		},
+		"tangrowth": {
+			"name": "Tangrowth",
+			"tier": 3,
+			"type": "grass",
+			"points": 4,
+			"cost": {
+				"water": 7
+			},
+			"art": "tangrowth.png"
+		},
+		"togepi": {
+			"name": "Togepi",
+			"tier": 1,
+			"type": "colorless",
+			"points": 0,
+			"cost": {
+				"dark": 1,
+				"fire": 1,
+				"grass": 2,
+				"water": 1
+			},
+			"art": "togepi.png"
+		},
+		"torracat": {
+			"name": "Torracat",
+			"tier": 2,
+			"type": "fire",
+			"points": 2,
+			"cost": {
+				"colorless": 3,
+				"dark": 5
+			},
+			"art": "torracat.png"
+		},
+		"typhlosionhisui": {
+			"name": "Typhlosion-Hisui",
+			"tier": 3,
+			"type": "dark",
+			"points": 5,
+			"cost": {
+				"dark": 3,
+				"fire": 7
+			},
+			"art": "typhlosionhisui.png"
+		},
+		"umbreon": {
+			"name": "Umbreon",
+			"tier": 2,
+			"type": "dark",
+			"points": 2,
+			"cost": {
+				"fire": 3,
+				"grass": 5
+			},
+			"art": "umbreon.png"
+		},
+		"vaporeon": {
+			"name": "Vaporeon",
+			"tier": 2,
+			"type": "water",
+			"points": 2,
+			"cost": {
+				"water": 5
+			},
+			"art": "vaporeon.png"
+		},
+		"volcanion": {
+			"name": "Volcanion",
+			"tier": 3,
+			"type": "fire",
+			"points": 3,
+			"cost": {
+				"colorless": 3,
+				"dark": 3,
+				"grass": 3,
+				"water": 5
+			},
+			"art": "volcanion.png"
+		},
+		"vulpix": {
+			"name": "Vulpix",
+			"tier": 1,
+			"type": "fire",
+			"points": 0,
+			"cost": {
+				"grass": 1,
+				"water": 2
+			},
+			"art": "vulpix.png"
+		},
+		"wimpod": {
+			"name": "Wimpod",
+			"tier": 1,
+			"type": "water",
+			"points": 0,
+			"cost": {
+				"dark": 3
+			},
+			"art": "wimpod.png"
+		},
+		"wochien": {
+			"name": "Wo-Chien",
+			"tier": 2,
+			"type": "dark",
+			"points": 2,
+			"cost": {
+				"fire": 2,
+				"grass": 4,
+				"water": 1
+			},
+			"art": "wochien.png"
+		},
+		"zoruahisui": {
+			"name": "Zorua-Hisui",
+			"tier": 1,
+			"type": "dark",
+			"points": 0,
+			"cost": {
+				"colorless": 2,
+				"grass": 2
+			},
+			"art": "zoruahisui.png"
 		}
 	},
 	"trainers": {
