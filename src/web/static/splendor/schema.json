@@ -78,6 +78,28 @@
 					"required": ["name", "types", "points", "art"]
 				}
 			}
+		},
+		"types": {
+			"type": "object",
+			"patternProperties": {
+				"^(colorless|dark|fire|grass|water|dragon)$": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"art": {
+							"type": "string"
+						},
+						"startCount": {
+							"type": "number"
+						}
+					},
+					"required": ["name", "art", "startCount"]
+				}
+			},
+			"required": ["colorless", "dark", "fire", "grass", "water", "dragon"]
 		}
-	}
+	},
+	"required": ["pokemon", "trainers", "types"]
 }
