@@ -116,32 +116,32 @@
 		"colorless": {
 			"name": "Colorless",
 			"art": "colorless.png",
-			"startCount": 7
+			"startCount": [4, 5, 7]
 		},
 		"dark": {
 			"name": "Dark",
 			"art": "dark.png",
-			"startCount": 7
+			"startCount": [4, 5, 7]
 		},
 		"fire": {
 			"name": "Fire",
 			"art": "fire.png",
-			"startCount": 7
+			"startCount": [4, 5, 7]
 		},
 		"grass": {
 			"name": "Grass",
 			"art": "grass.png",
-			"startCount": 7
+			"startCount": [4, 5, 7]
 		},
 		"water": {
 			"name": "Water",
 			"art": "water.png",
-			"startCount": 7
+			"startCount": [4, 5, 7]
 		},
 		"dragon": {
 			"name": "Dragon",
 			"art": "dragon.png",
-			"startCount": 5
+			"startCount": [5, 5, 5]
 		}
 	}
 }

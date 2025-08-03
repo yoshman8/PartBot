@@ -92,7 +92,12 @@
 							"type": "string"
 						},
 						"startCount": {
-							"type": "number"
+							"type": "array",
+							"items": {
+								"type": "number"
+							},
+							"minLength": 3,
+							"maxLength": 3
 						}
 					},
 					"required": ["name", "art", "startCount"]
