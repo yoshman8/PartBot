@@ -3,7 +3,7 @@
 ### Trainers
 
 - Aspect ratio 1:1
-- Min 128x128px
+- Min 256x256px
 
 ### Pokémon
 
