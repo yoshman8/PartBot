@@ -25,16 +25,6 @@
 			},
 			"art": "cheryl.png"
 		},
-		"chilicilancress": {
-			"name": "Chili/Cilan/Cress",
-			"points": 3,
-			"types": {
-				"fire": 3,
-				"grass": 3,
-				"water": 3
-			},
-			"art": "chilicilancress.png"
-		},
 		"drasna": {
 			"name": "Drasna",
 			"points": 3,
@@ -91,6 +81,16 @@
 				"dark": 4
 			},
 			"art": "larry.png"
+		},
+		"red": {
+			"name": "Red",
+			"points": 3,
+			"types": {
+				"fire": 3,
+				"grass": 3,
+				"water": 3
+			},
+			"art": "red.png"
 		},
 		"siebold": {
 			"name": "Siebold",

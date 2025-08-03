@@ -19,7 +19,7 @@ declare global {
 		/** Default order is ascending */
 		sortBy(getSort: ((term: T, thisArray: T[]) => unknown) | null, dir?: 'asc' | 'desc'): T[];
 		space<S = unknown>(spacer: S): (T | S)[];
-		sum(): T;
+		sum(): T extends number ? number : never;
 		unique(): T[];
 	}
 	interface ReadonlyArray<T> {
@@ -32,7 +32,7 @@ declare global {
 		random(rng?: RNGSource): T | null;
 		sample(amount: number, rng?: RNGSource): T[];
 		space<S = unknown>(spacer: S): (T | S)[];
-		sum(): T;
+		sum(): T extends number ? number : never;
 		unique(): T[];
 	}
 
