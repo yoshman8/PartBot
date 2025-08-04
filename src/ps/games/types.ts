@@ -42,6 +42,7 @@ export enum GamesList {
 	Othello = 'othello',
 	Scrabble = 'scrabble',
 	SnakesLadders = 'snakesladders',
+	Splendor = 'splendor',
 }
 
 export interface Player {

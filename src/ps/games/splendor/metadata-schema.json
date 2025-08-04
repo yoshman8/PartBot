@@ -9,6 +9,9 @@
 				".*": {
 					"type": "object",
 					"properties": {
+						"id": {
+							"type": "string"
+						},
 						"name": {
 							"type": "string"
 						},
@@ -41,7 +44,7 @@
 							"enum": ["fire", "water", "grass", "colorless", "dark"]
 						}
 					},
-					"required": ["name", "tier", "type", "points", "cost", "art"]
+					"required": ["id", "name", "tier", "type", "points", "cost", "art"]
 				}
 			}
 		},
@@ -50,6 +53,9 @@
 				".*": {
 					"type": "object",
 					"properties": {
+						"id": {
+							"type": "string"
+						},
 						"name": {
 							"type": "string"
 						},
@@ -75,7 +81,7 @@
 							"type": "string"
 						}
 					},
-					"required": ["name", "types", "points", "art"]
+					"required": ["id", "name", "types", "points", "art"]
 				}
 			}
 		},
