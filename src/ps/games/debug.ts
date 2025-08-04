@@ -34,6 +34,6 @@ if (require.main === module) {
 	watcher.on('all', async () => {
 		renderTemplates();
 	});
-	const server = createServer();
+	const server = createServer({ port: 8082 });
 	server.watch(path.join(debugDir, 'live'));
 }

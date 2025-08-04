@@ -1,16 +1,78 @@
 import metadata from '@/ps/games/splendor/metadata.json';
+import { RenderCtx, TokenType } from '@/ps/games/splendor/types';
 
-import type { Card, RenderCtx, Turn, TokenType } from '@/ps/games/splendor/types';
+import type { Card } from '@/ps/games/splendor/types';
 import type { CSSProperties, ReactElement } from 'react';
 
 type This = { msg: string };
 
-function getArtUrl(type: 'pokemon' | 'trainer' | 'type', path: string, tag: 'img' | 'bg' = 'bg'): string {
+function getArtUrl(type: 'pokemon' | 'trainer' | 'type' | 'other', path: string, tag: 'img' | 'bg' = 'bg'): string {
 	const baseURL = `${process.env.WEB_URL}/static/splendor/${type}/${path}`;
 	return tag === 'bg' ? `url(${baseURL})` : baseURL;
 }
 
-export function Card({ data, style }: { data: Card; style?: CSSProperties }): ReactElement {
+const TOKEN_COLOURS: Record<TokenType, string> = {
+	[TokenType.Colorless]: '#dddddd',
+	[TokenType.Dark]: '#444444',
+	[TokenType.Dragon]: '#eebe4e',
+	[TokenType.Fire]: '#fe3e4e',
+	[TokenType.Grass]: '#00a900',
+	[TokenType.Water]: '#1996e2',
+};
+
+export function TypeToken({ type }: { type: TokenType }): ReactElement {
+	const data = metadata.types[type];
+	return (
+		<div
+			style={{
+				display: 'inline-block',
+				border: '1px solid black',
+				background: TOKEN_COLOURS[type],
+				borderRadius: 99,
+				height: 108,
+				width: 108,
+				margin: 8,
+			}}
+		>
+			<div
+				style={{
+					inset: 0,
+					backgroundImage: getArtUrl('type', data.art),
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
+					borderRadius: 99,
+					height: 72,
+					width: 72,
+					margin: 'auto',
+					position: 'relative',
+					top: 18,
+				}}
+			/>
+		</div>
+	);
+}
+
+export function TypeTokenCount({ type, count }: { type: TokenType; count: number }): ReactElement {
+	return (
+		<div style={{ display: 'inline-block' }}>
+			<TypeToken type={type} />
+			<span style={{ position: 'relative', bottom: 48 }}>
+				<span style={{ fontSize: 36 }}>×</span>
+				<b style={{ fontSize: 54, position: 'relative', top: 4 }}>{count}</b>
+			</span>
+		</div>
+	);
+}
+
+export function PokemonCard({
+	data,
+	reserved,
+	style,
+}: {
+	data: Card;
+	reserved?: boolean | undefined;
+	style?: CSSProperties | undefined;
+}): ReactElement {
 	return (
 		<div
 			style={{
@@ -19,37 +81,59 @@ export function Card({ data, style }: { data: Card; style?: CSSProperties }): Re
 				height: 280,
 				width: 200,
 				border: '1px solid black',
-				borderRadius: 8,
-				filter: 'brightness(75%)',
+				borderRadius: 12,
+				filter: reserved ? 'brightness(50%)' : 'brightness(100%)',
 				color: 'white',
 				textShadow: '0 0 2px #000',
 				position: 'relative',
 				overflow: 'hidden',
+				margin: 12,
 				...style,
 			}}
 		>
 			<div style={{ background: '#1119', borderBottom: '1px solid black', textAlign: 'left' }}>
-				<strong style={{ fontSize: '32px', marginLeft: 12, position: 'relative', top: 4 }}>{data.points || null}</strong>
+				<strong style={{ fontSize: '54px', marginLeft: 12, position: 'relative', top: 4 }}>{data.points || '\u200b'}</strong>
 				<img
 					src={getArtUrl('type', metadata.types[data.type].art, 'img')}
-					height="32"
-					width="32"
+					height="48"
+					width="48"
 					style={{
 						float: 'right',
 						margin: 4,
-						borderRadius: 20,
+						borderRadius: 99,
 						outline: '0.5px solid #eeee',
 						outlineOffset: -2,
 					}}
 					alt={metadata.types[data.type].name}
 				/>
 			</div>
+			{reserved ? (
+				<div
+					style={{
+						textAlign: 'center',
+						marginTop: 24,
+						fontSize: 32,
+						color: 'yellow',
+						fontWeight: 'bold',
+					}}
+				>
+					<span
+						style={{
+							padding: 4,
+							background: '#1119',
+							borderRadius: 8,
+						}}
+					>
+						RESERVED
+					</span>
+				</div>
+			) : null}
 			<div
 				style={{
 					position: 'absolute',
 					bottom: 0,
 					left: 0,
-					padding: '8px 8px 12px 8px',
+					padding: '8px 8px 0',
 					background: '#0009',
 					borderTopRightRadius: 10,
 				}}
@@ -58,16 +142,83 @@ export function Card({ data, style }: { data: Card; style?: CSSProperties }): Re
 					<div>
 						<img
 							src={getArtUrl('type', metadata.types[tokenType].art, 'img')}
-							height="30"
-							width="30"
-							style={{ borderRadius: 20, outline: '0.5px solid #eee8', outlineOffset: -2 }}
+							height="42"
+							width="42"
+							style={{ borderRadius: 99, outline: '0.5px solid #eee8', outlineOffset: -2 }}
 							alt={metadata.types[data.type].name}
 						/>
-						<span style={{ position: 'relative', bottom: 9, fontSize: '0.7em' }}> x </span>
-						<b style={{ position: 'relative', bottom: 8 }}>{cost}</b>
+						<span style={{ position: 'relative', bottom: 10, fontSize: 24 }}> × </span>
+						<b style={{ position: 'relative', bottom: 8, fontSize: 32 }}>{cost}</b>
 					</div>
 				))}
 			</div>
+		</div>
+	);
+}
+
+function FlippedCard({ style }: { style?: CSSProperties | undefined }): ReactElement {
+	return (
+		<div
+			style={{
+				backgroundImage: getArtUrl('other', 'back.png'),
+				backgroundSize: 'cover',
+				height: 280,
+				width: 200,
+				border: '1px solid black',
+				borderRadius: 12,
+				margin: 12,
+				...style,
+			}}
+		/>
+	);
+}
+
+function PlaceholderCard({ style }: { style?: CSSProperties | undefined }): ReactElement {
+	return (
+		<div
+			style={{
+				background: '#1119',
+				height: 280,
+				width: 200,
+				border: '1px dashed black',
+				borderRadius: 12,
+				margin: 12,
+				...style,
+			}}
+		/>
+	);
+}
+
+export function Stack({
+	cards,
+	hidden,
+	reserved,
+	style,
+}: {
+	cards: Card[];
+	hidden?: boolean | undefined;
+	reserved?: boolean | undefined;
+	style?: CSSProperties | undefined;
+}): ReactElement {
+	return (
+		<div style={{ display: 'inline-block', border: '1px dashed black', boxSizing: 'border-box', ...style }}>
+			<div style={{ position: 'relative', display: 'inline-block' }}>
+				{hidden ? (
+					<FlippedCard />
+				) : cards.length ? (
+					cards.map((card, index) => (
+						<PokemonCard
+							data={card}
+							reserved={reserved}
+							style={index ? { position: 'absolute', top: index * 42, left: index * 12 } : undefined}
+						/>
+					))
+				) : (
+					<PlaceholderCard />
+				)}
+				<div style={{ height: (cards.length - 1) * 42 }} />
+			</div>
+			<div style={{ display: 'inline-block', width: (cards.length - 1) * 12 }} />
 		</div>
 	);
 }
