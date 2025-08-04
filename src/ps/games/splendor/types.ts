@@ -1,5 +1,11 @@
 export type Turn = 'W' | 'B';
 
+export type Metadata = {
+	pokemon: Record<string, Card>;
+	trainers: Record<string, Trainer>;
+	types: Record<string, { id: TokenType; name: string; art: string; startCount: [number, number, number] }>;
+};
+
 export enum TokenType {
 	Colorless = 'colorless',
 	Dark = 'dark',

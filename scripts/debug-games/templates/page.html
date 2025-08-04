@@ -1,0 +1,53 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Size: Desktop</title>
+		<style>
+			#page {
+				border: 1px solid black;
+				padding: 12px;
+			}
+		</style>
+		<script>
+			document.write(
+				'<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>'
+			);
+		</script>
+	</head>
+	<body>
+		<center>
+			<div style="display: flex; gap: 4px; justify-content: center; margin: 12px">
+				<button id="button-desktop" onclick="setView('desktop')">Desktop</button>
+				<button id="button-mobile" onclick="setView('mobile')">Mobile</button>
+				<button id="button-ruka" onclick="setView('ruka')">Ruka</button>
+			</div>
+			<center id="page">{HTML}</center>
+		</center>
+		<script>
+			/** @typedef {'desktop' | 'mobile' | 'ruka'} View */
+			/** @type View */
+			let view;
+
+			/** @type {Record<View, number>} */
+			const widths = { desktop: 600, mobile: 480, ruka: 360 };
+
+			/** @param {View} newView */
+			function setView(newView) {
+				view = newView;
+				localStorage.setItem('view', newView);
+
+				const page = document.getElementById('page');
+				page.style.width = widths[newView];
+				page.style.maxWidth = widths[newView];
+
+				document.querySelectorAll('button[id^=button-]').forEach(button => {
+					if (button.id === `button-${newView}`) button.setAttribute('disabled', 'true');
+					else button.removeAttribute('disabled');
+				});
+			}
+
+			setView(localStorage.getItem('view') || 'desktop');
+		</script>
+	</body>
+</html>

@@ -4,6 +4,7 @@
 	"description": "A chatbot for Pokémon Showdown",
 	"main": "src/index.js",
 	"scripts": {
+		"debug": "./scripts/debug-games/start.sh",
 		"lint": "eslint src --ext .ts",
 		"lint:fix": "eslint src --ext .ts --fix",
 		"notify-unpushed": "sh scripts/notify_unpushed.sh",
@@ -47,6 +48,7 @@
 	},
 	"devDependencies": {
 		"@types/express": "^5.0.0",
+		"@types/livereload": "^0.9.5",
 		"@types/node": "^20.4.4",
 		"@types/react": "^18.2.48",
 		"@types/react-dom": "^18.2.18",
@@ -58,6 +60,7 @@
 		"eslint-import-resolver-typescript": "^3.6.3",
 		"eslint-plugin-import": "^2.31.0",
 		"husky": "^8.0.3",
+		"livereload": "^0.9.3",
 		"prettier": "^3.3.3"
 	}
 }
