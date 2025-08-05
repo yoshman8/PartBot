@@ -24,7 +24,7 @@ export const test: () => Promise<string> = async () => {
 			.sample(4, 2);
 
 		return jsxToHTML(
-			<div style={{ zoom: '50%' }}>
+			<div style={{ zoom: '40%' }}>
 				<div>
 					<TrainerCard data={metadata.trainers.larry} />
 					<TrainerCard data={metadata.trainers.cheryl} />
@@ -41,7 +41,7 @@ export const test: () => Promise<string> = async () => {
 				{[tier3, tier2, tier1].map((cards, tier) => (
 					<div style={{ whiteSpace: 'nowrap', overflow: 'auto' }}>
 						{cards.map(card => (
-							<Stack cards={[card]} />
+							<Stack cards={[card]} onClick="abc def" />
 						))}
 						<Stack cards={tier < 2 ? [metadata.pokemon.celebi] : []} hidden={!!tier} reserved={!tier} />
 					</div>

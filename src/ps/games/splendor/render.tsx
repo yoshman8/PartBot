@@ -1,7 +1,8 @@
 import metadata from '@/ps/games/splendor/metadata.json';
-import { RenderCtx, TokenType, Trainer } from '@/ps/games/splendor/types';
+import { RenderCtx, TokenType } from '@/ps/games/splendor/types';
+import { Button } from '@/utils/components/ps';
 
-import type { Card } from '@/ps/games/splendor/types';
+import type { Card, Trainer } from '@/ps/games/splendor/types';
 import type { CSSProperties, ReactElement } from 'react';
 
 type This = { msg: string };
@@ -129,14 +130,21 @@ export function PokemonCard({
 	data,
 	reserved,
 	style,
+	onClick,
 }: {
 	data: Card;
 	reserved?: boolean | undefined;
+	onClick?: string | undefined;
 	style?: CSSProperties | undefined;
 }): ReactElement {
+	const Wrapper = onClick ? Button : 'div';
+
 	return (
-		<div
+		// @ts-expect-error -- Wrapper is Button only when value is provided
+		<Wrapper
+			{...(onClick ? { value: `${onClick} ${data.id}` } : undefined)}
 			style={{
+				display: 'block',
 				backgroundImage: getArtUrl('pokemon', data.art),
 				backgroundSize: 'cover',
 				height: 280,
@@ -148,10 +156,21 @@ export function PokemonCard({
 				position: 'relative',
 				overflow: 'hidden',
 				margin: 12,
+				padding: 0,
+				cursor: 'pointer',
 				...style,
 			}}
 		>
-			<div style={{ background: '#1119', borderBottom: '1px solid black', textAlign: 'left' }}>
+			<div
+				style={{
+					background: '#1119',
+					borderBottom: '1px solid black',
+					textAlign: 'left',
+					position: 'absolute',
+					top: 0,
+					width: '100%',
+				}}
+			>
 				<strong style={{ fontSize: '54px', marginLeft: 12, position: 'relative', top: 4, color: reserved ? '#999' : undefined }}>
 					{data.points || '\u200b'}
 				</strong>
@@ -201,7 +220,7 @@ export function PokemonCard({
 					left: 0,
 					padding: '8px 8px 0',
 					background: '#0009',
-					borderTopRightRadius: 10,
+					borderTopRightRadius: 12,
 				}}
 			>
 				{(Object.entries(data.cost) as [TokenType, number][]).map(([tokenType, cost]) => (
@@ -218,7 +237,7 @@ export function PokemonCard({
 					</div>
 				))}
 			</div>
-		</div>
+		</Wrapper>
 	);
 }
 
@@ -260,11 +279,13 @@ export function Stack({
 	cards,
 	hidden,
 	reserved,
+	onClick,
 	style,
 }: {
 	cards: Card[];
 	hidden?: boolean | undefined;
 	reserved?: boolean | undefined;
+	onClick?: string | undefined;
 	style?: CSSProperties | undefined;
 }): ReactElement {
 	return (
@@ -280,6 +301,7 @@ export function Stack({
 							<PokemonCard
 								data={card}
 								reserved={reserved}
+								onClick={onClick}
 								style={index ? { position: 'absolute', top: index * 42, left: index * 12 } : undefined}
 							/>
 						)

@@ -10,13 +10,26 @@
 				/* Art by Daniel Kong */
 				background: url('https://play.pokemonshowdown.com/fx/client-bg-shaymin.jpg') left center / cover no-repeat fixed
 					rgb(84, 107, 172);
+				border-radius: 12px;
+			}
+
+			#page.desktop {
+				width: 600px;
+				max-width: 600px;
+			}
+			#page.mobile {
+				width: 480px;
+				max-width: 480px;
+				overflow: auto;
+			}
+			#page.ruka {
+				width: 360px;
+				max-width: 360px;
+				max-height: 540px;
+				overflow: auto;
 			}
 		</style>
-		<script>
-			document.write(
-				'<script src="http://' + (location.host || 'localhost').split(':')[0] + ':8082/livereload.js?snipver=1"></' + 'script>'
-			);
-		</script>
+		<script src="http://localhost:8082/livereload.js?snipver=1"></script>
 	</head>
 	<body>
 		<center>
@@ -41,8 +54,8 @@
 				localStorage.setItem('view', newView);
 
 				const page = document.getElementById('page');
-				page.style.width = widths[newView];
-				page.style.maxWidth = widths[newView];
+				page.classList.remove('desktop', 'mobile', 'ruka');
+				page.classList.add(newView);
 
 				document.querySelectorAll('button[id^=button-]').forEach(button => {
 					if (button.id === `button-${newView}`) button.setAttribute('disabled', 'true');
