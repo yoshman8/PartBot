@@ -10,7 +10,7 @@ import type { Metadata } from '@/ps/games/splendor/types';
 export const test: () => Promise<string> = async () => {
 	try {
 		cachebustDir(fsPath('ps', 'games'));
-		const { Stack, TypeTokenCount } = await import('@/ps/games/splendor/render');
+		const { Stack, TypeTokenCount, TrainerCard } = await import('@/ps/games/splendor/render');
 		const { default: metadata } = (await import('@/ps/games/splendor/metadata.json')) as unknown as { default: Metadata };
 
 		const tier1 = Object.values(metadata.pokemon)
@@ -25,6 +25,11 @@ export const test: () => Promise<string> = async () => {
 
 		return jsxToHTML(
 			<div style={{ zoom: '50%' }}>
+				<div>
+					<TrainerCard data={metadata.trainers.larry} />
+					<TrainerCard data={metadata.trainers.cheryl} />
+					<TrainerCard data={metadata.trainers.drasna} />
+				</div>
 				<div>
 					<TypeTokenCount type={TokenType.Colorless} count={2} />
 					<TypeTokenCount type={TokenType.Dark} count={2} />

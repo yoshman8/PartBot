@@ -1,12 +1,12 @@
 import metadata from '@/ps/games/splendor/metadata.json';
-import { RenderCtx, TokenType } from '@/ps/games/splendor/types';
+import { RenderCtx, TokenType, Trainer } from '@/ps/games/splendor/types';
 
 import type { Card } from '@/ps/games/splendor/types';
 import type { CSSProperties, ReactElement } from 'react';
 
 type This = { msg: string };
 
-function getArtUrl(type: 'pokemon' | 'trainer' | 'type' | 'other', path: string, tag: 'img' | 'bg' = 'bg'): string {
+function getArtUrl(type: 'pokemon' | 'trainers' | 'type' | 'other', path: string, tag: 'img' | 'bg' = 'bg'): string {
 	const baseURL = `${process.env.WEB_URL}/static/splendor/${type}/${path}`;
 	return tag === 'bg' ? `url(${baseURL})` : baseURL;
 }
@@ -60,6 +60,67 @@ export function TypeTokenCount({ type, count }: { type: TokenType; count: number
 				<span style={{ fontSize: 36 }}>×</span>
 				<b style={{ fontSize: 54, position: 'relative', top: 4 }}>{count}</b>
 			</span>
+		</div>
+	);
+}
+
+export function TrainerCard({ data }: { data: Trainer }): ReactElement {
+	return (
+		<div
+			style={{
+				backgroundImage: getArtUrl('trainers', data.art),
+				backgroundSize: 'cover',
+				borderRadius: 16,
+				border: '1px solid black',
+				height: 144,
+				width: 144,
+				position: 'relative',
+				overflow: 'hidden',
+				color: 'white',
+				display: 'inline-block',
+				margin: 8,
+			}}
+		>
+			<div style={{ background: '#1119', borderBottom: '1px solid black', textAlign: 'right' }}>
+				<strong style={{ fontSize: '36px', marginRight: 12, position: 'relative', top: 4 }}>{data.points}</strong>
+				<div
+					style={{
+						position: 'absolute',
+						bottom: 0,
+						left: 0,
+						padding: '8px 8px 0',
+						background: '#0009',
+						borderTopRightRadius: 10,
+					}}
+				>
+					{(Object.entries(data.types) as [TokenType, number][]).map(([tokenType, cost]) => (
+						<div>
+							<div
+								style={{
+									display: 'inline-block',
+									height: 24,
+									width: 24,
+									borderRadius: 4,
+									background: TOKEN_COLOURS[tokenType],
+									outline: '0.5px solid #eee8',
+									outlineOffset: -2,
+									position: 'relative',
+								}}
+							>
+								<img
+									src={getArtUrl('type', metadata.types[tokenType].art, 'img')}
+									height="18"
+									width="18"
+									style={{ position: 'relative', right: 3, top: 3 }}
+									alt={metadata.types[tokenType].name}
+								/>
+							</div>
+							<span style={{ position: 'relative', bottom: 3, fontSize: 16 }}> × </span>
+							<b style={{ fontSize: 24 }}>{cost}</b>
+						</div>
+					))}
+				</div>
+			</div>
 		</div>
 	);
 }
@@ -145,7 +206,7 @@ export function PokemonCard({
 							height="42"
 							width="42"
 							style={{ borderRadius: 99, outline: '0.5px solid #eee8', outlineOffset: -2 }}
-							alt={metadata.types[data.type].name}
+							alt={metadata.types[tokenType].name}
 						/>
 						<span style={{ position: 'relative', bottom: 10, fontSize: 24 }}> × </span>
 						<b style={{ position: 'relative', bottom: 8, fontSize: 32 }}>{cost}</b>
