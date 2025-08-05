@@ -143,7 +143,6 @@ export function PokemonCard({
 				width: 200,
 				border: '1px solid black',
 				borderRadius: 12,
-				filter: reserved ? 'brightness(50%)' : 'brightness(100%)',
 				color: 'white',
 				textShadow: '0 0 2px #000',
 				position: 'relative',
@@ -153,7 +152,9 @@ export function PokemonCard({
 			}}
 		>
 			<div style={{ background: '#1119', borderBottom: '1px solid black', textAlign: 'left' }}>
-				<strong style={{ fontSize: '54px', marginLeft: 12, position: 'relative', top: 4 }}>{data.points || '\u200b'}</strong>
+				<strong style={{ fontSize: '54px', marginLeft: 12, position: 'relative', top: 4, color: reserved ? '#999' : undefined }}>
+					{data.points || '\u200b'}
+				</strong>
 				<img
 					src={getArtUrl('type', metadata.types[data.type].art, 'img')}
 					height="48"
@@ -175,7 +176,11 @@ export function PokemonCard({
 						marginTop: 24,
 						fontSize: 32,
 						color: 'yellow',
-						fontWeight: 'bold',
+						fontWeight: 'bolder',
+						position: 'absolute',
+						bottom: -16,
+						transform: 'rotate(90deg)',
+						transformOrigin: 'right 0',
 					}}
 				>
 					<span
@@ -241,7 +246,8 @@ function PlaceholderCard({ style }: { style?: CSSProperties | undefined }): Reac
 				background: '#1119',
 				height: 280,
 				width: 200,
-				border: '1px dashed black',
+				border: '4px dashed black',
+				boxSizing: 'border-box',
 				borderRadius: 12,
 				margin: 12,
 				...style,
@@ -264,18 +270,20 @@ export function Stack({
 	return (
 		<div style={{ display: 'inline-block', border: '1px dashed black', boxSizing: 'border-box', ...style }}>
 			<div style={{ position: 'relative', display: 'inline-block' }}>
-				{hidden ? (
-					<FlippedCard />
-				) : cards.length ? (
-					cards.map((card, index) => (
-						<PokemonCard
-							data={card}
-							reserved={reserved}
-							style={index ? { position: 'absolute', top: index * 42, left: index * 12 } : undefined}
-						/>
-					))
-				) : (
+				{cards.length === 0 ? (
 					<PlaceholderCard />
+				) : (
+					cards.map((card, index) =>
+						hidden ? (
+							<FlippedCard />
+						) : (
+							<PokemonCard
+								data={card}
+								reserved={reserved}
+								style={index ? { position: 'absolute', top: index * 42, left: index * 12 } : undefined}
+							/>
+						)
+					)
 				)}
 				<div style={{ height: (cards.length - 1) * 42 }} />
 			</div>
