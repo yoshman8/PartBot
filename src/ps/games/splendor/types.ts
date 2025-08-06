@@ -61,10 +61,10 @@ export type State = {
 export type RenderCtx = {
 	id: string;
 	board: Board;
-	validMoves: [number, number][];
 	header?: string;
 	dimHeader?: boolean;
-	self?: PlayerData;
+	self?: string;
+	turns: string[];
 	players: Record<string, PlayerData>;
 };
 

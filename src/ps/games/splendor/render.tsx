@@ -3,7 +3,7 @@ import { TokenType } from '@/ps/games/splendor/types';
 import { Username } from '@/utils/components';
 import { Button } from '@/utils/components/ps';
 
-import type { Board, Card, PlayerData, Trainer } from '@/ps/games/splendor/types';
+import type { Board, Card, PlayerData, RenderCtx, Trainer } from '@/ps/games/splendor/types';
 import type { CSSProperties, ReactElement } from 'react';
 
 type This = { msg: string };
@@ -308,6 +308,7 @@ export function BaseBoard({ board, onClick }: { board: Board; onClick?: string |
 					</Button>
 				) : null}
 			</div>
+			<div style={{ height: 48 }} />
 			{[board.cards[3], board.cards[2], board.cards[1]].map(({ wild, deck }) => (
 				<div style={{ whiteSpace: 'nowrap', overflow: 'auto' }}>
 					{wild.map(card => (
@@ -359,7 +360,7 @@ export function ActivePlayer({ data, onClick }: { data: PlayerData; onClick: str
 			</div>
 			{cards.length || data.reserved.length ? (
 				<div style={{ display: 'inline-block', verticalAlign: 'top', margin: '0 8px' }}>
-					<details style={{ display: 'inline-block', verticalAlign: 'top' }}>
+					<details open style={{ display: 'inline-block', verticalAlign: 'top' }}>
 						<summary style={{ ...RESOURCE_STYLES, display: 'inline-block', cursor: 'pointer' }}>
 							{cards.map(([tokenType, { length: count }]) => (
 								<TypeTokenCount type={tokenType} count={count} square />
@@ -392,7 +393,7 @@ export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 	);
 
 	return (
-		<div style={{ color: 'white' }}>
+		<div style={{ color: 'white', border: '1px solid', display: 'inline-block', borderRadius: 8 }}>
 			<div style={{ display: 'inline-block' }}>
 				<div style={{ margin: 12 }}>
 					<span style={{ fontWeight: 'bold', fontSize: 36, background: '#1119', borderRadius: 8, padding: '8px 12px' }}>
@@ -416,5 +417,45 @@ export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+export function render(this: This, ctx: RenderCtx): ReactElement {
+	const onClick = ctx.self ? this.msg : undefined;
+	return (
+		<center>
+			<h1 style={ctx.dimHeader ? { color: 'gray' } : {}}>{ctx.header}</h1>
+			<div style={{ zoom: '50%' }}>
+				<BaseBoard board={ctx.board} onClick={onClick} />
+				<div style={{ height: 48 }} />
+				{ctx.self ? (
+					<>
+						<ActivePlayer data={ctx.players[ctx.self]} onClick={onClick!} />
+						<hr />
+					</>
+				) : null}
+				{ctx.turns
+					.map(turn => {
+						if (turn === ctx.self)
+							return (
+								<div
+									style={{
+										fontWeight: 'bold',
+										fontSize: 36,
+										background: '#1119',
+										borderRadius: 8,
+										padding: '12px 24px',
+										display: 'inline-block',
+										border: '1px solid',
+									}}
+								>
+									<Username name={ctx.players[ctx.self].name} clickable />
+								</div>
+							);
+						return <PlayerSummary data={ctx.players[turn]} />;
+					})
+					.space(<div style={{ height: 12 }} />)}
+			</div>
+		</center>
 	);
 }
