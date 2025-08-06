@@ -10,6 +10,7 @@ declare global {
 		count(): Record<T & (string | number), number>;
 		count(map: true): Map<T, number>;
 		group(size: number): T[][];
+		groupBy<Key extends string>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
 		filterMap<X>(cb: (element: T, index: number, thisArray: T[]) => X | undefined): X[];
 		list($T?: TranslationFn | string): string;
 		random(rng?: RNGSource): T | null;
@@ -28,6 +29,7 @@ declare global {
 		count(map: true): Map<T, number>;
 		filterMap<X>(cb: (element: T, index: number, thisArray: T[]) => X | undefined): X[];
 		group(size: number): T[][];
+		groupBy<Key extends string>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
 		list($T?: TranslationFn): string;
 		random(rng?: RNGSource): T | null;
 		sample(amount: number, rng?: RNGSource): T[];
@@ -117,6 +119,19 @@ Object.defineProperties(Array.prototype, {
 			}
 			// TODO
 			return [];
+		},
+	},
+	groupBy: {
+		enumerable: false,
+		writable: false,
+		configurable: false,
+		value: function <T, Key extends string>(this: T[], classification: (element: T) => Key): Partial<Record<Key, T[]>> {
+			return this.reduce<Partial<Record<Key, T[]>>>((acc, current) => {
+				const key = classification(current);
+				if (acc[key]) acc[key].push(current);
+				else acc[key] = [current];
+				return acc;
+			}, {});
 		},
 	},
 	list: {

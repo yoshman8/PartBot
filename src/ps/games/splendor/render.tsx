@@ -1,8 +1,9 @@
 import metadata from '@/ps/games/splendor/metadata.json';
-import { RenderCtx, TokenType } from '@/ps/games/splendor/types';
+import { TokenType } from '@/ps/games/splendor/types';
+import { Username } from '@/utils/components';
 import { Button } from '@/utils/components/ps';
 
-import type { Card, Trainer } from '@/ps/games/splendor/types';
+import type { Board, Card, PlayerData, Trainer } from '@/ps/games/splendor/types';
 import type { CSSProperties, ReactElement } from 'react';
 
 type This = { msg: string };
@@ -21,7 +22,22 @@ const TOKEN_COLOURS: Record<TokenType, string> = {
 	[TokenType.Water]: '#1996e2',
 };
 
-export function TypeToken({ type }: { type: TokenType }): ReactElement {
+function getCardStyles(imageSrc: string | null): CSSProperties {
+	return {
+		...(imageSrc ? { backgroundImage: imageSrc, backgroundSize: 'cover' } : {}),
+		boxSizing: 'border-box',
+		height: 280,
+		width: 200,
+		overflow: 'hidden',
+		display: 'inline-block',
+		border: '1px solid black',
+		borderRadius: 12,
+		padding: 0,
+		margin: 12,
+	};
+}
+
+export function TypeToken({ type, square }: { type: TokenType; square?: boolean | undefined }): ReactElement {
 	const data = metadata.types[type];
 	return (
 		<div
@@ -29,47 +45,48 @@ export function TypeToken({ type }: { type: TokenType }): ReactElement {
 				display: 'inline-block',
 				border: '1px solid black',
 				background: TOKEN_COLOURS[type],
-				borderRadius: 99,
+				borderRadius: square ? 12 : 99,
 				height: 108,
 				width: 108,
 				margin: 8,
+				marginBottom: -12,
 			}}
 		>
 			<div
 				style={{
 					inset: 0,
-					backgroundImage: getArtUrl('type', data.art),
+					backgroundImage: square && type === TokenType.Dragon ? getArtUrl('other', 'question-mark.png') : getArtUrl('type', data.art),
 					backgroundPosition: 'center',
 					backgroundSize: 'cover',
 					borderRadius: 99,
-					height: 72,
-					width: 72,
+					height: square ? 102 : 84,
+					width: square ? 102 : 84,
 					margin: 'auto',
 					position: 'relative',
-					top: 18,
+					top: square ? 2 : 12,
 				}}
 			/>
 		</div>
 	);
 }
 
-export function TypeTokenCount({ type, count }: { type: TokenType; count: number }): ReactElement {
+function TypeTokenCount({ type, count, square }: { type: TokenType; count: number; square?: boolean | undefined }): ReactElement {
 	return (
-		<div style={{ display: 'inline-block' }}>
-			<TypeToken type={type} />
-			<span style={{ position: 'relative', bottom: 48 }}>
-				<span style={{ fontSize: 36 }}>×</span>
-				<b style={{ fontSize: 54, position: 'relative', top: 4 }}>{count}</b>
+		<div style={{ display: 'inline-block', margin: '0 12px 0 0' }}>
+			<TypeToken type={type} square={square} />
+			<span style={{ position: 'relative', bottom: 24, color: count === 0 ? '#aaa' : undefined }}>
+				<span style={{ fontSize: 54 }}>×</span>
+				<b style={{ fontSize: 72, position: 'relative', top: 6 }}>{count}</b>
 			</span>
 		</div>
 	);
 }
 
-export function TrainerCard({ data }: { data: Trainer }): ReactElement {
+function TrainerCard({ data }: { data: Trainer }): ReactElement {
 	return (
 		<div
 			style={{
-				backgroundImage: getArtUrl('trainers', data.art),
+				background: `${getArtUrl('trainers', data.art)} #eee8`,
 				backgroundSize: 'cover',
 				borderRadius: 16,
 				border: '1px solid black',
@@ -89,35 +106,15 @@ export function TrainerCard({ data }: { data: Trainer }): ReactElement {
 						position: 'absolute',
 						bottom: 0,
 						left: 0,
-						padding: '8px 8px 0',
+						padding: '8px 36px 0 18px',
 						background: '#0009',
-						borderTopRightRadius: 10,
+						borderTopRightRadius: 24,
+						zoom: '25%',
 					}}
 				>
 					{(Object.entries(data.types) as [TokenType, number][]).map(([tokenType, cost]) => (
 						<div>
-							<div
-								style={{
-									display: 'inline-block',
-									height: 24,
-									width: 24,
-									borderRadius: 4,
-									background: TOKEN_COLOURS[tokenType],
-									outline: '0.5px solid #eee8',
-									outlineOffset: -2,
-									position: 'relative',
-								}}
-							>
-								<img
-									src={getArtUrl('type', metadata.types[tokenType].art, 'img')}
-									height="18"
-									width="18"
-									style={{ position: 'relative', right: 3, top: 3 }}
-									alt={metadata.types[tokenType].name}
-								/>
-							</div>
-							<span style={{ position: 'relative', bottom: 3, fontSize: 16 }}> × </span>
-							<b style={{ fontSize: 24 }}>{cost}</b>
+							<TypeTokenCount type={tokenType} count={cost} square />
 						</div>
 					))}
 				</div>
@@ -129,36 +126,33 @@ export function TrainerCard({ data }: { data: Trainer }): ReactElement {
 export function PokemonCard({
 	data,
 	reserved,
-	style,
 	onClick,
+	stackIndex,
 }: {
 	data: Card;
 	reserved?: boolean | undefined;
 	onClick?: string | undefined;
-	style?: CSSProperties | undefined;
+	stackIndex?: number | undefined;
 }): ReactElement {
 	const Wrapper = onClick ? Button : 'div';
 
 	return (
-		// @ts-expect-error -- Wrapper is Button only when value is provided
+		// @ts-ignore -- Wrapper is Button only when value is provided
 		<Wrapper
 			{...(onClick ? { value: `${onClick} ${data.id}` } : undefined)}
 			style={{
-				display: 'block',
-				backgroundImage: getArtUrl('pokemon', data.art),
-				backgroundSize: 'cover',
-				height: 280,
-				width: 200,
-				border: '1px solid black',
-				borderRadius: 12,
+				...getCardStyles(getArtUrl('pokemon', data.art)),
 				color: 'white',
 				textShadow: '0 0 2px #000',
 				position: 'relative',
-				overflow: 'hidden',
-				margin: 12,
-				padding: 0,
-				cursor: 'pointer',
-				...style,
+				cursor: onClick ? 'pointer' : undefined,
+				...(stackIndex
+					? {
+							position: 'absolute',
+							top: stackIndex * 42,
+							left: stackIndex * 12,
+						}
+					: undefined),
 			}}
 		>
 			<div
@@ -171,7 +165,7 @@ export function PokemonCard({
 					width: '100%',
 				}}
 			>
-				<strong style={{ fontSize: '54px', marginLeft: 12, position: 'relative', top: 4, color: reserved ? '#999' : undefined }}>
+				<strong style={{ fontSize: '54px', marginLeft: 12, position: 'relative', top: 4, color: reserved ? '#aaa' : undefined }}>
 					{data.points || '\u200b'}
 				</strong>
 				<img
@@ -221,19 +215,12 @@ export function PokemonCard({
 					padding: '8px 8px 0',
 					background: '#0009',
 					borderTopRightRadius: 12,
+					zoom: '40%',
 				}}
 			>
 				{(Object.entries(data.cost) as [TokenType, number][]).map(([tokenType, cost]) => (
 					<div>
-						<img
-							src={getArtUrl('type', metadata.types[tokenType].art, 'img')}
-							height="42"
-							width="42"
-							style={{ borderRadius: 99, outline: '0.5px solid #eee8', outlineOffset: -2 }}
-							alt={metadata.types[tokenType].name}
-						/>
-						<span style={{ position: 'relative', bottom: 10, fontSize: 24 }}> × </span>
-						<b style={{ position: 'relative', bottom: 8, fontSize: 32 }}>{cost}</b>
+						<TypeTokenCount type={tokenType} count={cost} />
 					</div>
 				))}
 			</div>
@@ -241,38 +228,30 @@ export function PokemonCard({
 	);
 }
 
-function FlippedCard({ style }: { style?: CSSProperties | undefined }): ReactElement {
+function FlippedCard({ data, count }: { data: Card; count: number }): ReactElement {
 	return (
-		<div
-			style={{
-				backgroundImage: getArtUrl('other', 'back.png'),
-				backgroundSize: 'cover',
-				height: 280,
-				width: 200,
-				border: '1px solid black',
-				borderRadius: 12,
-				margin: 12,
-				...style,
-			}}
-		/>
+		<div style={getCardStyles(getArtUrl('other', `back-${data.tier}.png`))}>
+			<div
+				style={{
+					position: 'relative',
+					top: 96,
+					background: '#1119',
+					borderRadius: 12,
+					color: 'white',
+					textShadow: '0 0 2px #000',
+					display: 'inline-block',
+					padding: '0 8px 8px',
+				}}
+			>
+				<span style={{ fontSize: 54 }}>×</span>
+				<b style={{ fontSize: 72, position: 'relative', top: 6 }}>{count}</b>
+			</div>
+		</div>
 	);
 }
 
-function PlaceholderCard({ style }: { style?: CSSProperties | undefined }): ReactElement {
-	return (
-		<div
-			style={{
-				background: '#1119',
-				height: 280,
-				width: 200,
-				border: '4px dashed black',
-				boxSizing: 'border-box',
-				borderRadius: 12,
-				margin: 12,
-				...style,
-			}}
-		/>
-	);
+function PlaceholderCard(): ReactElement {
+	return <div style={{ ...getCardStyles(null), background: '#1115', border: '2px dashed #eee5' }} />;
 }
 
 export function Stack({
@@ -289,27 +268,153 @@ export function Stack({
 	style?: CSSProperties | undefined;
 }): ReactElement {
 	return (
-		<div style={{ display: 'inline-block', border: '1px dashed black', boxSizing: 'border-box', ...style }}>
+		<div style={{ display: 'inline-block', boxSizing: 'border-box', ...style }}>
 			<div style={{ position: 'relative', display: 'inline-block' }}>
 				{cards.length === 0 ? (
 					<PlaceholderCard />
 				) : (
 					cards.map((card, index) =>
 						hidden ? (
-							<FlippedCard />
+							index === 0 ? (
+								<FlippedCard data={card} count={cards.length} />
+							) : null
 						) : (
-							<PokemonCard
-								data={card}
-								reserved={reserved}
-								onClick={onClick}
-								style={index ? { position: 'absolute', top: index * 42, left: index * 12 } : undefined}
-							/>
+							<PokemonCard data={card} reserved={reserved} onClick={onClick} stackIndex={index} />
 						)
 					)
 				)}
-				<div style={{ height: (cards.length - 1) * 42 }} />
+				{!hidden ? <div style={{ height: (cards.length - 1) * 42 }} /> : null}
 			</div>
-			<div style={{ display: 'inline-block', width: (cards.length - 1) * 12 }} />
+			{!hidden ? <div style={{ display: 'inline-block', width: (cards.length - 1) * 12 }} /> : null}
+		</div>
+	);
+}
+
+export function BaseBoard({ board, onClick }: { board: Board; onClick?: string | undefined }): ReactElement {
+	return (
+		<>
+			<div>
+				{board.trainers.map(trainer => (
+					<TrainerCard data={trainer} />
+				))}
+			</div>
+			<div style={{ zoom: '60%', color: 'white' }}>
+				{[TokenType.Colorless, TokenType.Fire, TokenType.Grass, TokenType.Water, TokenType.Dark, TokenType.Dragon].map(tokenType => (
+					<TypeTokenCount type={tokenType} count={board.tokens[tokenType]} />
+				))}
+				{onClick ? (
+					<Button value={`${onClick} ! collect`} style={{ zoom: '360%', position: 'relative', bottom: 6 }}>
+						Draw Tokens
+					</Button>
+				) : null}
+			</div>
+			{[board.cards[3], board.cards[2], board.cards[1]].map(({ wild, deck }) => (
+				<div style={{ whiteSpace: 'nowrap', overflow: 'auto' }}>
+					{wild.map(card => (
+						<Stack cards={[card]} onClick={onClick} />
+					))}
+					<Stack cards={deck} hidden />
+				</div>
+			))}
+		</>
+	);
+}
+
+const RESOURCE_STYLES: CSSProperties = {
+	zoom: '40%',
+	overflowX: 'auto',
+	fontSize: 24,
+	background: '#1119',
+	borderRadius: 8,
+	padding: '8px 12px',
+	margin: 12,
+};
+
+export function ActivePlayer({ data, onClick }: { data: PlayerData; onClick: string }): ReactElement {
+	const cards = Object.entries(data.cards.groupBy(card => card.type)) as [TokenType, Card[]][];
+	const tokensEl = (Object.entries(data.tokens) as [TokenType, number][]).filterMap(([tokenType, count]) =>
+		count ? <TypeTokenCount type={tokenType} count={count} /> : null
+	);
+
+	return (
+		<div style={{ color: 'white', fontSize: 36 }}>
+			<div style={{ display: 'inline-block', verticalAlign: 'top' }}>
+				<div style={{ background: '#1119', borderRadius: 12, padding: '8px 12px', margin: 12 }}>
+					<b style={{ fontSize: 48 }}>{data.points}</b>
+					<small>/15</small>
+					<br />
+					<Username name={data.name} clickable />
+				</div>
+				<div style={{ zoom: '75%' }}>
+					{data.trainers.map(trainer => (
+						<TrainerCard data={trainer} />
+					))}
+				</div>
+			</div>
+			<div style={{ display: 'inline-block', verticalAlign: 'top' }}>
+				<div style={RESOURCE_STYLES}>
+					<div style={{ textAlign: 'start', fontSize: 48 }}>Tokens:</div>
+					{tokensEl.length ? tokensEl : '-'}
+				</div>
+			</div>
+			{cards.length || data.reserved.length ? (
+				<div style={{ display: 'inline-block', verticalAlign: 'top', margin: '0 8px' }}>
+					<details style={{ display: 'inline-block', verticalAlign: 'top' }}>
+						<summary style={{ ...RESOURCE_STYLES, display: 'inline-block', cursor: 'pointer' }}>
+							{cards.map(([tokenType, { length: count }]) => (
+								<TypeTokenCount type={tokenType} count={count} square />
+							))}
+						</summary>
+						<div style={{ zoom: '75%', display: 'inline' }}>
+							{cards.map(([_tokenType, card]) => (
+								<Stack cards={card} />
+							))}
+						</div>
+					</details>
+					{data.reserved.map(card => (
+						<Stack cards={[card]} onClick={`${onClick} ! buyreserved ${card.id}`} reserved />
+					))}
+				</div>
+			) : null}
+		</div>
+	);
+}
+
+export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
+	const cards = data.cards.groupBy(card => card.type);
+	cards[TokenType.Dragon] = data.reserved;
+
+	const cardsEl = (Object.entries(cards) as [TokenType, Card[]][]).map(([tokenType, { length: count }]) => (
+		<TypeTokenCount type={tokenType} count={count} square />
+	));
+	const tokensEl = (Object.entries(data.tokens) as [TokenType, number][]).filterMap(([tokenType, count]) =>
+		count ? <TypeTokenCount type={tokenType} count={count} /> : null
+	);
+
+	return (
+		<div style={{ color: 'white' }}>
+			<div style={{ display: 'inline-block' }}>
+				<div style={{ margin: 12 }}>
+					<span style={{ fontWeight: 'bold', fontSize: 36, background: '#1119', borderRadius: 8, padding: '8px 12px' }}>
+						<Username name={data.name} clickable /> ({data.points})
+					</span>
+				</div>
+				<div style={{ zoom: '60%' }}>
+					{data.trainers.map(trainer => (
+						<TrainerCard data={trainer} />
+					))}
+				</div>
+			</div>
+			<div style={{ display: 'inline-block' }}>
+				<div style={RESOURCE_STYLES}>
+					<div style={{ textAlign: 'start', fontSize: 48 }}>Cards:</div>
+					{cardsEl.length ? cardsEl : '-'}
+				</div>
+				<div style={RESOURCE_STYLES}>
+					<div style={{ textAlign: 'start', fontSize: 48 }}>Tokens:</div>
+					{tokensEl.length ? tokensEl : '-'}
+				</div>
+			</div>
 		</div>
 	);
 }

@@ -26,7 +26,7 @@ export type Card = {
 };
 
 export type Deck = Card[];
-export type WildCards = (Card | null)[];
+export type WildCards = Card[];
 
 export type Trainer = {
 	id: string;
@@ -43,6 +43,8 @@ export type Board = {
 };
 
 export type PlayerData = {
+	id: string;
+	name: string;
 	points: number;
 	tokens: Record<TokenType, number>;
 	cards: Card[];
