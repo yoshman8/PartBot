@@ -332,11 +332,38 @@ function TokenInput({
 	);
 }
 
-// TODO
-function WildCardInput({ id }: { id: string; onClick: string }): ReactElement {
-	const _data = metadata.pokemon[id];
-	const _TODO = [ACTIONS.BUY, ACTIONS.RESERVE];
-	return <div />;
+function WildCardInput({ action, onClick }: { action: ViewType; onClick: string }): ReactElement {
+	if (!action.active || action.action !== VIEW_ACTION_TYPE.CLICK_WILD) return <></>;
+	const card = metadata.pokemon[action.id];
+	return (
+		<div style={{ borderRadius: 12, padding: 12, background: '#1119' }}>
+			<PokemonCard data={card} />
+			{action.canBuy ? (
+				<TokenInput allowDragon preset={action.preset} label={'Buy!' as ToTranslate} onClick={`${onClick} ! ${ACTIONS.BUY}`} />
+			) : null}
+			{action.canReserve ? (
+				<div
+					style={{
+						display: 'inline-block',
+						verticalAlign: 'top',
+						border: '1px solid',
+						borderRadius: 12,
+						padding: 24,
+						margin: 12,
+					}}
+				>
+					<Button
+						value={`${onClick} ! ${ACTIONS.RESERVE}`}
+						style={{
+							zoom: '240%',
+						}}
+					>
+						{'Reserve!' as ToTranslate}
+					</Button>
+				</div>
+			) : null}
+		</div>
+	);
 }
 
 function ReservedCardInput({ card, preset, onClick }: { preset: TokenCount; card: Card; onClick: string }): ReactElement {
@@ -346,7 +373,6 @@ function ReservedCardInput({ card, preset, onClick }: { preset: TokenCount; card
 export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewType; onClick?: string | undefined }): ReactElement {
 	return (
 		<>
-			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD ? <WildCardInput id={view.id} onClick={onClick!} /> : null}
 			<div>
 				{board.trainers.map(trainer => (
 					<TrainerCard data={trainer} />
@@ -367,11 +393,19 @@ export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewTy
 			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_TOKENS ? (
 				<TokenInput preset={null} label={'Draw!' as ToTranslate} onClick={`${onClick} ! ${ACTIONS.DRAW}`} />
 			) : null}
+			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD ? <WildCardInput action={view} onClick={onClick!} /> : null}
 			<div style={{ height: 48 }} />
 			{[board.cards[3], board.cards[2], board.cards[1]].map(({ wild, deck }) => (
 				<div style={{ whiteSpace: 'nowrap', overflow: 'auto' }}>
 					{wild.map(card => (
-						<Stack cards={[card]} onClick={onClick ? `${onClick} ! wild` : onClick} />
+						<PokemonCard
+							data={card}
+							onClick={
+								onClick && !(view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD && card.id === view.id)
+									? `${onClick} ! wild`
+									: undefined
+							}
+						/>
 					))}
 					<Stack cards={deck} hidden />
 				</div>
@@ -434,10 +468,11 @@ export function ActivePlayer({ data, action, onClick }: { data: PlayerData; acti
 						</details>
 					) : null}
 					{data.reserved.map(card => (
-						<Stack
-							cards={[card]}
+						<PokemonCard
+							data={card}
 							onClick={
-								action.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS
+								action.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS &&
+								!(action.action === VIEW_ACTION_TYPE.CLICK_RESERVE && card.id === action.id)
 									? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_RESERVE} ${card.id}`
 									: undefined
 							}

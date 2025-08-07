@@ -288,6 +288,8 @@ export class Splendor extends BaseGame<State> {
 			}
 		}
 
+		playerData.points = playerData.cards.map(card => card.points).sum() + playerData.trainers.map(trainer => trainer.points).sum();
+
 		this.state.actionState = { action: VIEW_ACTION_TYPE.NONE };
 
 		if (this.gameCanEnd()) this.end();
