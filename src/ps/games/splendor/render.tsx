@@ -1,8 +1,9 @@
-import { ACTIONS, TOKEN_TYPE, VIEW_ACTION_TYPE } from '@/ps/games/splendor/constants';
+import { ACTIONS, AllTokenTypes, MAX_TOKEN_COUNT, TOKEN_TYPE, TokenTypes, VIEW_ACTION_TYPE } from '@/ps/games/splendor/constants';
 import metadata from '@/ps/games/splendor/metadata.json';
 import { Username } from '@/utils/components';
-import { Button } from '@/utils/components/ps';
+import { Button, Form } from '@/utils/components/ps';
 
+import type { ToTranslate, TranslatedText } from '@/i18n/types';
 import type { ActionState, Board, Card, PlayerData, RenderCtx, TokenCount, Trainer, ViewType } from '@/ps/games/splendor/types';
 import type { CSSProperties, ReactElement } from 'react';
 
@@ -287,39 +288,65 @@ export function Stack({
 						)
 					)
 				)}
-				{!hidden ? <div style={{ height: (cards.length - 1) * 42 }} /> : null}
+				{!hidden && cards.length > 1 ? <div style={{ height: (cards.length - 1) * 42 }} /> : null}
 			</div>
-			{!hidden ? <div style={{ display: 'inline-block', width: (cards.length - 1) * 12 }} /> : null}
+			{!hidden && cards.length > 1 ? <div style={{ display: 'inline-block', width: (cards.length - 1) * 12 }} /> : null}
 		</div>
 	);
 }
 
-// TODO
-function TokenInput({}: { preset: TokenCount | null; onClick: string }): ReactElement {
-	return <div />;
+function TokenInput({
+	allowDragon,
+	preset,
+	label,
+	onClick,
+}: {
+	allowDragon?: boolean;
+	preset: TokenCount | null;
+	label: TranslatedText;
+	onClick: string;
+}): ReactElement {
+	const types = allowDragon ? AllTokenTypes : TokenTypes;
+	return (
+		<Form
+			value={`${onClick} ${types
+				.map(type => {
+					const name = type.charAt(0);
+					return `${name}{${name}}`;
+				})
+				.join('')}`}
+			style={{ border: '1px solid', display: 'inline-block', padding: 12, borderRadius: 12, margin: 12 }}
+		>
+			{types.map(type => (
+				<div style={{ display: 'inline-block' }}>
+					<div style={{ zoom: '70%' }}>
+						<TypeToken type={type} />
+					</div>
+					<input value={preset?.[type]} placeholder="0" style={{ width: 36, zoom: '200%' }} name={type.charAt(0)} />
+				</div>
+			))}
+			<div style={{ zoom: '240%', verticalAlign: 'top', marginTop: 18 }}>
+				<button>{label}</button>
+			</div>
+		</Form>
+	);
 }
 
 // TODO
-function WildCardChooser({ id }: { id: string; onClick: string }): ReactElement {
+function WildCardInput({ id }: { id: string; onClick: string }): ReactElement {
 	const _data = metadata.pokemon[id];
 	const _TODO = [ACTIONS.BUY, ACTIONS.RESERVE];
 	return <div />;
 }
 
-// TODO
 function ReservedCardInput({ card, preset, onClick }: { preset: TokenCount; card: Card; onClick: string }): ReactElement {
-	return (
-		<div>
-			Buy {card.name}?
-			<TokenInput preset={preset} onClick={onClick} />
-		</div>
-	);
+	return <TokenInput allowDragon preset={preset} label={`Buy ${card.name}!` as ToTranslate} onClick={onClick} />;
 }
 
 export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewType; onClick?: string | undefined }): ReactElement {
 	return (
 		<>
-			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD ? <WildCardChooser id={view.id} onClick={onClick!} /> : null}
+			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD ? <WildCardInput id={view.id} onClick={onClick!} /> : null}
 			<div>
 				{board.trainers.map(trainer => (
 					<TrainerCard data={trainer} />
@@ -331,14 +358,14 @@ export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewTy
 						<TypeTokenCount type={tokenType} count={board.tokens[tokenType]} />
 					)
 				)}
-				{view.active ? (
+				{view.active && view.action !== VIEW_ACTION_TYPE.CLICK_TOKENS ? (
 					<Button value={`${onClick} ! ${VIEW_ACTION_TYPE.CLICK_TOKENS}`} style={{ zoom: '360%', position: 'relative', bottom: 6 }}>
 						Draw Tokens
 					</Button>
 				) : null}
 			</div>
 			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_TOKENS ? (
-				<TokenInput preset={null} onClick={`${onClick} ! ${ACTIONS.DRAW}`} />
+				<TokenInput preset={null} label={'Draw!' as ToTranslate} onClick={`${onClick} ! ${ACTIONS.DRAW}`} />
 			) : null}
 			<div style={{ height: 48 }} />
 			{[board.cards[3], board.cards[2], board.cards[1]].map(({ wild, deck }) => (
@@ -407,7 +434,15 @@ export function ActivePlayer({ data, action, onClick }: { data: PlayerData; acti
 						</details>
 					) : null}
 					{data.reserved.map(card => (
-						<Stack cards={[card]} onClick={`${onClick} ! ${VIEW_ACTION_TYPE.CLICK_RESERVE} ${card.id}`} reserved />
+						<Stack
+							cards={[card]}
+							onClick={
+								action.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS
+									? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_RESERVE} ${card.id}`
+									: undefined
+							}
+							reserved
+						/>
 					))}
 				</div>
 			) : null}
@@ -419,8 +454,24 @@ export function ActivePlayer({ data, action, onClick }: { data: PlayerData; acti
 						onClick={`${onClick} ! ${ACTIONS.BUY_RESERVE}`}
 					/>
 				) : (
-					<div>You can't afford this...</div>
+					<div>{`You can't afford ${metadata.pokemon[action.id].name}...`}</div>
 				)
+			) : null}
+			{action.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS ? (
+				<div>
+					<p>
+						{
+							// eslint-disable-next-line max-len -- TODO $T
+							`You have too many tokens! The maximum you can have at a time is ${MAX_TOKEN_COUNT}; please discard at least ${action.discard}.` as ToTranslate
+						}
+					</p>
+					<TokenInput
+						allowDragon
+						preset={null}
+						label={'Discard' as ToTranslate}
+						onClick={`${onClick} ! ${VIEW_ACTION_TYPE.TOO_MANY_TOKENS}`}
+					/>
+				</div>
 			) : null}
 		</div>
 	);

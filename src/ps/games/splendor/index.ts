@@ -3,7 +3,7 @@ import {
 	ACTIONS,
 	AllTokenTypes,
 	MAX_RESERVE_COUNT,
-	MAX_TOKENS,
+	MAX_TOKEN_COUNT,
 	POINTS_TO_WIN,
 	TOKEN_TYPE,
 	TokenTypes,
@@ -149,7 +149,7 @@ export class Splendor extends BaseGame<State> {
 			playerData.tokens[tokenType] += count;
 		});
 	}
-	useTokens(tokens: Partial<TokenCount>, playerData: PlayerData): void {
+	spendTokens(tokens: Partial<TokenCount>, playerData: PlayerData): void {
 		const bank = this.state.board.tokens;
 		(Object.entries(tokens) as [TOKEN_TYPE, number][]).forEach(([tokenType, count]) => {
 			if (count > playerData.tokens[tokenType]) {
@@ -168,6 +168,7 @@ export class Splendor extends BaseGame<State> {
 		const [action, actionCtx] = ctx.lazySplit(' ', 1);
 
 		// VIEW_ACTION_TYPES update the user's state while staying on the same turn. Use 'return'.
+		// The exception to this is TOO_MANY_TOKENS, which is deferred from ACTIONS and uses 'break'.
 		// ACTIONS are actual actions, and will end the turn and stuff if valid. Use 'break'.
 		switch (action) {
 			case VIEW_ACTION_TYPE.CLICK_TOKENS: {
@@ -209,6 +210,22 @@ export class Splendor extends BaseGame<State> {
 				return;
 			}
 
+			case VIEW_ACTION_TYPE.TOO_MANY_TOKENS: {
+				if (this.state.actionState.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
+					throw new ChatError("You don't need to discard any tokens yet." as ToTranslate);
+				const toDiscard = this.state.actionState.discard;
+				const tokensToDiscard = this.parseTokens(actionCtx);
+				const discarding = Object.values(tokensToDiscard).sum();
+
+				if (discarding < toDiscard)
+					throw new ChatError(`You must discard at least ${toDiscard} tokens! ${discarding} isn't enough.` as ToTranslate);
+				if (!this.canAfford(tokensToDiscard, playerData.tokens))
+					throw new ChatError("Unfortunately it doesn't look like you don't have those to discard." as ToTranslate);
+
+				this.spendTokens(tokensToDiscard, playerData);
+				break;
+			}
+
 			case ACTIONS.BUY: {
 				const [mon, tokenInfo = ''] = actionCtx.lazySplit(' ', 1);
 				const getCard = this.findWildCard(mon);
@@ -219,7 +236,7 @@ export class Splendor extends BaseGame<State> {
 				if (!this.canAfford(card.cost, paying))
 					throw new ChatError(`The given tokens are insufficient to purchase ${card.name}!` as ToTranslate);
 
-				this.useTokens(paying, playerData);
+				this.spendTokens(paying, playerData);
 				playerData.cards.push(card);
 				break;
 			}
@@ -253,7 +270,7 @@ export class Splendor extends BaseGame<State> {
 				if (!this.canAfford(reservedCard.cost, paying))
 					throw new ChatError(`The given tokens are insufficient to purchase ${reservedCard.name}!` as ToTranslate);
 
-				this.useTokens(paying, playerData);
+				this.spendTokens(paying, playerData);
 				playerData.reserved.remove(reservedCard);
 				break;
 			}
@@ -274,9 +291,9 @@ export class Splendor extends BaseGame<State> {
 		this.state.actionState = { action: VIEW_ACTION_TYPE.NONE };
 
 		if (this.gameCanEnd()) this.end();
-		else if (Object.values(playerData.tokens).sum() > MAX_TOKENS) {
+		else if (Object.values(playerData.tokens).sum() > MAX_TOKEN_COUNT) {
 			const count = Object.values(playerData.tokens).sum();
-			this.state.actionState = { action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS, discard: count - MAX_TOKENS };
+			this.state.actionState = { action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS, discard: count - MAX_TOKEN_COUNT };
 			this.update(user.id);
 		} else this.endTurn();
 	}

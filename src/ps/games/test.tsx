@@ -48,7 +48,16 @@ export const test: () => Promise<string> = async () => {
 					[TOKEN_TYPE.COLORLESS]: 2,
 				},
 			},
-			view: { type: 'player', active: true, self: 'partman', action: VIEW_ACTION_TYPE.NONE },
+			view: {
+				type: 'player',
+				active: true,
+				self: 'partman',
+				action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS,
+				discard: 2,
+				// id: 'klink',
+				// preset: { [TOKEN_TYPE.GRASS]: 2, [TOKEN_TYPE.WATER]: 1 },
+				// preset: null,
+			},
 			turns: ['partbot', 'partman'],
 			players: {
 				partbot: {
