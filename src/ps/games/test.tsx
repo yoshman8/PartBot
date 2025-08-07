@@ -1,6 +1,6 @@
 import '@/globals';
 
-import { TokenType } from '@/ps/games/splendor/types';
+import { TOKEN_TYPE, VIEW_ACTION_TYPE } from '@/ps/games/splendor/constants';
 import { ansiToHtml } from '@/utils/ansiToHtml';
 import { cachebustDir } from '@/utils/cachebust';
 import { fsPath } from '@/utils/fsPath';
@@ -40,15 +40,15 @@ export const test: () => Promise<string> = async () => {
 				},
 				trainers: Object.values(metadata.trainers).sample(5, 1),
 				tokens: {
-					[TokenType.Fire]: 4,
-					[TokenType.Grass]: 5,
-					[TokenType.Dark]: 7,
-					[TokenType.Dragon]: 1,
-					[TokenType.Water]: 0,
-					[TokenType.Colorless]: 2,
+					[TOKEN_TYPE.FIRE]: 4,
+					[TOKEN_TYPE.GRASS]: 5,
+					[TOKEN_TYPE.DARK]: 7,
+					[TOKEN_TYPE.DRAGON]: 1,
+					[TOKEN_TYPE.WATER]: 0,
+					[TOKEN_TYPE.COLORLESS]: 2,
 				},
 			},
-			self: 'partman',
+			view: { type: 'player', active: true, self: 'partman', action: VIEW_ACTION_TYPE.NONE },
 			turns: ['partbot', 'partman'],
 			players: {
 				partbot: {
@@ -56,12 +56,12 @@ export const test: () => Promise<string> = async () => {
 					name: 'PartBot',
 					points: 9,
 					tokens: {
-						[TokenType.Fire]: 0,
-						[TokenType.Grass]: 0,
-						[TokenType.Dark]: 0,
-						[TokenType.Dragon]: 1,
-						[TokenType.Water]: 3,
-						[TokenType.Colorless]: 0,
+						[TOKEN_TYPE.FIRE]: 0,
+						[TOKEN_TYPE.GRASS]: 0,
+						[TOKEN_TYPE.DARK]: 0,
+						[TOKEN_TYPE.DRAGON]: 1,
+						[TOKEN_TYPE.WATER]: 3,
+						[TOKEN_TYPE.COLORLESS]: 0,
 					},
 					cards: [metadata.pokemon.murkrow, metadata.pokemon.tapulele],
 					trainers: [metadata.trainers.larry, metadata.trainers.siebold],
@@ -72,12 +72,12 @@ export const test: () => Promise<string> = async () => {
 					name: 'PartMan',
 					points: 10,
 					tokens: {
-						[TokenType.Fire]: 0,
-						[TokenType.Grass]: 0,
-						[TokenType.Dark]: 0,
-						[TokenType.Dragon]: 1,
-						[TokenType.Water]: 3,
-						[TokenType.Colorless]: 0,
+						[TOKEN_TYPE.FIRE]: 0,
+						[TOKEN_TYPE.GRASS]: 0,
+						[TOKEN_TYPE.DARK]: 0,
+						[TOKEN_TYPE.DRAGON]: 1,
+						[TOKEN_TYPE.WATER]: 3,
+						[TOKEN_TYPE.COLORLESS]: 0,
 					},
 					cards: [
 						metadata.pokemon.murkrow,

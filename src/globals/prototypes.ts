@@ -11,6 +11,9 @@ declare global {
 		count(map: true): Map<T, number>;
 		group(size: number): T[][];
 		groupBy<Key extends string>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
+		/**
+		 * filterMap runs map. Only results that are NOT exactly 'undefined' are returned.
+		 */
 		filterMap<X>(cb: (element: T, index: number, thisArray: T[]) => X | undefined): X[];
 		list($T?: TranslationFn | string): string;
 		random(rng?: RNGSource): T | null;
@@ -27,6 +30,9 @@ declare global {
 		access<V = ArrayAtom<T>>(pos: number[]): V;
 		count(): Record<T & (string | number), number>;
 		count(map: true): Map<T, number>;
+		/**
+		 * filterMap runs map. Only results that are NOT exactly 'undefined' are returned.
+		 */
 		filterMap<X>(cb: (element: T, index: number, thisArray: T[]) => X | undefined): X[];
 		group(size: number): T[][];
 		groupBy<Key extends string>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
@@ -40,7 +46,14 @@ declare global {
 
 	interface String {
 		gsub(match: RegExp, replace: string | ((arg: string, ...captures: string[]) => string)): string;
-		lazySplit(match: string | RegExp, cases: number): string[];
+
+		/**
+		 * Split the string exactly as many times as needed.
+		 * @param matcher Pattern/string to split by.
+		 * @param cases Number of cases to split.
+		 * @example 'a b c'.lazySplit(' ', 1); // ['a', 'bc']
+		 */
+		lazySplit(matcher: string | RegExp, cases: number): string[];
 	}
 
 	interface Number {

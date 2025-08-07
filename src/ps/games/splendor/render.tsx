@@ -1,25 +1,27 @@
+import { ACTIONS, TOKEN_TYPE, VIEW_ACTION_TYPE } from '@/ps/games/splendor/constants';
 import metadata from '@/ps/games/splendor/metadata.json';
-import { TokenType } from '@/ps/games/splendor/types';
 import { Username } from '@/utils/components';
 import { Button } from '@/utils/components/ps';
 
-import type { Board, Card, PlayerData, RenderCtx, Trainer } from '@/ps/games/splendor/types';
+import type { ActionState, Board, Card, PlayerData, RenderCtx, TokenCount, Trainer, ViewType } from '@/ps/games/splendor/types';
 import type { CSSProperties, ReactElement } from 'react';
 
 type This = { msg: string };
+
+// TODO: Optimize the size of the HTML produced
 
 function getArtUrl(type: 'pokemon' | 'trainers' | 'type' | 'other', path: string, tag: 'img' | 'bg' = 'bg'): string {
 	const baseURL = `${process.env.WEB_URL}/static/splendor/${type}/${path}`;
 	return tag === 'bg' ? `url(${baseURL})` : baseURL;
 }
 
-const TOKEN_COLOURS: Record<TokenType, string> = {
-	[TokenType.Colorless]: '#dddddd',
-	[TokenType.Dark]: '#444444',
-	[TokenType.Dragon]: '#eebe4e',
-	[TokenType.Fire]: '#fe3e4e',
-	[TokenType.Grass]: '#00a900',
-	[TokenType.Water]: '#1996e2',
+const TOKEN_COLOURS: Record<TOKEN_TYPE, string> = {
+	[TOKEN_TYPE.COLORLESS]: '#dddddd',
+	[TOKEN_TYPE.DARK]: '#444444',
+	[TOKEN_TYPE.DRAGON]: '#eebe4e',
+	[TOKEN_TYPE.FIRE]: '#fe3e4e',
+	[TOKEN_TYPE.GRASS]: '#00a900',
+	[TOKEN_TYPE.WATER]: '#1996e2',
 };
 
 function getCardStyles(imageSrc: string | null): CSSProperties {
@@ -30,6 +32,7 @@ function getCardStyles(imageSrc: string | null): CSSProperties {
 		width: 200,
 		overflow: 'hidden',
 		display: 'inline-block',
+		verticalAlign: 'top',
 		border: '1px solid black',
 		borderRadius: 12,
 		padding: 0,
@@ -37,7 +40,7 @@ function getCardStyles(imageSrc: string | null): CSSProperties {
 	};
 }
 
-export function TypeToken({ type, square }: { type: TokenType; square?: boolean | undefined }): ReactElement {
+export function TypeToken({ type, square }: { type: TOKEN_TYPE; square?: boolean | undefined }): ReactElement {
 	const data = metadata.types[type];
 	return (
 		<div
@@ -55,7 +58,8 @@ export function TypeToken({ type, square }: { type: TokenType; square?: boolean 
 			<div
 				style={{
 					inset: 0,
-					backgroundImage: square && type === TokenType.Dragon ? getArtUrl('other', 'question-mark.png') : getArtUrl('type', data.art),
+					backgroundImage:
+						square && type === TOKEN_TYPE.DRAGON ? getArtUrl('other', 'question-mark.png') : getArtUrl('type', data.art),
 					backgroundPosition: 'center',
 					backgroundSize: 'cover',
 					borderRadius: 99,
@@ -70,7 +74,7 @@ export function TypeToken({ type, square }: { type: TokenType; square?: boolean 
 	);
 }
 
-function TypeTokenCount({ type, count, square }: { type: TokenType; count: number; square?: boolean | undefined }): ReactElement {
+function TypeTokenCount({ type, count, square }: { type: TOKEN_TYPE; count: number; square?: boolean | undefined }): ReactElement {
 	return (
 		<div style={{ display: 'inline-block', margin: '0 12px 0 0' }}>
 			<TypeToken type={type} square={square} />
@@ -112,7 +116,7 @@ function TrainerCard({ data }: { data: Trainer }): ReactElement {
 						zoom: '25%',
 					}}
 				>
-					{(Object.entries(data.types) as [TokenType, number][]).map(([tokenType, cost]) => (
+					{(Object.entries(data.types) as [TOKEN_TYPE, number][]).map(([tokenType, cost]) => (
 						<div>
 							<TypeTokenCount type={tokenType} count={cost} square />
 						</div>
@@ -139,7 +143,7 @@ export function PokemonCard({
 	return (
 		// @ts-ignore -- Wrapper is Button only when value is provided
 		<Wrapper
-			{...(onClick ? { value: `${onClick} ${data.id}` } : undefined)}
+			{...(onClick ? { value: `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_WILD} ${data.id}` } : undefined)}
 			style={{
 				...getCardStyles(getArtUrl('pokemon', data.art)),
 				color: 'white',
@@ -218,7 +222,7 @@ export function PokemonCard({
 					zoom: '40%',
 				}}
 			>
-				{(Object.entries(data.cost) as [TokenType, number][]).map(([tokenType, cost]) => (
+				{(Object.entries(data.cost) as [TOKEN_TYPE, number][]).map(([tokenType, cost]) => (
 					<div>
 						<TypeTokenCount type={tokenType} count={cost} />
 					</div>
@@ -290,29 +294,57 @@ export function Stack({
 	);
 }
 
-export function BaseBoard({ board, onClick }: { board: Board; onClick?: string | undefined }): ReactElement {
+// TODO
+function TokenInput({}: { preset: TokenCount | null; onClick: string }): ReactElement {
+	return <div />;
+}
+
+// TODO
+function WildCardChooser({ id }: { id: string; onClick: string }): ReactElement {
+	const _data = metadata.pokemon[id];
+	const _TODO = [ACTIONS.BUY, ACTIONS.RESERVE];
+	return <div />;
+}
+
+// TODO
+function ReservedCardInput({ card, preset, onClick }: { preset: TokenCount; card: Card; onClick: string }): ReactElement {
+	return (
+		<div>
+			Buy {card.name}?
+			<TokenInput preset={preset} onClick={onClick} />
+		</div>
+	);
+}
+
+export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewType; onClick?: string | undefined }): ReactElement {
 	return (
 		<>
+			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD ? <WildCardChooser id={view.id} onClick={onClick!} /> : null}
 			<div>
 				{board.trainers.map(trainer => (
 					<TrainerCard data={trainer} />
 				))}
 			</div>
 			<div style={{ zoom: '60%', color: 'white' }}>
-				{[TokenType.Colorless, TokenType.Fire, TokenType.Grass, TokenType.Water, TokenType.Dark, TokenType.Dragon].map(tokenType => (
-					<TypeTokenCount type={tokenType} count={board.tokens[tokenType]} />
-				))}
-				{onClick ? (
-					<Button value={`${onClick} ! collect`} style={{ zoom: '360%', position: 'relative', bottom: 6 }}>
+				{[TOKEN_TYPE.COLORLESS, TOKEN_TYPE.FIRE, TOKEN_TYPE.GRASS, TOKEN_TYPE.WATER, TOKEN_TYPE.DARK, TOKEN_TYPE.DRAGON].map(
+					tokenType => (
+						<TypeTokenCount type={tokenType} count={board.tokens[tokenType]} />
+					)
+				)}
+				{view.active ? (
+					<Button value={`${onClick} ! ${VIEW_ACTION_TYPE.CLICK_TOKENS}`} style={{ zoom: '360%', position: 'relative', bottom: 6 }}>
 						Draw Tokens
 					</Button>
 				) : null}
 			</div>
+			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_TOKENS ? (
+				<TokenInput preset={null} onClick={`${onClick} ! ${ACTIONS.DRAW}`} />
+			) : null}
 			<div style={{ height: 48 }} />
 			{[board.cards[3], board.cards[2], board.cards[1]].map(({ wild, deck }) => (
 				<div style={{ whiteSpace: 'nowrap', overflow: 'auto' }}>
 					{wild.map(card => (
-						<Stack cards={[card]} onClick={onClick} />
+						<Stack cards={[card]} onClick={onClick ? `${onClick} ! wild` : onClick} />
 					))}
 					<Stack cards={deck} hidden />
 				</div>
@@ -331,9 +363,9 @@ const RESOURCE_STYLES: CSSProperties = {
 	margin: 12,
 };
 
-export function ActivePlayer({ data, onClick }: { data: PlayerData; onClick: string }): ReactElement {
-	const cards = Object.entries(data.cards.groupBy(card => card.type)) as [TokenType, Card[]][];
-	const tokensEl = (Object.entries(data.tokens) as [TokenType, number][]).filterMap(([tokenType, count]) =>
+export function ActivePlayer({ data, action, onClick }: { data: PlayerData; action: ActionState; onClick: string }): ReactElement {
+	const cards = Object.entries(data.cards.groupBy(card => card.type)) as [TOKEN_TYPE, Card[]][];
+	const tokensEl = (Object.entries(data.tokens) as [TOKEN_TYPE, number][]).filterMap(([tokenType, count]) =>
 		count ? <TypeTokenCount type={tokenType} count={count} /> : null
 	);
 
@@ -360,22 +392,35 @@ export function ActivePlayer({ data, onClick }: { data: PlayerData; onClick: str
 			</div>
 			{cards.length || data.reserved.length ? (
 				<div style={{ display: 'inline-block', verticalAlign: 'top', margin: '0 8px' }}>
-					<details open style={{ display: 'inline-block', verticalAlign: 'top' }}>
-						<summary style={{ ...RESOURCE_STYLES, display: 'inline-block', cursor: 'pointer' }}>
-							{cards.map(([tokenType, { length: count }]) => (
-								<TypeTokenCount type={tokenType} count={count} square />
-							))}
-						</summary>
-						<div style={{ zoom: '75%', display: 'inline' }}>
-							{cards.map(([_tokenType, card]) => (
-								<Stack cards={card} />
-							))}
-						</div>
-					</details>
+					{cards.length ? (
+						<details open style={{ display: 'inline-block', verticalAlign: 'top' }}>
+							<summary style={{ ...RESOURCE_STYLES, cursor: 'pointer' }}>
+								{cards.map(([tokenType, { length: count }]) => (
+									<TypeTokenCount type={tokenType} count={count} square />
+								))}
+							</summary>
+							<div style={{ zoom: '75%', display: 'inline' }}>
+								{cards.map(([_tokenType, card]) => (
+									<Stack cards={card} />
+								))}
+							</div>
+						</details>
+					) : null}
 					{data.reserved.map(card => (
-						<Stack cards={[card]} onClick={`${onClick} ! buyreserved ${card.id}`} reserved />
+						<Stack cards={[card]} onClick={`${onClick} ! ${VIEW_ACTION_TYPE.CLICK_RESERVE} ${card.id}`} reserved />
 					))}
 				</div>
+			) : null}
+			{action.action === VIEW_ACTION_TYPE.CLICK_RESERVE ? (
+				action.preset ? (
+					<ReservedCardInput
+						card={metadata.pokemon[action.id]}
+						preset={action.preset}
+						onClick={`${onClick} ! ${ACTIONS.BUY_RESERVE}`}
+					/>
+				) : (
+					<div>You can't afford this...</div>
+				)
 			) : null}
 		</div>
 	);
@@ -383,12 +428,12 @@ export function ActivePlayer({ data, onClick }: { data: PlayerData; onClick: str
 
 export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 	const cards = data.cards.groupBy(card => card.type);
-	cards[TokenType.Dragon] = data.reserved;
+	cards[TOKEN_TYPE.DRAGON] = data.reserved;
 
-	const cardsEl = (Object.entries(cards) as [TokenType, Card[]][]).map(([tokenType, { length: count }]) => (
+	const cardsEl = (Object.entries(cards) as [TOKEN_TYPE, Card[]][]).map(([tokenType, { length: count }]) => (
 		<TypeTokenCount type={tokenType} count={count} square />
 	));
-	const tokensEl = (Object.entries(data.tokens) as [TokenType, number][]).filterMap(([tokenType, count]) =>
+	const tokensEl = (Object.entries(data.tokens) as [TOKEN_TYPE, number][]).filterMap(([tokenType, count]) =>
 		count ? <TypeTokenCount type={tokenType} count={count} /> : null
 	);
 
@@ -396,7 +441,16 @@ export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 		<div style={{ color: 'white', border: '1px solid', display: 'inline-block', borderRadius: 8 }}>
 			<div style={{ display: 'inline-block' }}>
 				<div style={{ margin: 12 }}>
-					<span style={{ fontWeight: 'bold', fontSize: 36, background: '#1119', borderRadius: 8, padding: '8px 12px' }}>
+					<span
+						style={{
+							fontWeight: 'bold',
+							fontSize: 36,
+							background: '#1119',
+							borderRadius: 8,
+							padding: '8px 12px',
+							textDecoration: data.out ? 'line-through' : undefined,
+						}}
+					>
 						<Username name={data.name} clickable /> ({data.points})
 					</span>
 				</div>
@@ -421,26 +475,24 @@ export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 }
 
 export function render(this: This, ctx: RenderCtx): ReactElement {
-	const onClick = ctx.self ? this.msg : undefined;
 	return (
 		<center>
 			<h1 style={ctx.dimHeader ? { color: 'gray' } : {}}>{ctx.header}</h1>
 			<div style={{ zoom: '50%' }}>
-				<BaseBoard board={ctx.board} onClick={onClick} />
+				<BaseBoard board={ctx.board} onClick={ctx.view.active ? this.msg : undefined} view={ctx.view} />
 				<div style={{ height: 48 }} />
-				{ctx.self ? (
+				{ctx.view.active ? (
 					<>
-						<ActivePlayer data={ctx.players[ctx.self]} onClick={onClick!} />
+						<ActivePlayer data={ctx.players[ctx.view.self]} action={ctx.view} onClick={this.msg} />
 						<hr />
 					</>
 				) : null}
 				{ctx.turns
 					.map(turn => {
-						if (turn === ctx.self)
+						if (ctx.view.active && turn === ctx.view.self)
 							return (
 								<div
 									style={{
-										fontWeight: 'bold',
 										fontSize: 36,
 										background: '#1119',
 										borderRadius: 8,
@@ -449,7 +501,7 @@ export function render(this: This, ctx: RenderCtx): ReactElement {
 										border: '1px solid',
 									}}
 								>
-									<Username name={ctx.players[ctx.self].name} clickable />
+									<Username name={ctx.players[ctx.view.self].name} clickable />
 								</div>
 							);
 						return <PlayerSummary data={ctx.players[turn]} />;

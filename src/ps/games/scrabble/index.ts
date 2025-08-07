@@ -253,7 +253,7 @@ export class Scrabble extends BaseGame<State> {
 		this.passCount = 0;
 
 		if (rack.length === 0) return this.end();
-		const next = this.nextPlayer();
+		const next = this.endTurn();
 		if (!next) return this.end();
 	}
 
@@ -292,7 +292,7 @@ export class Scrabble extends BaseGame<State> {
 		this.log.push(logEntry);
 		this.room.sendHTML(...renderMove(logEntry, this));
 
-		this.nextPlayer();
+		this.endTurn();
 	}
 
 	pass(): void {
@@ -305,7 +305,7 @@ export class Scrabble extends BaseGame<State> {
 		if (this.passCount > Object.keys(this.players).length) {
 			return this.end('regular');
 		}
-		this.nextPlayer();
+		this.endTurn();
 	}
 
 	onEnd(type?: EndType): TranslatedText {

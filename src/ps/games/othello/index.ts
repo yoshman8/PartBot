@@ -85,7 +85,7 @@ export class Othello extends BaseGame<State> {
 		board[i][j] = turn;
 		this.log.push({ action: 'play', time: new Date(), turn, ctx: [i, j] });
 
-		const next = this.nextPlayer();
+		const next = this.endTurn();
 		if (!next) this.end();
 		return board;
 	}

@@ -84,7 +84,7 @@ export class LightsOut extends BaseGame<State> {
 		if (this.state.board.every(row => row.every(cell => cell === false))) {
 			return this.end();
 		}
-		this.nextPlayer();
+		this.endTurn();
 	}
 
 	onEnd(type: Exclude<EndType, 'loss'>): TranslatedText {

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- This isn't part of the bot */
 import 'dotenv/config';
 
 import { watch } from 'chokidar';

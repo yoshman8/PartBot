@@ -79,7 +79,7 @@ export class SnakesLadders extends BaseGame<State> {
 				player,
 				`You rolled a ${dice}, but needed a ${100 - current}${100 - current === 1 ? '' : ' or lower'}...` as ToTranslate
 			);
-			this.nextPlayer();
+			this.endTurn();
 			return;
 		}
 
@@ -107,7 +107,7 @@ export class SnakesLadders extends BaseGame<State> {
 
 		this.frames = frameNums.map(pos => this.render(null, pos));
 
-		this.nextPlayer();
+		this.endTurn();
 	}
 
 	update(user?: string): void {

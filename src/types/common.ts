@@ -8,6 +8,8 @@ export type RecursivePartial<T> = {
 	[P in keyof T]?: T[P] extends (infer U)[] ? RecursivePartial<U>[] : T[P] extends object | undefined ? RecursivePartial<T[P]> : T[P];
 };
 
+export type SemiPartial<T extends Record<string, unknown>, Required extends keyof T> = Partial<T> & Pick<T, Required>;
+
 export type Satisfies<A, B extends A> = B;
 
 // Mongoose output as JSON

@@ -1,27 +1,22 @@
-export type Turn = 'W' | 'B';
+import type { TOKEN_TYPE, VIEW_ACTION_TYPE } from '@/ps/games/splendor/constants';
+
+export type Turn = string;
+
+export type TokenCount = Record<TOKEN_TYPE, number>;
 
 export type Metadata = {
 	pokemon: Record<string, Card>;
 	trainers: Record<string, Trainer>;
-	types: Record<string, { id: TokenType; name: string; art: string; startCount: [number, number, number] }>;
+	types: Record<string, { id: TOKEN_TYPE; name: string; art: string; startCount: [number, number, number] }>;
 };
-
-export enum TokenType {
-	Colorless = 'colorless',
-	Dark = 'dark',
-	Fire = 'fire',
-	Grass = 'grass',
-	Water = 'water',
-	Dragon = 'dragon',
-}
 
 export type Card = {
 	id: string;
 	name: string;
 	tier: number;
-	type: TokenType;
+	type: TOKEN_TYPE;
 	points: number;
-	cost: Partial<Record<TokenType, number>>;
+	cost: Partial<TokenCount>;
 	art: string;
 };
 
@@ -32,30 +27,59 @@ export type Trainer = {
 	id: string;
 	name: string;
 	points: number;
-	types: Partial<Record<TokenType, number>>;
+	types: Partial<TokenCount>;
 	art: string;
 };
 
 export type Board = {
 	cards: Record<1 | 2 | 3, { wild: WildCards; deck: Deck }>;
 	trainers: Trainer[];
-	tokens: Record<TokenType, number>;
+	tokens: TokenCount;
 };
 
 export type PlayerData = {
 	id: string;
 	name: string;
 	points: number;
-	tokens: Record<TokenType, number>;
+	tokens: TokenCount;
 	cards: Card[];
 	reserved: Card[];
 	trainers: Trainer[];
+	out?: boolean;
 };
+
+type ActivePlayer = {
+	type: 'player';
+	active: true;
+	self: string;
+};
+
+export type ActionState =
+	| { action: VIEW_ACTION_TYPE.NONE }
+	| { action: VIEW_ACTION_TYPE.CLICK_TOKENS }
+	| ({ action: VIEW_ACTION_TYPE.CLICK_WILD; id: string; canReserve: boolean } & (
+			| { canBuy: true; preset: TokenCount }
+			| { canBuy: false; preset: null }
+	  ))
+	| { action: VIEW_ACTION_TYPE.CLICK_RESERVE; id: string; preset: TokenCount | null }
+	| { action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS; discard: number };
+
+export type ViewType =
+	| {
+			type: 'spectator';
+			active: false;
+	  }
+	| {
+			type: 'player';
+			active: false;
+	  }
+	| (ActivePlayer & ActionState);
 
 export type State = {
 	turn: Turn;
 	board: Board;
-	playerData: PlayerData;
+	playerData: Record<Turn, PlayerData>;
+	actionState: ActionState;
 };
 
 export type RenderCtx = {
@@ -63,7 +87,7 @@ export type RenderCtx = {
 	board: Board;
 	header?: string;
 	dimHeader?: boolean;
-	self?: string;
+	view: ViewType;
 	turns: string[];
 	players: Record<string, PlayerData>;
 };

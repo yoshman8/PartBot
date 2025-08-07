@@ -57,7 +57,7 @@ export class ConnectFour extends BaseGame<State> {
 			this.end();
 			return true;
 		}
-		this.nextPlayer();
+		this.endTurn();
 		return board;
 	}
 
