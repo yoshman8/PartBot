@@ -23,6 +23,7 @@ export enum VIEW_ACTION_TYPE {
 	CLICK_RESERVE = 'payback',
 	CLICK_TOKENS = 'tokens',
 	TOO_MANY_TOKENS = 'discard',
+	GAME_END = 'end',
 }
 
 export const POINTS_TO_WIN = 15;

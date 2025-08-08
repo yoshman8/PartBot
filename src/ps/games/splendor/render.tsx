@@ -142,9 +142,9 @@ export function PokemonCard({
 	const Wrapper = onClick ? Button : 'div';
 
 	return (
-		// @ts-ignore -- Wrapper is Button only when value is provided
+		// @ts-expect-error -- Wrapper is Button only when value is provided
 		<Wrapper
-			{...(onClick ? { value: `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_WILD} ${data.id}` } : undefined)}
+			{...(onClick ? { value: `${onClick} ${data.id}` } : undefined)}
 			style={{
 				...getCardStyles(getArtUrl('pokemon', data.art)),
 				color: 'white',
@@ -309,20 +309,16 @@ function TokenInput({
 	const types = allowDragon ? AllTokenTypes : TokenTypes;
 	return (
 		<Form
-			value={`${onClick} ${types
-				.map(type => {
-					const name = type.charAt(0);
-					return `${name}{${name}}`;
-				})
-				.join('')}`}
+			value={`${onClick} ${types.map(type => `${type}{${type}}`).join(' ')}`}
 			style={{ border: '1px solid', display: 'inline-block', padding: 12, borderRadius: 12, margin: 12 }}
+			autoComplete="off"
 		>
 			{types.map(type => (
 				<div style={{ display: 'inline-block' }}>
 					<div style={{ zoom: '70%' }}>
 						<TypeToken type={type} />
 					</div>
-					<input value={preset?.[type]} placeholder="0" style={{ width: 36, zoom: '200%' }} name={type.charAt(0)} />
+					<input value={preset?.[type]} placeholder="0" style={{ width: 36, zoom: '200%' }} name={type} />
 				</div>
 			))}
 			<div style={{ zoom: '240%', verticalAlign: 'top', marginTop: 18 }}>
@@ -339,7 +335,12 @@ function WildCardInput({ action, onClick }: { action: ViewType; onClick: string 
 		<div style={{ borderRadius: 12, padding: 12, background: '#1119' }}>
 			<PokemonCard data={card} />
 			{action.canBuy ? (
-				<TokenInput allowDragon preset={action.preset} label={'Buy!' as ToTranslate} onClick={`${onClick} ! ${ACTIONS.BUY}`} />
+				<TokenInput
+					allowDragon
+					preset={action.preset}
+					label={'Buy!' as ToTranslate}
+					onClick={`${onClick} ! ${ACTIONS.BUY} ${card.id}`}
+				/>
 			) : null}
 			{action.canReserve ? (
 				<div
@@ -353,7 +354,7 @@ function WildCardInput({ action, onClick }: { action: ViewType; onClick: string 
 					}}
 				>
 					<Button
-						value={`${onClick} ! ${ACTIONS.RESERVE}`}
+						value={`${onClick} ! ${ACTIONS.RESERVE} ${card.id}`}
 						style={{
 							zoom: '240%',
 						}}
@@ -367,7 +368,7 @@ function WildCardInput({ action, onClick }: { action: ViewType; onClick: string 
 }
 
 function ReservedCardInput({ card, preset, onClick }: { preset: TokenCount; card: Card; onClick: string }): ReactElement {
-	return <TokenInput allowDragon preset={preset} label={`Buy ${card.name}!` as ToTranslate} onClick={onClick} />;
+	return <TokenInput allowDragon preset={preset} label={`Buy ${card.name}!` as ToTranslate} onClick={`${onClick} ${card.id}`} />;
 }
 
 export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewType; onClick?: string | undefined }): ReactElement {
@@ -378,7 +379,7 @@ export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewTy
 					<TrainerCard data={trainer} />
 				))}
 			</div>
-			<div style={{ zoom: '60%', color: 'white' }}>
+			<div style={{ zoom: '60%' }}>
 				{[TOKEN_TYPE.COLORLESS, TOKEN_TYPE.FIRE, TOKEN_TYPE.GRASS, TOKEN_TYPE.WATER, TOKEN_TYPE.DARK, TOKEN_TYPE.DRAGON].map(
 					tokenType => (
 						<TypeTokenCount type={tokenType} count={board.tokens[tokenType]} />
@@ -402,7 +403,7 @@ export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewTy
 							data={card}
 							onClick={
 								onClick && !(view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD && card.id === view.id)
-									? `${onClick} ! wild`
+									? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_WILD}`
 									: undefined
 							}
 						/>
@@ -426,18 +427,16 @@ const RESOURCE_STYLES: CSSProperties = {
 
 export function ActivePlayer({ data, action, onClick }: { data: PlayerData; action: ActionState; onClick: string }): ReactElement {
 	const cards = Object.entries(data.cards.groupBy(card => card.type)) as [TOKEN_TYPE, Card[]][];
-	const tokensEl = (Object.entries(data.tokens) as [TOKEN_TYPE, number][]).filterMap(([tokenType, count]) =>
-		count ? <TypeTokenCount type={tokenType} count={count} /> : null
-	);
+	const tokensEl = (Object.entries(data.tokens) as [TOKEN_TYPE, number][]).filterMap(([tokenType, count]) => {
+		if (count) return <TypeTokenCount type={tokenType} count={count} />;
+	});
 
 	return (
-		<div style={{ color: 'white', fontSize: 36 }}>
+		<div style={{ fontSize: 36 }}>
 			<div style={{ display: 'inline-block', verticalAlign: 'top' }}>
-				<div style={{ background: '#1119', borderRadius: 12, padding: '8px 12px', margin: 12 }}>
-					<b style={{ fontSize: 48 }}>{data.points}</b>
-					<small>/15</small>
-					<br />
-					<Username name={data.name} clickable />
+				<div className="header" style={{ height: 'auto', position: 'initial', borderRadius: 12, padding: '8px 12px', margin: 12 }}>
+					<Username name={data.name} clickable />(<b style={{ fontSize: 48 }}>{data.points}</b>
+					<small>/15</small>)
 				</div>
 				<div style={{ zoom: '75%' }}>
 					{data.trainers.map(trainer => (
@@ -445,14 +444,14 @@ export function ActivePlayer({ data, action, onClick }: { data: PlayerData; acti
 					))}
 				</div>
 			</div>
-			<div style={{ display: 'inline-block', verticalAlign: 'top' }}>
+			<div style={{ display: 'inline-block', verticalAlign: 'top', color: 'white' }}>
 				<div style={RESOURCE_STYLES}>
-					<div style={{ textAlign: 'start', fontSize: 48 }}>Tokens:</div>
-					{tokensEl.length ? tokensEl : '-'}
+					<div style={{ textAlign: 'start', fontSize: 48 }}>Tokens:{tokensEl.length === 0 ? ' - ' : null}</div>
+					{tokensEl}
 				</div>
 			</div>
 			{cards.length || data.reserved.length ? (
-				<div style={{ display: 'inline-block', verticalAlign: 'top', margin: '0 8px' }}>
+				<div style={{ display: 'inline-block', verticalAlign: 'top', margin: '0 8px', color: 'white' }}>
 					{cards.length ? (
 						<details open style={{ display: 'inline-block', verticalAlign: 'top' }}>
 							<summary style={{ ...RESOURCE_STYLES, cursor: 'pointer' }}>
@@ -473,7 +472,7 @@ export function ActivePlayer({ data, action, onClick }: { data: PlayerData; acti
 							onClick={
 								action.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS &&
 								!(action.action === VIEW_ACTION_TYPE.CLICK_RESERVE && card.id === action.id)
-									? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_RESERVE} ${card.id}`
+									? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_RESERVE}`
 									: undefined
 							}
 							reserved
@@ -493,7 +492,7 @@ export function ActivePlayer({ data, action, onClick }: { data: PlayerData; acti
 				)
 			) : null}
 			{action.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS ? (
-				<div>
+				<div style={{ color: 'white' }}>
 					<p>
 						{
 							// eslint-disable-next-line max-len -- TODO $T
@@ -514,24 +513,26 @@ export function ActivePlayer({ data, action, onClick }: { data: PlayerData; acti
 
 export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 	const cards = data.cards.groupBy(card => card.type);
-	cards[TOKEN_TYPE.DRAGON] = data.reserved;
+	if (data.reserved.length > 0) cards[TOKEN_TYPE.DRAGON] = data.reserved;
 
 	const cardsEl = (Object.entries(cards) as [TOKEN_TYPE, Card[]][]).map(([tokenType, { length: count }]) => (
 		<TypeTokenCount type={tokenType} count={count} square />
 	));
-	const tokensEl = (Object.entries(data.tokens) as [TOKEN_TYPE, number][]).filterMap(([tokenType, count]) =>
-		count ? <TypeTokenCount type={tokenType} count={count} /> : null
-	);
+	const tokensEl = (Object.entries(data.tokens) as [TOKEN_TYPE, number][]).filterMap(([tokenType, count]) => {
+		if (count) return <TypeTokenCount type={tokenType} count={count} />;
+	});
 
 	return (
-		<div style={{ color: 'white', border: '1px solid', display: 'inline-block', borderRadius: 8 }}>
-			<div style={{ display: 'inline-block' }}>
+		<div style={{ border: '1px solid', display: 'inline-block', borderRadius: 8 }}>
+			<div style={{ display: 'inline-block', verticalAlign: 'top' }}>
 				<div style={{ margin: 12 }}>
 					<span
+						className="header"
 						style={{
+							height: 'auto',
+							position: 'initial',
 							fontWeight: 'bold',
 							fontSize: 36,
-							background: '#1119',
 							borderRadius: 8,
 							padding: '8px 12px',
 							textDecoration: data.out ? 'line-through' : undefined,
@@ -546,14 +547,14 @@ export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 					))}
 				</div>
 			</div>
-			<div style={{ display: 'inline-block' }}>
+			<div style={{ display: 'inline-block', color: 'white' }}>
 				<div style={RESOURCE_STYLES}>
-					<div style={{ textAlign: 'start', fontSize: 48 }}>Cards:</div>
-					{cardsEl.length ? cardsEl : '-'}
+					<div style={{ textAlign: 'start', fontSize: 48 }}>Cards:{cardsEl.length === 0 ? ' - ' : null}</div>
+					{cardsEl}
 				</div>
 				<div style={RESOURCE_STYLES}>
-					<div style={{ textAlign: 'start', fontSize: 48 }}>Tokens:</div>
-					{tokensEl.length ? tokensEl : '-'}
+					<div style={{ textAlign: 'start', fontSize: 48 }}>Tokens:{tokensEl.length === 0 ? ' - ' : null}</div>
+					{tokensEl}
 				</div>
 			</div>
 		</div>
@@ -564,7 +565,7 @@ export function render(this: This, ctx: RenderCtx): ReactElement {
 	return (
 		<center>
 			<h1 style={ctx.dimHeader ? { color: 'gray' } : {}}>{ctx.header}</h1>
-			<div style={{ zoom: '50%' }}>
+			<div style={{ zoom: ctx.view.type === 'spectator' && ctx.view.action === VIEW_ACTION_TYPE.GAME_END ? '30%' : '50%' }}>
 				<BaseBoard board={ctx.board} onClick={ctx.view.active ? this.msg : undefined} view={ctx.view} />
 				<div style={{ height: 48 }} />
 				{ctx.view.active ? (
@@ -578,9 +579,11 @@ export function render(this: This, ctx: RenderCtx): ReactElement {
 						if (ctx.view.active && turn === ctx.view.self)
 							return (
 								<div
+									className="header"
 									style={{
+										height: 'auto',
+										position: 'initial',
 										fontSize: 36,
-										background: '#1119',
 										borderRadius: 8,
 										padding: '12px 24px',
 										display: 'inline-block',

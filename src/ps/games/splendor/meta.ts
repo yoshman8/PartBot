@@ -12,6 +12,7 @@ export const meta: Meta = {
 	maxSize: 4,
 
 	autostart: false,
-	pokeTimer: fromHumanTime('1 min'),
-	timer: fromHumanTime('2 min'),
+	// TODO
+	pokeTimer: fromHumanTime('4 min'),
+	timer: fromHumanTime('6 min'),
 };

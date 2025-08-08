@@ -129,14 +129,12 @@ export class Splendor extends BaseGame<State> {
 	findWildCard(ctx: string): ActionResponse<Card> {
 		const card = this.lookupCard(ctx);
 		if (!card) return { success: false, error: `${ctx} is not a valid card.` as ToTranslate };
-		if (
-			!Object.values(this.state.board.cards)
-				.flatMap(cards => cards.wild)
-				.some(wildCard => wildCard.id === card.id)
-		)
-			return { success: false, error: `Cannot access ${ctx} for the desired action.` as ToTranslate };
+		const foundCard = Object.values(this.state.board.cards)
+			.flatMap(cards => cards.wild)
+			.find(wildCard => wildCard.id === card.id);
 
-		return { success: true, data: card };
+		if (!foundCard) return { success: false, error: `Cannot access ${card.name} for the desired action.` as ToTranslate };
+		return { success: true, data: foundCard };
 	}
 
 	getTokens(tokens: Partial<TokenCount>, playerData: PlayerData): void {
@@ -180,7 +178,7 @@ export class Splendor extends BaseGame<State> {
 				const card = this.lookupCard(actionCtx);
 				if (!card) throw new ChatError(`${actionCtx} is not available to reserve.` as ToTranslate);
 
-				const canAfford = this.canAfford(card.cost, playerData.tokens);
+				const canAfford = this.canAfford(card.cost, playerData.tokens, playerData.cards);
 
 				this.state.actionState = {
 					action: VIEW_ACTION_TYPE.CLICK_RESERVE,
@@ -196,7 +194,7 @@ export class Splendor extends BaseGame<State> {
 
 				const card = lookupCard.data;
 
-				const canBuy = this.canAfford(card.cost, playerData.tokens);
+				const canBuy = this.canAfford(card.cost, playerData.tokens, playerData.cards);
 				const canReserve = this.canReserve(player);
 
 				if (!canBuy && !canReserve) throw new ChatError(`You can neither buy nor reserve ${card.name}.` as ToTranslate);
@@ -214,12 +212,12 @@ export class Splendor extends BaseGame<State> {
 				if (this.state.actionState.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
 					throw new ChatError("You don't need to discard any tokens yet." as ToTranslate);
 				const toDiscard = this.state.actionState.discard;
-				const tokensToDiscard = this.parseTokens(actionCtx);
+				const tokensToDiscard = this.parseTokens(actionCtx, true);
 				const discarding = Object.values(tokensToDiscard).sum();
 
 				if (discarding < toDiscard)
 					throw new ChatError(`You must discard at least ${toDiscard} tokens! ${discarding} isn't enough.` as ToTranslate);
-				if (!this.canAfford(tokensToDiscard, playerData.tokens))
+				if (!this.canAfford(tokensToDiscard, playerData.tokens, null))
 					throw new ChatError("Unfortunately it doesn't look like you don't have those to discard." as ToTranslate);
 
 				this.spendTokens(tokensToDiscard, playerData);
@@ -232,12 +230,20 @@ export class Splendor extends BaseGame<State> {
 				if (!getCard.success) throw new ChatError(getCard.error);
 				const card = getCard.data;
 
-				const paying = this.parseTokens(tokenInfo);
-				if (!this.canAfford(card.cost, paying))
-					throw new ChatError(`The given tokens are insufficient to purchase ${card.name}!` as ToTranslate);
+				const paying = this.parseTokens(tokenInfo, true);
+				const canAfford = this.canAfford(card.cost, paying, playerData.cards);
+				if (!canAfford) throw new ChatError(`The given tokens are insufficient to purchase ${card.name}!` as ToTranslate);
+
+				if (Object.values(paying).sum() !== Object.values(canAfford.recommendation).sum())
+					throw new ChatError(`You're overpaying!` as ToTranslate);
+
+				playerData.cards.push(card);
+
+				const stage = this.state.board.cards[card.tier];
+				stage.wild.remove(card);
+				stage.wild.push(...stage.deck.splice(0, 1));
 
 				this.spendTokens(paying, playerData);
-				playerData.cards.push(card);
 				break;
 			}
 
@@ -251,27 +257,32 @@ export class Splendor extends BaseGame<State> {
 							'You may only reserve a card if a Dragon token is available AND you have less than three cards currently reserved.') as ToTranslate
 					);
 				}
+				const card = getCard.data;
 
-				playerData.reserved.push(getCard.data);
+				playerData.reserved.push(card);
+
+				const stage = this.state.board.cards[card.tier];
+				stage.wild.remove(card);
+				stage.wild.push(...stage.deck.splice(0, 1));
+
 				this.getTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
 				break;
 			}
 
 			case ACTIONS.BUY_RESERVE: {
 				const [mon, tokenInfo = ''] = actionCtx.lazySplit(' ', 1);
-				const getCard = this.findWildCard(mon);
-				if (!getCard.success) throw new ChatError(getCard.error);
 				const baseCard = this.lookupCard(mon);
 				if (!baseCard) throw new ChatError(`${mon} is not a valid card!` as ToTranslate);
 				const reservedCard = playerData.reserved.find(card => card.id === baseCard.id);
 				if (!reservedCard) throw new ChatError(`You have not reserved ${baseCard.name}!` as ToTranslate);
 
-				const paying = this.parseTokens(tokenInfo);
-				if (!this.canAfford(reservedCard.cost, paying))
+				const paying = this.parseTokens(tokenInfo, true);
+				if (!this.canAfford(reservedCard.cost, paying, playerData.cards))
 					throw new ChatError(`The given tokens are insufficient to purchase ${reservedCard.name}!` as ToTranslate);
 
 				this.spendTokens(paying, playerData);
 				playerData.reserved.remove(reservedCard);
+				playerData.cards.push(reservedCard);
 				break;
 			}
 
@@ -288,6 +299,12 @@ export class Splendor extends BaseGame<State> {
 			}
 		}
 
+		// TODO: Add a UI for one-at-a-time
+		// TODO: Trainers aren't checking properly
+		const newTrainers = this.state.board.trainers.filter(trainer => this.canAfford(trainer.types, {}, playerData.cards));
+		this.state.board.trainers.remove(...newTrainers);
+		playerData.trainers.push(...newTrainers);
+
 		playerData.points = playerData.cards.map(card => card.points).sum() + playerData.trainers.map(trainer => trainer.points).sum();
 
 		this.state.actionState = { action: VIEW_ACTION_TYPE.NONE };
@@ -297,22 +314,31 @@ export class Splendor extends BaseGame<State> {
 			const count = Object.values(playerData.tokens).sum();
 			this.state.actionState = { action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS, discard: count - MAX_TOKEN_COUNT };
 			this.update(user.id);
+			this.backup();
 		} else this.endTurn();
 	}
 
-	canAfford(cost: Partial<TokenCount>, funds: TokenCount): { recommendation: TokenCount } | false {
-		const availableDragons = funds[TOKEN_TYPE.DRAGON] - (cost[TOKEN_TYPE.DRAGON] ?? 0);
+	canAfford(cost: Partial<TokenCount>, funds: Partial<TokenCount>, cards: Card[] | null): { recommendation: TokenCount } | false {
+		const cardCounts = cards?.groupBy(card => card.type) ?? {};
+
+		const spendingPower = Object.fromEntries(
+			AllTokenTypes.map(type => [type, (funds[type] ?? 0) + (cardCounts[type]?.length ?? 0)])
+		) as TokenCount;
+
+		const availableDragons = spendingPower[TOKEN_TYPE.DRAGON] - (cost[TOKEN_TYPE.DRAGON] ?? 0);
 		if (availableDragons < 0) return false;
 
 		const neededDragons = TokenTypes.filterMap(type => {
 			const needed = cost[type];
-			if (needed && needed > funds[type]) return needed - funds[type];
+			if (needed && needed > spendingPower[type]) return needed - spendingPower[type];
 		}).sum();
 
 		if (neededDragons > availableDragons) return false;
 		return {
 			recommendation: {
-				...Object.fromEntries(TokenTypes.map(type => [type, Math.min(cost[type] ?? Infinity, funds[type])])),
+				...Object.fromEntries(
+					TokenTypes.map(type => [type, Math.min(cost[type] ? cost[type] - (cardCounts[type]?.length ?? 0) : 0, funds[type] ?? 0)])
+				),
 				[TOKEN_TYPE.DRAGON]: neededDragons,
 			} as TokenCount,
 		};
@@ -323,24 +349,18 @@ export class Splendor extends BaseGame<State> {
 	}
 
 	/**
-	 * @example this.parseTokens('C1DF0w5G'); // { colorless: 1, water: 5, ... }
+	 * @example this.parseTokens('colorless 1'); // { colorless: 1... }
 	 */
-	parseTokens(input: string): TokenCount {
-		const tokenNames: Record<string, TOKEN_TYPE> = {
-			C: TOKEN_TYPE.COLORLESS,
-			D: TOKEN_TYPE.DARK,
-			F: TOKEN_TYPE.FIRE,
-			G: TOKEN_TYPE.GRASS,
-			W: TOKEN_TYPE.WATER,
-		};
+	parseTokens(input: string, allowDragon?: boolean): TokenCount {
 		const tokens = Object.fromEntries(AllTokenTypes.map(type => [type, 0])) as TokenCount;
-		input.split(/(?=[a-z])/i).forEach(entry => {
-			const char = entry[0].toUpperCase();
-			const amt = +entry.substring(1);
+		input.split(/ /i).forEach(entry => {
+			const type = entry.replace(/[^a-z]/gi, '').toLowerCase() as TOKEN_TYPE;
+			const amt = +(entry.match(/\d/) ?? '0');
 			if (!(amt >= 0 && amt < 10)) throw new ChatError(`${entry.substring(1)} is not a valid count.` as ToTranslate);
-			const type = tokenNames[char];
-			if (!type) throw new ChatError(`${char} is not a recognized type id.` as ToTranslate);
-			tokens[tokenNames[char]] += amt;
+			if (!AllTokenTypes.includes(type)) throw new ChatError(`${type} is not a recognized type.` as ToTranslate);
+			if (type === TOKEN_TYPE.DRAGON && !allowDragon)
+				throw new ChatError("Dragon isn't allowed as a valid token here." as ToTranslate);
+			tokens[type] += amt;
 		});
 		return tokens;
 	}
@@ -425,7 +445,7 @@ export class Splendor extends BaseGame<State> {
 		if (side) {
 			if (side === this.turn) view = { type: 'player', active: true, self: side, ...this.state.actionState };
 			else view = { type: 'player', active: false };
-		} else view = { type: 'spectator', active: false };
+		} else view = { type: 'spectator', active: false, action: this.winCtx ? VIEW_ACTION_TYPE.GAME_END : null };
 
 		const ctx: RenderCtx = { id: this.id, board: this.state.board, players: this.state.playerData, turns: this.turns, view };
 

@@ -13,7 +13,7 @@ export type Metadata = {
 export type Card = {
 	id: string;
 	name: string;
-	tier: number;
+	tier: 1 | 2 | 3;
 	type: TOKEN_TYPE;
 	points: number;
 	cost: Partial<TokenCount>;
@@ -68,6 +68,7 @@ export type ViewType =
 	| {
 			type: 'spectator';
 			active: false;
+			action: VIEW_ACTION_TYPE.GAME_END | null;
 	  }
 	| {
 			type: 'player';
