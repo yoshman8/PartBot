@@ -73,6 +73,7 @@ export type ViewType =
 	| {
 			type: 'player';
 			active: false;
+			self: string;
 	  }
 	| (ActivePlayer & ActionState);
 
@@ -93,6 +94,4 @@ export type RenderCtx = {
 	players: Record<string, PlayerData>;
 };
 
-export type WinCtx =
-	| ({ type: 'win' } & Record<'winner' | 'loser', { name: string; id: string; turn: string; score: number }>)
-	| { type: 'draw' };
+export type WinCtx = { type: 'win'; winner: { name: string; id: string; points: number } } | { type: 'draw' };

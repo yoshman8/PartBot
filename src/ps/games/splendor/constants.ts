@@ -15,6 +15,7 @@ export enum ACTIONS {
 	BUY_RESERVE = 'buy-reserve',
 	RESERVE = 'reserve',
 	DRAW = 'draw',
+	PASS = 'pass',
 }
 
 export enum VIEW_ACTION_TYPE {

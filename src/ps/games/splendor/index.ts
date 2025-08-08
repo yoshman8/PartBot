@@ -10,7 +10,7 @@ import {
 	VIEW_ACTION_TYPE,
 } from '@/ps/games/splendor/constants';
 import metadata from '@/ps/games/splendor/metadata.json';
-import { render } from '@/ps/games/splendor/render';
+import { render, renderLog } from '@/ps/games/splendor/render';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 
@@ -165,6 +165,7 @@ export class Splendor extends BaseGame<State> {
 		const playerData = this.state.playerData[player.turn];
 		const [action, actionCtx] = ctx.lazySplit(' ', 1);
 
+		let logEntry: Log;
 		// VIEW_ACTION_TYPES update the user's state while staying on the same turn. Use 'return'.
 		// The exception to this is TOO_MANY_TOKENS, which is deferred from ACTIONS and uses 'break'.
 		// ACTIONS are actual actions, and will end the turn and stuff if valid. Use 'break'.
@@ -212,15 +213,16 @@ export class Splendor extends BaseGame<State> {
 				if (this.state.actionState.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
 					throw new ChatError("You don't need to discard any tokens yet." as ToTranslate);
 				const toDiscard = this.state.actionState.discard;
-				const tokensToDiscard = this.parseTokens(actionCtx, true);
-				const discarding = Object.values(tokensToDiscard).sum();
+				const tokens = this.parseTokens(actionCtx, true);
+				const discarding = Object.values(tokens).sum();
 
 				if (discarding < toDiscard)
 					throw new ChatError(`You must discard at least ${toDiscard} tokens! ${discarding} isn't enough.` as ToTranslate);
-				if (!this.canAfford(tokensToDiscard, playerData.tokens, null))
+				if (!this.canAfford(tokens, playerData.tokens, null))
 					throw new ChatError("Unfortunately it doesn't look like you don't have those to discard." as ToTranslate);
 
-				this.spendTokens(tokensToDiscard, playerData);
+				this.spendTokens(tokens, playerData);
+				logEntry = { turn: player.turn, time: new Date(), action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS, ctx: { discard: tokens } };
 				break;
 			}
 
@@ -244,6 +246,8 @@ export class Splendor extends BaseGame<State> {
 				stage.wild.push(...stage.deck.splice(0, 1));
 
 				this.spendTokens(paying, playerData);
+
+				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.BUY, ctx: { id: card.id, cost: paying } };
 				break;
 			}
 
@@ -266,6 +270,8 @@ export class Splendor extends BaseGame<State> {
 				stage.wild.push(...stage.deck.splice(0, 1));
 
 				this.getTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
+
+				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.RESERVE, ctx: { id: card.id } };
 				break;
 			}
 
@@ -283,6 +289,8 @@ export class Splendor extends BaseGame<State> {
 				this.spendTokens(paying, playerData);
 				playerData.reserved.remove(reservedCard);
 				playerData.cards.push(reservedCard);
+
+				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.BUY_RESERVE, ctx: { id: reservedCard.id, cost: paying } };
 				break;
 			}
 
@@ -291,6 +299,13 @@ export class Splendor extends BaseGame<State> {
 				const validateTokens = this.getTokenIssues(tokens);
 				if (!validateTokens.success) throw new ChatError(validateTokens.error);
 				this.getTokens(tokens, playerData);
+
+				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.DRAW, ctx: { tokens } };
+				break;
+			}
+
+			case ACTIONS.PASS: {
+				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.PASS, ctx: null };
 				break;
 			}
 
@@ -300,10 +315,11 @@ export class Splendor extends BaseGame<State> {
 		}
 
 		// TODO: Add a UI for one-at-a-time
-		// TODO: Trainers aren't checking properly
 		const newTrainers = this.state.board.trainers.filter(trainer => this.canAfford(trainer.types, {}, playerData.cards));
 		this.state.board.trainers.remove(...newTrainers);
 		playerData.trainers.push(...newTrainers);
+		if (logEntry.ctx) logEntry.ctx.trainers = newTrainers.map(trainer => trainer.id);
+		this.chatLog(logEntry);
 
 		playerData.points = playerData.cards.map(card => card.points).sum() + playerData.trainers.map(trainer => trainer.points).sum();
 
@@ -337,7 +353,10 @@ export class Splendor extends BaseGame<State> {
 		return {
 			recommendation: {
 				...Object.fromEntries(
-					TokenTypes.map(type => [type, Math.min(cost[type] ? cost[type] - (cardCounts[type]?.length ?? 0) : 0, funds[type] ?? 0)])
+					TokenTypes.map(type => [
+						type,
+						Math.min(cost[type] ? Math.max(cost[type] - (cardCounts[type]?.length ?? 0), 0) : 0, funds[type] ?? 0),
+					])
 				),
 				[TOKEN_TYPE.DRAGON]: neededDragons,
 			} as TokenCount,
@@ -418,33 +437,27 @@ export class Splendor extends BaseGame<State> {
 			if (type === 'dq') return this.$T('GAME.ENDED_AUTOMATICALLY', { game: this.meta.name, id: this.id });
 			return this.$T('GAME.ENDED', { game: this.meta.name, id: this.id });
 		}
-		// const scores = this.count();
-		// if (scores.W === scores.B) {
-		// 	this.winCtx = { type: 'draw' };
-		// 	return this.$T('GAME.DRAW', { players: [this.players.W.name, this.players.B.name].list(this.$T) });
-		// }
-		// const winningSide = scores.W > scores.B ? 'W' : 'B';
-		// const winner = this.players[winningSide];
-		// const loser = this.players[this.getNext(winningSide)];
-		// this.winCtx = {
-		// 	type: 'win',
-		// 	winner: { ...winner, score: scores[winningSide] },
-		// 	loser: { ...loser, score: scores[this.getNext(winningSide)] },
-		// };
-		// return this.$T('GAME.WON_AGAINST', {
-		// 	winner: `${winner.name} (${winningSide})`,
-		// 	game: this.meta.name,
-		// 	loser: `${loser.name} (${this.getNext(winningSide)})`,
-		// 	ctx: ` [${scores[winningSide]}-${scores[this.getNext(winningSide)]}]`,
-		// });
-		return 'TODO' as ToTranslate;
+		const sorted = Object.values(this.state.playerData).sort((p1, p2) => {
+			if (p1.points !== p2.points) return p2.points - p1.points;
+			if (p1.cards.length !== p2.cards.length) return p1.cards.length - p2.cards.length;
+			return [-1, 1].random(this.prng)!;
+		});
+
+		const winner = sorted[0];
+		this.winCtx = { type: 'win', winner };
+		return this.$T('GAME.WON', { winner: winner.name });
+	}
+
+	chatLog(log: Log): void {
+		this.log.push(log);
+		this.room.sendHTML(...renderLog(log, this));
 	}
 
 	render(side: Turn | null) {
 		let view: ViewType;
 		if (side) {
 			if (side === this.turn) view = { type: 'player', active: true, self: side, ...this.state.actionState };
-			else view = { type: 'player', active: false };
+			else view = { type: 'player', active: false, self: side };
 		} else view = { type: 'spectator', active: false, action: this.winCtx ? VIEW_ACTION_TYPE.GAME_END : null };
 
 		const ctx: RenderCtx = { id: this.id, board: this.state.board, players: this.state.playerData, turns: this.turns, view };
@@ -454,7 +467,7 @@ export class Splendor extends BaseGame<State> {
 		} else if (side === this.turn) {
 			ctx.header = this.$T('GAME.YOUR_TURN');
 		} else if (side) {
-			ctx.header = this.$T('GAME.WAITING_FOR_OPPONENT');
+			ctx.header = this.$T('GAME.WAITING_FOR_PLAYER', { player: this.players[this.turn!]?.name });
 			ctx.dimHeader = true;
 		} else if (this.turn) {
 			const current = this.players[this.turn];
