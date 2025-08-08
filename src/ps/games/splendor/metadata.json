@@ -293,10 +293,9 @@
 			"name": "Eldegoss",
 			"tier": 2,
 			"type": "grass",
-			"points": 2,
+			"points": 3,
 			"cost": {
-				"grass": 3,
-				"water": 5
+				"grass": 6
 			},
 			"art": "eldegoss.png"
 		},
@@ -389,9 +388,10 @@
 			"name": "Grovyle",
 			"tier": 2,
 			"type": "grass",
-			"points": 3,
+			"points": 2,
 			"cost": {
-				"grass": 6
+				"grass": 3,
+				"water": 5
 			},
 			"art": "grovyle.png"
 		},
