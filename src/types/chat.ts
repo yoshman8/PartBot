@@ -112,7 +112,7 @@ export type PSCommand = {
 	/**
 	 * Command syntax.
 	 * Disable explicitly by passing null.
-	 * Start with a CMD
+	 * Start with a CMD.
 	 */
 	syntax: string | null;
 	/**
