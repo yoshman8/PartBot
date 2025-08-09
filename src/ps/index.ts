@@ -1,6 +1,6 @@
 import { Client } from 'ps-client';
 
-import { password, rooms, username } from '@/config/ps';
+import { avatar, password, rooms, username } from '@/config/ps';
 import { IS_ENABLED } from '@/enabled';
 import { registerEvent } from '@/ps/handlers';
 import { startPSCron } from '@/ps/handlers/cron';
@@ -8,7 +8,7 @@ import { transformHTML } from '@/ps/handlers/html';
 import loadPS from '@/ps/loaders';
 import { Logger } from '@/utils/logger';
 
-const PS = new Client({ username, password, rooms, transformHTML });
+const PS = new Client({ username, password, rooms, transformHTML, avatar });
 PS.on('login', () => Logger.log(`Connected to PS! [${username}]`));
 
 if (IS_ENABLED.PS) loadPS().then(() => PS.connect());
