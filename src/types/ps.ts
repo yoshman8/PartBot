@@ -24,7 +24,7 @@ export type PSRoomConfig = {
 	roomName?: string;
 	auth?: { [key in AuthKey]?: string[] } | null;
 	tour?: {
-		timer?: [bool: number] | [autoStart: number, autoDQ: number] | null;
+		timer?: [autoStart: number, autoDQ: number] | null;
 	} | null;
 	whitelist?: string[] | null;
 	blacklist?: string[] | null;

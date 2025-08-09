@@ -89,6 +89,11 @@ export function tourHandler(this: Client, roomId: string, line: string, isIntro?
 					`${ROLES.PS_TOURS} A ${name} tournament has been created in [the room](https://play.pokemonshowdown.com/petmods)!`
 				);
 			}
+			const roomConfig = PSRoomConfigs[roomId];
+			if (roomConfig?.tour?.timer) {
+				const [autostart, autoDQ] = roomConfig.tour.timer;
+				room.send(`/tour autostart ${autostart}\n/tour autodq ${autoDQ}`);
+			}
 			break;
 		}
 		case 'battlestart': {
