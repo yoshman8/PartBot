@@ -1,6 +1,6 @@
 import { PSGames } from '@/cache';
 import { gameCache } from '@/cache/games';
-import { prefix } from '@/config/ps';
+import { isGlobalBot, prefix } from '@/config/ps';
 import { uploadGame } from '@/database/games';
 import { BOT_LOG_CHANNEL } from '@/discord/constants/servers/boardgames';
 import { getChannel } from '@/discord/loaders/channels';
@@ -126,8 +126,12 @@ export class BaseGame<State extends BaseState> {
 
 		this.meta = ctx.meta;
 		this.renderCtx = {
-			msg: `/msgroom ${ctx.room.id},/botmsg ${this.parent.status.userid},${prefix}@${ctx.id}`,
-			simpleMsg: `/msgroom ${ctx.room.id},/botmsg ${this.parent.status.userid},${prefix}@${ctx.room.id} ${ctx.meta.id}`,
+			msg: isGlobalBot
+				? `/botmsg ${this.parent.status.userid},${prefix}@${ctx.id}`
+				: `/msgroom ${ctx.room.id},/botmsg ${this.parent.status.userid},${prefix}@${ctx.id}`,
+			simpleMsg: isGlobalBot
+				? `/botmsg ${this.parent.status.userid},${prefix}@${ctx.room.id} ${ctx.meta.id}`
+				: `/msgroom ${ctx.room.id},/botmsg ${this.parent.status.userid},${prefix}@${ctx.room.id} ${ctx.meta.id}`,
 		};
 
 		if (ctx.meta.turns) this.turns = Object.keys(ctx.meta.turns);

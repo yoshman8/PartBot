@@ -10,3 +10,5 @@ export const password = process.env.PS_PASSWORD || 'password';
 export const rooms = process.env.PS_ROOMS?.split(',') || ['botdevelopment'];
 export const prefix = process.env.PREFIX || ',';
 export const avatar = process.env.PS_AVATAR || 'supernerd';
+
+export const isGlobalBot = process.env.PS_GLOBAL_BOT === 'true';

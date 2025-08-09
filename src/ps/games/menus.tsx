@@ -1,6 +1,6 @@
 import { PSGames } from '@/cache';
 import { gameCache } from '@/cache/games';
-import { prefix } from '@/config/ps';
+import { isGlobalBot, prefix } from '@/config/ps';
 import { i18n } from '@/i18n';
 import { getLanguage } from '@/i18n/language';
 import { Button, Username } from '@/utils/components/ps';
@@ -100,7 +100,11 @@ export function renderBackups(room: PSRoomTranslated, meta: Meta): ReactElement 
 					return (
 						<div>
 							<Button
-								value={`/msgroom ${room.id},/botmsg ${room.parent.status.userid},${prefix}@${room.id} ${meta.id} unstash ${game.id}`}
+								value={
+									isGlobalBot
+										? `/botmsg ${room.parent.status.userid},${prefix}@${room.id} ${meta.id} unstash ${game.id}`
+										: `/msgroom ${room.id},/botmsg ${room.parent.status.userid},${prefix}@${room.id} ${meta.id} unstash ${game.id}`
+								}
 							>
 								{$T('GAME.LABELS.UNSTASH')}
 							</Button>
