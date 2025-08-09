@@ -451,22 +451,32 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 					message.target.sendHTML(staffHTML, { ...opts, rank: '%' });
 				},
 			},
-			stash: {
-				name: 'stash',
-				aliases: ['yeet'],
-				help: 'Stashes a game to store it for later.',
-				perms: Symbol.for('games.create'),
-				syntax: 'CMD [game ref]',
-				async run({ message, arg, $T }) {
-					const { game } = getGame(arg, { action: 'any' }, { room: message.target, $T });
-					delete PSGames[gameId]?.[game.id];
-					game.pokeTimer?.cancel();
-					game.timer?.cancel();
-					message.reply($T('GAME.STASHED', { id: game.id }));
-				},
-			},
 			...conditionalCommand(
 				Game.meta.players === 'many',
+				{
+					name: 'closepage',
+					help: 'Closes a page without leaving the game.',
+					syntax: 'CMD [game ref]',
+					async run({ message, arg, $T }) {
+						const { game } = getGame(arg, { action: 'leave', user: message.author.id }, { room: message.target, $T });
+						if (!game.getPlayer(message.author)) throw new ChatError($T('GAME.INVALID_INPUT'));
+						message.reply(`/closehtmlpage ${message.author.id}, ${game.id}` as NoTranslate);
+					},
+				},
+				{
+					name: 'stash',
+					aliases: ['yeet'],
+					help: 'Stashes a game to store it for later.',
+					perms: Symbol.for('games.create'),
+					syntax: 'CMD [game ref]',
+					async run({ message, arg, $T }) {
+						const { game } = getGame(arg, { action: 'any' }, { room: message.target, $T });
+						delete PSGames[gameId]?.[game.id];
+						game.pokeTimer?.cancel();
+						game.timer?.cancel();
+						message.reply($T('GAME.STASHED', { id: game.id }));
+					},
+				},
 				{
 					name: 'backups',
 					aliases: ['bu', 'b'],
