@@ -1,26 +1,35 @@
 import { DICTIONARY, ScrabbleMods } from '@/ps/games/scrabble/constants';
 
+import type { BaseModEntry } from '@/ps/games/mods';
 import type { LetterMetadata, WordScore } from '@/ps/games/scrabble/types';
 
 export const ScrabbleModData: Record<
 	ScrabbleMods,
-	{ name: string; dict: DICTIONARY; aliases?: string[]; points?: LetterMetadata; counts?: LetterMetadata }
+	BaseModEntry & { dict: DICTIONARY; points?: LetterMetadata; counts?: LetterMetadata }
 > = {
 	[ScrabbleMods.CSW19]: {
+		id: ScrabbleMods.CSW19,
 		name: 'CSW19',
+		desc: 'Base Scrabble with the CSW19 dictionary.',
 		dict: DICTIONARY.CSW19,
 	},
 	[ScrabbleMods.CSW21]: {
+		id: ScrabbleMods.CSW21,
 		name: 'CSW21',
+		desc: 'Base Scrabble with the CSW21 dictionary.',
 		dict: DICTIONARY.CSW21,
 	},
 	[ScrabbleMods.CSW24]: {
+		id: ScrabbleMods.CSW24,
 		name: 'CSW24',
+		desc: 'Base Scrabble with the CSW24 dictionary.',
 		dict: DICTIONARY.CSW24,
 		aliases: ['current'],
 	},
 	[ScrabbleMods.ODS8]: {
+		id: ScrabbleMods.ODS8,
 		name: 'ODS8',
+		desc: 'French variant of Scrabble.',
 		dict: DICTIONARY.ODS8,
 		counts: {
 			A: 9,
@@ -83,16 +92,22 @@ export const ScrabbleModData: Record<
 		aliases: ['ods', 'french', 'francais', 'franais'],
 	},
 	[ScrabbleMods.CLABBERS]: {
+		id: ScrabbleMods.CLABBERS,
 		name: 'Clabbers',
+		desc: 'Scrabble, but all anagrams are valid, too!',
 		dict: DICTIONARY.CLABBERS,
 	},
 	[ScrabbleMods.POKEMON]: {
+		id: ScrabbleMods.POKEMON,
 		name: 'Pokémon',
+		desc: 'Scrabble but Pokéwords are allowed (with bonus scoring)!',
 		dict: DICTIONARY.CSW24,
 		aliases: ['pokemod', 'pokmon', 'pkmn', 'mons'],
 	},
 	[ScrabbleMods.CRAZYMONS]: {
+		id: ScrabbleMods.CRAZYMONS,
 		name: 'CRAZYMONS',
+		desc: 'PokéScrabble, but INsANe BONuSEs!',
 		dict: DICTIONARY.CSW24,
 		aliases: ['crazy'],
 	},

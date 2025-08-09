@@ -9,6 +9,7 @@ import { ChatError } from '@/utils/chatError';
 
 import type { NoTranslate, ToTranslate, TranslationFn } from '@/i18n/types';
 import type { CommonGame } from '@/ps/games/game';
+import type { BaseModEntry } from '@/ps/games/mods';
 import type { PSCommand } from '@/types/chat';
 import type { Room } from 'ps-client';
 import type { HTMLopts } from 'ps-client/classes/common';
@@ -397,6 +398,31 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 								if (!mod) throw new ChatError($T('GAME.MOD_NOT_FOUND', { mod: ctx }));
 								const applied = game.applyMod(mod);
 								if (applied.success) message.reply(applied.data);
+							},
+						},
+						mods: {
+							name: 'mods',
+							aliases: ['modslist', 'listmods', 'modoptions'],
+							help: `Lists the mods available for ${Game.meta.name}.`,
+							syntax: 'CMD',
+							async run({ broadcastHTML }) {
+								const mods = Game.meta.mods!;
+								broadcastHTML(
+									<div>
+										{Object.values(mods.data)
+											.filter((mod): mod is BaseModEntry => !!mod)
+											.map(mod => (
+												<details>
+													<summary>
+														<b>{mod.name}</b>
+														{mod.aliases?.length ? ` (${mod.aliases.join('/')})` : null}
+													</summary>
+													{mod.desc}
+												</details>
+											))
+											.space(<br />)}
+									</div>
+								);
 							},
 						},
 					} satisfies PSCommand['children'])

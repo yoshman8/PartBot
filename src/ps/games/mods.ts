@@ -1,7 +1,8 @@
 import { toId } from '@/tools';
 
 export type ModEnum<Mod extends string> = Record<string, Mod>;
-export type ModData<Mod extends string> = Partial<Record<Mod, { aliases?: string[] | undefined }>>;
+export type BaseModEntry = { id: string; name: string; desc: string; aliases?: string[] | undefined };
+export type ModData<Mod extends string> = Partial<Record<Mod, BaseModEntry>>;
 
 export function parseMod<Mod extends string>(input: string, mods: ModEnum<Mod>, modData: ModData<Mod>): Mod | null {
 	const query = toId(input);
