@@ -18,8 +18,8 @@ if (IS_ENABLED.WEB) {
 	Promise.resolve(connection)
 		.then(() => loadStatic(app))
 		.then(() => loadAPI(app))
-		.then(() => loadUI(app))
 		.then(() => loadBundles(app))
+		.then(() => loadUI(app))
 		.then(() => app.listen(port, () => Logger.log(`Web is running!`)));
 }
 

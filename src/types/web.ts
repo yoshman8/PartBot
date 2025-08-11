@@ -1,14 +1,15 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import type { ReactElement } from 'react';
 
 export type UIRouteHandler = (
 	req: Request,
-	res: { [key in keyof Response as key extends 'render' ? never : key]: Response[key] } & { render: Render; getBundle: GetBundle }
+	res: { [key in keyof Response as key extends 'render' ? never : key]: Response[key] } & { render: Render; getBundle: GetBundle },
+	next: NextFunction
 ) => void;
 
 // Note: This isn't the actual type that's imported, but since we override render to support JSX...
 export type APIRoute = {
-	handler: (req: Request, res: Response) => void;
+	handler: (req: Request, res: Response, next: NextFunction) => void;
 	verb?: 'get' | 'post';
 };
 
