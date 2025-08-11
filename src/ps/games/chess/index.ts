@@ -136,7 +136,7 @@ export class Chess extends BaseGame<State> {
 		}
 		if (this.lib.isDraw()) {
 			this.winCtx = { type: 'draw' };
-			return this.$T('GAME.DRAW', { players: [this.players.W, this.players.B.name].list(this.$T) });
+			return this.$T('GAME.DRAW', { players: [this.players.W.name, this.players.B.name].list(this.$T) });
 		}
 		if (this.lib.isCheckmate()) {
 			const winner = this.players[this.turn!];
