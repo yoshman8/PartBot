@@ -131,7 +131,7 @@ function ShipGrid({
 		);
 	};
 
-	return <Table board={ships} labels={{ row: 'A-Z', col: '1-9' }} Cell={Cell} style={{ fontSize: '0.8em' }} />;
+	return <Table board={ships} labels={{ row: 'A-Z', col: '1-9' }} Cell={Cell} style={{ fontSize: '0.8em', color: 'white' }} />;
 }
 
 function ShipInput({ msg, filled }: { msg: string; filled?: string[] | null }): ReactElement {
