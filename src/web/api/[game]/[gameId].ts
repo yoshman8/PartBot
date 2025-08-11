@@ -6,10 +6,11 @@ import type { RequestHandler } from 'express';
 
 export const handler: RequestHandler = async (req, res) => {
 	if (!IS_ENABLED.DB) throw new Error('Database is disabled.');
-	const { gameId } = req.params as { gameId: string };
+	const { game: gameType, gameId } = req.params as { game: string; gameId: string };
 	try {
-		const game = await getGameById('othello', gameId);
-		res.json(game!.toJSON());
+		const game = await getGameById(gameType, gameId);
+		const serializable = game!.toJSON();
+		res.json({ ...serializable, log: serializable.log.map(entry => JSON.parse(entry)) });
 	} catch (err: unknown) {
 		if (err instanceof Error) throw new WebError(err.message, 404);
 	}

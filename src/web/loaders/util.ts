@@ -11,7 +11,7 @@ export async function readFileStructure(root: string): Promise<Record<string, st
 			const label = file
 				.replace(/\.tsx?$/, '')
 				.replace('/index', '')
-				.replace(/\[(\w+)]/, ':$1');
+				.replace(/\[(\w+)]/g, ':$1');
 			acc[`/${label}`] = path.join(root, file);
 			return acc;
 		}, {});
