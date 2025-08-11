@@ -170,7 +170,7 @@ export class Chess extends BaseGame<State> {
 				iconURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Chess_tile_kl.svg/1200px-Chess_tile_kl.svg.png',
 			})
 			.setTitle(`${this.players.W.name} vs ${this.players.B.name}`)
-			.setURL(this.lichessURL);
+			.setURL(await this.getURL());
 	}
 
 	render(side: Turn | null) {
