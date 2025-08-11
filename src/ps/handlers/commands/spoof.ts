@@ -41,7 +41,7 @@ export function spoof(argData: string, message: PSMessage, $T: TranslationFn): P
 	});
 }
 
-export const getSpoofMessage = (text: string, room: string, PS: Client, partial?: Partial<PSMessage>): PSMessage => {
+export const getSpoofMessage = (text: string, room: string, PS: Client, partial?: Partial<PSMessage>): Message => {
 	const time = new Date();
 
 	const message = new Message({
@@ -57,7 +57,7 @@ export const getSpoofMessage = (text: string, room: string, PS: Client, partial?
 
 	if (!partial) return message;
 
-	Object.entries(partial).forEach(<Key extends keyof PSMessage & string>([key, value]: [key: string, value: PSMessage[Key]]) => {
+	Object.entries(partial).forEach(<Key extends keyof Message & string>([key, value]: [key: string, value: Message[Key]]) => {
 		message[key as Key] = value;
 	});
 	return message;

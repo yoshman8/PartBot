@@ -1,5 +1,6 @@
 import type refText from '@/i18n/languages/english';
-import type { Message, Room } from 'ps-client';
+import type { PSMessage } from '@/types/ps';
+import type { Room } from 'ps-client';
 
 export type Translations = typeof refText;
 
@@ -38,8 +39,8 @@ type ReplaceStringWithTranslatedText<TParams extends readonly unknown[]> = {
 type ForceTranslations<F> = F extends (...args: infer T) => infer R ? (...args: ReplaceStringWithTranslatedText<T>) => R : never;
 
 type MessageReplyKeys = 'reply' | 'privateReply';
-export type PSMessageTranslated = Omit<Message, MessageReplyKeys> & {
-	[key in MessageReplyKeys]: ForceTranslations<Message[key]>;
+export type PSMessageTranslated = Omit<PSMessage, MessageReplyKeys> & {
+	[key in MessageReplyKeys]: ForceTranslations<PSMessage[key]>;
 };
 
 type RoomSendKeys = 'send' | 'privateSend';
