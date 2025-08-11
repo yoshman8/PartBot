@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -a && source .env && set +a
 if [[ "$USE_WEB" = 'true' ]]
