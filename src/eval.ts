@@ -1,3 +1,5 @@
+// The eval function is stored at the top level in order to be able to resolve relative imports consistently.
+
 import _fsSync, { promises as _fs } from 'fs';
 import _path from 'path';
 import { inspect } from 'util';
