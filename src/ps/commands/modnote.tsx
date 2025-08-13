@@ -55,6 +55,7 @@ export const command: PSCommand = {
 				if (!userInRoom) throw new ChatError($T('NOT_IN_ROOM'));
 				if (!isStaff(userInRoom)) throw new ChatError($T('ACCESS_DENIED'));
 
+				const nonGlobalPrefix = !isGlobalBot ? `/msgroom ${targetRoom.id},` : '';
 				const [h, s, l] = HSL(message.author.id).hsl;
 				targetRoom.sendHTML(
 					<div className="infobox">
@@ -72,7 +73,13 @@ export const command: PSCommand = {
 						<br />
 						<span style={{ color: '#444', fontSize: 10 }}>
 							Note: Only users ranked % and above can see this. Use{' '}
-							<span style={{ background: '#4444', border: '1px dashed #8884' }}>{prefix}modnote</span> in my DMs to reply.
+							<Button
+								value={`${nonGlobalPrefix}/botmsg ${message.parent.status.userid},${prefix}modnote open ${targetRoom.id}`}
+								style={{ background: '#8881', borderWidth: 1, color: '#555a' }}
+							>
+								<small>{prefix}modnote</small>
+							</Button>{' '}
+							to reply.
 						</span>
 					</div>,
 					{ rank: '*' }
@@ -94,13 +101,15 @@ export const command: PSCommand = {
 				<>
 					Which room?
 					<br />
-					{rooms.map(room => (
-						<Button
-							value={`${!isGlobalBot ? `/msgroom ${room.id},` : ''}/botmsg ${message.parent.status.userid},${prefix}modnote open ${room.id}`}
-						>
-							{room.title}
-						</Button>
-					))}
+					{rooms
+						.map(room => (
+							<Button
+								value={`${!isGlobalBot ? `/msgroom ${room.id},` : ''}/botmsg ${message.parent.status.userid},${prefix}modnote open ${room.id}`}
+							>
+								{room.title}
+							</Button>
+						))
+						.space(' ')}
 				</>
 			);
 			return;
