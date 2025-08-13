@@ -75,7 +75,7 @@ export const command: PSCommand = {
 							Note: Only users ranked % and above can see this. Use{' '}
 							<Button
 								value={`${nonGlobalPrefix}/botmsg ${message.parent.status.userid},${prefix}modnote open ${targetRoom.id}`}
-								style={{ background: '#8881', borderWidth: 1, color: '#555a' }}
+								style={{ background: '#8881', border: '1px dashed #666', borderRadius: 4, color: '#444' }}
 							>
 								<small>{prefix}modnote</small>
 							</Button>{' '}
