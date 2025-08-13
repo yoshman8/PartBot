@@ -1,3 +1,5 @@
+import { getScrabbleDex } from '@/database/games';
+import { Board } from '@/ps/commands/points';
 import { parseMod } from '@/ps/games/mods';
 import { checkWord } from '@/ps/games/scrabble/checker';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
@@ -5,7 +7,36 @@ import { ScrabbleModData } from '@/ps/games/scrabble/mods';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 
+import type { ScrabbleDexEntry } from '@/database/games';
+import type { ToTranslate, TranslationFn } from '@/i18n/types';
 import type { PSCommand } from '@/types/chat';
+import type { ReactElement } from 'react';
+
+export function renderScrabbleDexLeaderboard(entries: ScrabbleDexEntry[], $T: TranslationFn): ReactElement {
+	const usersData = Object.values(entries.groupBy(entry => entry.by) as Record<string, ScrabbleDexEntry[]>).map(entries => {
+		const name = entries.findLast(entry => entry.byName)?.byName ?? entries[0].by;
+		const count = entries.length;
+		const points = entries.map(entry => Math.max(1, entry.pokemon.length - 4)).sum();
+		return { name, count, points };
+	});
+	const sortedData = usersData
+		.sortBy(({ count, points }) => [points, count], 'desc')
+		.map(({ name, count, points }, index, data) => {
+			let rank = index;
+
+			const getPointsKey = (entry: { count: number; points: number }): string => [entry.count, entry.points].join(',');
+			const userPointsKey = getPointsKey({ count, points });
+
+			while (rank > 0) {
+				const prev = data[rank - 1];
+				if (getPointsKey(prev) !== userPointsKey) break;
+				rank--;
+			}
+
+			return [rank + 1, name, count, points];
+		});
+	return <Board headers={['#', $T('COMMANDS.POINTS.HEADERS.USER'), 'Unique', 'Points']} data={sortedData} />;
+}
 
 export const command: PSCommand[] = [
 	{
@@ -34,6 +65,35 @@ export const command: PSCommand[] = [
 		categories: ['game'],
 		async run({ broadcastHTML }) {
 			broadcastHTML([['e6', 'f4'], ['e3', 'f6'], ['g5', 'd6'], ['e7', 'f5'], ['c5']].map(turns => turns.join(', ')).join('<br />'));
+		},
+	},
+	{
+		name: 'scrabbledex',
+		help: 'Shows your current Scrabble Dex for UGO.',
+		syntax: 'CMD',
+		flags: { allowPMs: true },
+		categories: ['game'],
+		async run({ message, broadcastHTML, $T }) {
+			const allEntries = await getScrabbleDex();
+			const results = allEntries!.filter(entry => entry.by === message.author.id);
+			const grouped = results.map(res => res.pokemon.toUpperCase()).groupBy(mon => mon.length);
+
+			if (!results.length) throw new ChatError("You don't have any entries yet!" as ToTranslate);
+
+			broadcastHTML(
+				<details>
+					<summary>ScrabbleDex ({results.length} entries)</summary>
+					{Object.entries(grouped).filterMap(([length, mons]) => {
+						if (mons)
+							return (
+								<p>
+									{length} ({mons.length}): {mons.list($T)}
+								</p>
+							);
+					})}
+				</details>,
+				{ name: `scrabbledex-${message.author.id}` }
+			);
 		},
 	},
 ];

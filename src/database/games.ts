@@ -87,11 +87,12 @@ export async function getGameById(gameType: string, gameId: string): Promise<Hyd
 	return game;
 }
 
-type ScrabbleDexEntry = {
+export type ScrabbleDexEntry = {
 	pokemon: string;
 	pokemonName: string;
 	num: number;
 	by: string;
+	byName: string | null;
 	at: Date;
 	gameId: string;
 	mod: string;
@@ -119,6 +120,7 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 						pokemonName: mon.name,
 						num: mon.num,
 						by: log.turn,
+						byName: game.players[log.turn]?.name ?? null,
 						at: log.time,
 						won: winners.includes(log.turn),
 					};
