@@ -97,7 +97,7 @@ export class BaseGame<State extends BaseState> {
 
 	onAddPlayer?(user: User, ctx: string): ActionResponse;
 	onAfterAddPlayer?(player: Player): void;
-	onLeavePlayer?(player: Player, ctx: string | User): ActionResponse;
+	onLeavePlayer?(player: Player, ctx: string | User): ActionResponse<'end' | null>;
 	onForfeitPlayer?(player: Player, ctx: string | User): ActionResponse;
 	onReplacePlayer?(turn: BaseState['turn'], withPlayer: User): ActionResponse;
 	onAfterReplacePlayer?(player: Player): void;
@@ -247,6 +247,7 @@ export class BaseGame<State extends BaseState> {
 	}
 	backup(): void {
 		if (this.meta.players === 'single') return; // Don't back up single-player games
+		if (this.endedAt) return;
 		const backup = this.serialize();
 		gameCache.set({ id: this.id, room: this.roomid, game: this.meta.id, backup, at: Date.now() });
 	}
@@ -345,7 +346,7 @@ export class BaseGame<State extends BaseState> {
 					cb: () => {
 						const playersLeft = Object.values(this.players).filter((player: Player) => !player.out);
 						if (playersLeft.length <= 1) this.end('dq');
-						else if (this.turn === player.turn) this.nextPlayer(); // Needs to be run AFTER consumer has finished DQing
+						else if (this.turn === player.turn) this.endTurn(); // Needs to be run AFTER consumer has finished DQing
 						this.backup();
 					},
 				},
@@ -356,7 +357,12 @@ export class BaseGame<State extends BaseState> {
 		delete this.players[player.turn];
 		return {
 			success: true,
-			data: { message: this.$T(staffAction ? 'GAME.REMOVED' : 'GAME.LEFT', { player: player.name }) },
+			data: {
+				message: this.$T(staffAction ? 'GAME.REMOVED' : 'GAME.LEFT', { player: player.name }),
+				cb: () => {
+					if (removePlayer?.data === 'end') this.end('dq');
+				},
+			},
 		};
 	}
 
@@ -377,7 +383,7 @@ export class BaseGame<State extends BaseState> {
 		this.players[newTurn] = { ...oldPlayer, ...assign, turn: newTurn };
 		if (!this.meta.turns) this.turns.splice(this.turns.indexOf(turn), 1, newTurn);
 		if (this.turn === turn) this.turn = newTurn;
-		this.spectators.remove(oldPlayer.id);
+		this.spectators.remove(oldPlayer.id, withPlayer.id);
 		this.onAfterReplacePlayer?.(this.players[newTurn]);
 		this.backup();
 		return { success: true, data: this.$T('GAME.SUB', { in: withPlayer.name, out: oldPlayer.name }) };
@@ -410,7 +416,7 @@ export class BaseGame<State extends BaseState> {
 		if (tryStart?.success === false) return tryStart;
 		this.started = true;
 		if (!this.turns.length) this.turns = Object.keys(this.players).shuffle(this.prng);
-		this.nextPlayer();
+		this.endTurn();
 		this.startedAt = new Date();
 		this.setTimer('Game started');
 		this.onAfterStart?.();
@@ -425,7 +431,7 @@ export class BaseGame<State extends BaseState> {
 	}
 
 	// Increments turn as needed and backs up state.
-	nextPlayer(): State['turn'] | null {
+	endTurn(): State['turn'] | null {
 		let current = this.turn;
 		do {
 			current = this.getNext(current);

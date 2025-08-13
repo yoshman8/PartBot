@@ -10,6 +10,10 @@ declare global {
 		count(): Record<T & (string | number), number>;
 		count(map: true): Map<T, number>;
 		group(size: number): T[][];
+		groupBy<Key extends string>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
+		/**
+		 * filterMap runs map. Only results that are NOT exactly 'undefined' are returned.
+		 */
 		filterMap<X>(cb: (element: T, index: number, thisArray: T[]) => X | undefined): X[];
 		list($T?: TranslationFn | string): string;
 		random(rng?: RNGSource): T | null;
@@ -19,26 +23,37 @@ declare global {
 		/** Default order is ascending */
 		sortBy(getSort: ((term: T, thisArray: T[]) => unknown) | null, dir?: 'asc' | 'desc'): T[];
 		space<S = unknown>(spacer: S): (T | S)[];
-		sum(): T;
+		sum(): T extends number ? number : never;
 		unique(): T[];
 	}
 	interface ReadonlyArray<T> {
 		access<V = ArrayAtom<T>>(pos: number[]): V;
 		count(): Record<T & (string | number), number>;
 		count(map: true): Map<T, number>;
+		/**
+		 * filterMap runs map. Only results that are NOT exactly 'undefined' are returned.
+		 */
 		filterMap<X>(cb: (element: T, index: number, thisArray: T[]) => X | undefined): X[];
 		group(size: number): T[][];
+		groupBy<Key extends string>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
 		list($T?: TranslationFn): string;
 		random(rng?: RNGSource): T | null;
 		sample(amount: number, rng?: RNGSource): T[];
 		space<S = unknown>(spacer: S): (T | S)[];
-		sum(): T;
+		sum(): T extends number ? number : never;
 		unique(): T[];
 	}
 
 	interface String {
 		gsub(match: RegExp, replace: string | ((arg: string, ...captures: string[]) => string)): string;
-		lazySplit(match: string | RegExp, cases: number): string[];
+
+		/**
+		 * Split the string exactly as many times as needed.
+		 * @param matcher Pattern/string to split by.
+		 * @param cases Number of cases to split.
+		 * @example 'a b c'.lazySplit(' ', 1); // ['a', 'bc']
+		 */
+		lazySplit(matcher: string | RegExp, cases: number): string[];
 	}
 
 	interface Number {
@@ -117,6 +132,19 @@ Object.defineProperties(Array.prototype, {
 			}
 			// TODO
 			return [];
+		},
+	},
+	groupBy: {
+		enumerable: false,
+		writable: false,
+		configurable: false,
+		value: function <T, Key extends string>(this: T[], classification: (element: T) => Key): Partial<Record<Key, T[]>> {
+			return this.reduce<Partial<Record<Key, T[]>>>((acc, current) => {
+				const key = classification(current);
+				if (acc[key]) acc[key].push(current);
+				else acc[key] = [current];
+				return acc;
+			}, {});
 		},
 	},
 	list: {

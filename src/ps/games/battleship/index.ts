@@ -79,7 +79,7 @@ export class Battleship extends BaseGame<State> {
 				this.room.sendHTML(...renderMove(logEntry, this));
 				if (this.state.ready.A === true && this.state.ready.B === true) {
 					this.state.allReady = true;
-					this.nextPlayer();
+					this.endTurn();
 				} else {
 					this.update(player.id);
 				}
@@ -122,7 +122,7 @@ export class Battleship extends BaseGame<State> {
 					this.winCtx = { type: 'win', winner: player, loser: this.players[opponent] };
 					this.end();
 				}
-				this.nextPlayer();
+				this.endTurn();
 				this.update();
 				break;
 			}

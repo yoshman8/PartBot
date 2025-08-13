@@ -112,7 +112,7 @@ export class Chess extends BaseGame<State> {
 		this.cleanup();
 		this.state.pgn = this.lib.pgn();
 
-		this.nextPlayer();
+		this.endTurn();
 	}
 
 	// Cleans up stuff like selections and draw offers

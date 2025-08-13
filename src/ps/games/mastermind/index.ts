@@ -53,7 +53,7 @@ export class Mastermind extends BaseGame<State> {
 		if (this.state.board.length >= this.state.cap) {
 			return this.end('loss');
 		}
-		this.nextPlayer();
+		this.endTurn();
 	}
 	guess(guess: Guess): GuessResult {
 		if (this.state.board.length === 0 && !this.setBy) this.closeSignups();
