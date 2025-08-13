@@ -62,5 +62,9 @@
 		"husky": "^8.0.3",
 		"livereload": "^0.9.3",
 		"prettier": "^3.3.3"
+	},
+	"optionalDependencies": {
+		"@swc/core-linux-x64-gnu": "^1.2.160",
+		"@parcel/watcher-linux-x64-glibc": "^2.5.1"
 	}
 }
