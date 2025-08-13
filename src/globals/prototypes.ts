@@ -10,7 +10,7 @@ declare global {
 		count(): Record<T & (string | number), number>;
 		count(map: true): Map<T, number>;
 		group(size: number): T[][];
-		groupBy<Key extends string>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
+		groupBy<Key extends string | number>(classification: (element: T) => Key): Partial<Record<Key, T[]>>;
 		/**
 		 * filterMap runs map. Only results that are NOT exactly 'undefined' are returned.
 		 */
@@ -218,14 +218,29 @@ Object.defineProperties(Array.prototype, {
 		enumerable: false,
 		writable: false,
 		configurable: false,
-		value: function <T, W = number>(this: T[], getSort: ((term: T, thisArray: T[]) => W) | null, dir?: 'asc' | 'desc'): T[] {
+		value: function <T, W extends string | number | string[] | number[] = number>(
+			this: T[],
+			getSort: ((term: T, thisArray: T[]) => W) | null,
+			dir?: 'asc' | 'desc'
+		): T[] {
 			const cache = this.reduce<Map<T, W>>((map, term) => {
 				map.set(term, getSort ? getSort(term, this) : (term as unknown as W));
 				return map;
 			}, new Map());
-			return this.sort((a, b) =>
-				cache.get(a)! === cache.get(b)! ? 0 : (dir === 'desc' ? cache.get(a)! < cache.get(b)! : cache.get(b)! < cache.get(a)!) ? 1 : -1
-			);
+			return this.sort((a, b) => {
+				const cachedA = cache.get(a)!;
+				const cachedB = cache.get(b)!;
+				const lookupA: (string | number)[] = Array.isArray(cachedA) ? cachedA : [cachedA];
+				const lookupB: (string | number)[] = Array.isArray(cachedB) ? cachedB : [cachedB];
+
+				for (let i = 0; i < lookupA.length; i++) {
+					if (lookupA[i] === lookupB[i]) continue;
+					const AisBigger = lookupA[i] > lookupB[i];
+					return (dir === 'desc' ? -1 : 1) * (AisBigger ? 1 : -1);
+				}
+
+				return 0;
+			});
 		},
 	},
 	space: {
