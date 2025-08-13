@@ -5,7 +5,7 @@ import { uploadGame } from '@/database/games';
 import { BOT_LOG_CHANNEL } from '@/discord/constants/servers/boardgames';
 import { getChannel } from '@/discord/loaders/channels';
 import { IS_ENABLED } from '@/enabled';
-import { renderCloseSignups, renderSignups } from '@/ps/games/render';
+import { Small, renderCloseSignups, renderSignups } from '@/ps/games/render';
 import { toHumanTime, toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { Logger } from '@/utils/logger';
@@ -484,7 +484,7 @@ export class BaseGame<State extends BaseState> {
 		this.clearTimer();
 		this.update();
 		if (this.started && (this.meta.players === 'many' || this.canBroadcastFinish?.())) {
-			this.room.sendHTML(this.render(null));
+			this.room.sendHTML(Small({ children: this.render(null) }));
 		}
 		this.endedAt = new Date();
 		this.room.send(message);

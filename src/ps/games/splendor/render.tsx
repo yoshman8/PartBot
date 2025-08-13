@@ -682,7 +682,7 @@ export function render(this: This, ctx: RenderCtx): ReactElement {
 	return (
 		<center>
 			<h1 style={ctx.dimHeader ? { color: 'gray' } : {}}>{ctx.header}</h1>
-			<div style={{ zoom: ctx.view.type === 'spectator' && ctx.view.action === VIEW_ACTION_TYPE.GAME_END ? '30%' : '50%' }}>
+			<div style={{ zoom: '50%' }}>
 				<BaseBoard board={ctx.board} onClick={ctx.view.active ? this.msg : undefined} view={ctx.view} />
 				<div style={{ height: 48 }} />
 				{ctx.view.type === 'player' ? (

@@ -4,6 +4,10 @@ import type { BaseGame } from '@/ps/games/game';
 import type { BaseState } from '@/ps/games/types';
 import type { CSSProperties, HTMLProps, ReactElement, ReactNode } from 'react';
 
+export function Small({ children }: { children: ReactNode }): ReactElement {
+	return <div style={{ zoom: '60%' }}>{children}</div>;
+}
+
 export function renderSignups<State extends BaseState>(this: BaseGame<State>, staff: boolean): ReactElement | null {
 	const startable = this.meta.autostart === false && this.startable();
 	if (staff && !startable) return null;
