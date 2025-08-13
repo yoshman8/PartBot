@@ -142,6 +142,7 @@ export const command: PSCommand = {
 	name: 'help',
 	help: 'Shows the help for a command.',
 	syntax: 'CMD [command]',
+	aliases: ['h'],
 	flags: { allowPMs: true },
 	categories: ['utility'],
 	async run({ message, broadcastHTML, args, checkPermissions, $T }) {
