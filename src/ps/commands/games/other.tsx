@@ -16,8 +16,9 @@ import type { ReactElement } from 'react';
 export function renderScrabbleDexLeaderboard(entries: ScrabbleDexEntry[], $T: TranslationFn): ReactElement {
 	const usersData = Object.values(entries.groupBy(entry => entry.by) as Record<string, ScrabbleDexEntry[]>).map(entries => {
 		const name = entries.findLast(entry => entry.byName)?.byName ?? entries[0].by;
-		const count = entries.length;
-		const points = entries.map(entry => Math.max(1, entry.pokemon.length - 4)).sum();
+		const uniqueMons = entries.map(entry => entry.pokemon).unique();
+		const count = uniqueMons.length;
+		const points = uniqueMons.map(mon => Math.max(1, mon.length - 4)).sum();
 		return { name, count, points };
 	});
 	const sortedData = usersData
@@ -70,16 +71,17 @@ export const command: PSCommand[] = [
 	},
 	{
 		name: 'scrabbledex',
-		help: 'Shows your current Scrabble Dex for UGO.',
-		syntax: 'CMD',
+		help: "Shows a user's current Scrabble Dex for UGO.",
+		syntax: 'CMD [user?]',
 		flags: { allowPMs: true },
 		categories: ['game'],
-		async run({ message, broadcastHTML, $T }) {
+		async run({ message, broadcastHTML, arg, $T }) {
+			const target = toId(arg) || message.author.id;
 			const allEntries = await getScrabbleDex();
-			const results = allEntries!.filter(entry => entry.by === message.author.id);
+			const results = allEntries!.filter(entry => entry.by === target);
 			const grouped = mapValues(
 				results.map(res => res.pokemon.toUpperCase()).groupBy(mon => mon.length),
-				mons => mons?.sort()
+				mons => mons?.unique().sort()
 			);
 
 			if (!results.length) throw new ChatError("You don't have any entries yet!" as ToTranslate);
