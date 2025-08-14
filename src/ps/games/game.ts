@@ -178,6 +178,8 @@ export class BaseGame<State extends BaseState> {
 						break;
 					}
 					case 'prngCalls': {
+						// This is needed since we still have some game backups that don't have prngCalls; can safely remove after a while
+						if (typeof this.prngCalls !== 'number') break;
 						this.prngCalls = parsedBackup.prngCalls;
 						// Call prng() the required number of times
 						this.prngCalls.times(() => this.prng());
