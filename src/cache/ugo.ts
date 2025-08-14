@@ -59,6 +59,7 @@ export function addUGOPoints(this: Client, pointsData: Record<string, number>, g
 	});
 	UGO_POINTS.set(current);
 
-	// TODO: Test this
-	uploadToPastie(JSON.stringify(commit, null, 2)).then(url => this.addUser('ugo').send(`;setpointsbyjson boardgames, ${url}`));
+	uploadToPastie(JSON.stringify(commit, null, 2)).then(url => {
+		this.addUser('ugo').send(`;setpointsfromjson boardgames, ${url}`);
+	});
 }

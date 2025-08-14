@@ -1,9 +1,11 @@
+import { addUGOPoints, getUGOPlayed, setUGOPlayed } from '@/cache/ugo';
 import { getScrabbleDex } from '@/database/games';
 import { Board } from '@/ps/commands/points';
 import { parseMod } from '@/ps/games/mods';
 import { checkWord } from '@/ps/games/scrabble/checker';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
+import { CHAIN_REACTION_META } from '@/ps/ugo/constants';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { mapValues } from '@/utils/map';
@@ -106,12 +108,27 @@ export const command: PSCommand[] = [
 		name: 'ugoexternal',
 		help: 'Adds points for external UGO games.',
 		syntax: 'CMD [winner], [...others]',
+		flags: { allowPMs: true },
 		perms: message => message.author.id === 'partprofessor',
 		categories: ['game'],
-		async run({ arg }) {
+		async run({ arg, message }) {
 			const players = arg.split(',');
-			const winner = toId(players[0]);
-			// TODO
+			const winner = players[0];
+
+			const pointsData = Object.fromEntries(
+				players
+					.filter(player => {
+						const prevCount = getUGOPlayed(CHAIN_REACTION_META.id, player);
+						setUGOPlayed(CHAIN_REACTION_META.id, player, prevCount + 1);
+						return prevCount <= CHAIN_REACTION_META.ugo.cap;
+					})
+					.map(player => [
+						player.trim(),
+						player === winner ? CHAIN_REACTION_META.ugo.points.win(players.length) : CHAIN_REACTION_META.ugo.points.loss,
+					])
+			);
+
+			addUGOPoints.call(message.parent, pointsData, CHAIN_REACTION_META.id);
 		},
 	},
 ];

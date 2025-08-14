@@ -281,7 +281,6 @@ export class BaseGame<State extends BaseState> {
 			if (staffHTML) this.room.sendHTML(staffHTML, { name: this.id, rank: '+', change: true });
 		}
 	}
-	// TODO: Handle max players state
 	renderCloseSignups?(): ReactElement;
 	closeSignups(change = true): void {
 		const closeSignupsHTML = (this.renderCloseSignups ?? renderCloseSignups).bind(this)();
