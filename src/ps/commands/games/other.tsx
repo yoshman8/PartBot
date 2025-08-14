@@ -6,7 +6,7 @@ import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
-import { mapValues } from '@/utils/mapValues';
+import { mapValues } from '@/utils/map';
 
 import type { ScrabbleDexEntry } from '@/database/games';
 import type { ToTranslate, TranslationFn } from '@/i18n/types';
@@ -100,6 +100,18 @@ export const command: PSCommand[] = [
 				</details>,
 				{ name: `scrabbledex-${message.author.id}` }
 			);
+		},
+	},
+	{
+		name: 'ugoexternal',
+		help: 'Adds points for external UGO games.',
+		syntax: 'CMD [winner], [...others]',
+		perms: message => message.author.id === 'partprofessor',
+		categories: ['game'],
+		async run({ arg }) {
+			const players = arg.split(',');
+			const winner = toId(players[0]);
+			// TODO
 		},
 	},
 ];

@@ -13,6 +13,10 @@ export const Timers: { [key: string]: Timer } = {};
 // Showdown cache
 export const PSRoomConfigs: Partial<{ [key: string]: PSRoomConfig }> = {};
 export const PSCommands: { [key: string]: PSCommand & { path: string } } = {};
+/**
+ * Aliases delimited by ' '
+ * @example 'voice': 'promote voice'
+ */
 export const PSAliases: { [key: string]: string } = {};
 export const PSAltCache: Partial<{ [key: string]: { from: string; to: string; at: Date } }> = {};
 export const PSSeenCache: Partial<{ [key: string]: { id: string; name: string; at: Date; seenIn: string[] } }> = {};

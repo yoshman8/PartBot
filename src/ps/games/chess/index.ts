@@ -27,7 +27,7 @@ export class Chess extends BaseGame<State> {
 	lib: ChessLib;
 
 	log: Log[] = [];
-	winCtx?: WinCtx | { type: EndType };
+	declare winCtx?: WinCtx | { type: EndType };
 	cache: Record<string, Record<Turn, number>> = {};
 	lichessURL: string | null = null;
 

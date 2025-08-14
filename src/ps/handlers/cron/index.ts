@@ -1,7 +1,8 @@
 import { CronJob } from 'cron';
 
 import { PSCronJobs } from '@/cache';
-import { register } from '@/ps/handlers/cron/hindi';
+import { register as registerHindi } from '@/ps/handlers/cron/hindi';
+import { register as registerUGO } from '@/ps/handlers/cron/ugo';
 
 import type { TimeZone } from '@/ps/handlers/cron/constants';
 import type { Client } from 'ps-client';
@@ -21,7 +22,8 @@ export class PSCronJobManager {
 
 export function startPSCron(this: Client): PSCronJobManager {
 	const Jobs = new PSCronJobManager();
-	register.call(this, Jobs);
+	registerHindi.call(this, Jobs);
+	registerUGO.call(this, Jobs);
 
 	// Kill existing cron jobs
 	PSCronJobs.manager?.kill();

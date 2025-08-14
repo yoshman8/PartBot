@@ -15,7 +15,7 @@ export { meta } from '@/ps/games/snakesladders/meta';
 
 export class SnakesLadders extends BaseGame<State> {
 	log: Log[] = [];
-	winCtx?: WinCtx | { type: EndType };
+	declare winCtx?: WinCtx | { type: EndType };
 	frames: ReactNode[] = [];
 
 	ladders: [number, number][] = [

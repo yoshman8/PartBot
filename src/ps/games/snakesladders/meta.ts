@@ -15,4 +15,13 @@ export const meta: Meta = {
 	autostart: false,
 	pokeTimer: fromHumanTime('30 sec'),
 	timer: fromHumanTime('45 sec'),
+
+	// UGO-CODE
+	ugo: {
+		cap: 20,
+		points: {
+			win: 3,
+			loss: 2,
+		},
+	},
 };

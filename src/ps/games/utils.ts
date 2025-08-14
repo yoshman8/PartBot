@@ -1,5 +1,9 @@
 import { usePersistedCache } from '@/cache/persisted';
 
+import type { CommonGame } from '@/ps/games/game';
+import type { Meta } from '@/ps/games/types';
+import type { UGOBoardGames } from '@/ps/ugo/constants';
+
 const idCache = usePersistedCache('gameId');
 
 // IDs are meant to be 4-character alphanumeric codes preceded with a '#'.
@@ -15,4 +19,10 @@ export function generateId(): string {
 
 export function createGrid<T>(x: number, y: number, fill: (x: number, y: number) => T) {
 	return Array.from({ length: x }).map((_, i) => Array.from({ length: y }).map((_, j) => fill(i, j)));
+}
+
+export function checkUGO(
+	game: CommonGame
+): game is CommonGame & { meta: Meta & { id: UGOBoardGames; ugo: NonNullable<Meta['ugo']> } } {
+	return game.roomid === 'boardgames' && !!game.meta.ugo;
 }

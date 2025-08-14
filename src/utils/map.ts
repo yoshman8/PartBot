@@ -7,3 +7,13 @@ export function mapValues<Input extends object, Mapped>(
 		Mapped
 	>;
 }
+
+export function mapKeys<Input extends object, Mapped extends string | number>(
+	input: Input,
+	map: (key: keyof Input) => Mapped
+): Record<Mapped, Input[keyof Input]> {
+	return Object.fromEntries(Object.entries(input).map(([key, value]) => [map(key as keyof Input), value])) as Record<
+		Mapped,
+		Input[keyof Input]
+	>;
+}

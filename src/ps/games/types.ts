@@ -29,6 +29,15 @@ export type Meta = Readonly<
 		autostart?: boolean;
 		timer?: number | false;
 		pokeTimer?: number | false | undefined;
+
+		// UGO-CODE
+		/**
+		 * Metadata for automatic UGO points.
+		 */
+		ugo: {
+			points: { win: number | ((playerCount: number) => number); loss: number; draw?: number };
+			cap: number;
+		} | null;
 	} & ({ themes: Record<string, Theme>; defaultTheme: string } | { themes?: undefined; defaultTheme?: undefined })
 >;
 

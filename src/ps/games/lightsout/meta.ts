@@ -8,4 +8,7 @@ export const meta: Meta = {
 	aliases: ['lo'],
 	abbr: 'lo',
 	players: 'single',
+
+	// UGO-CODE
+	ugo: null,
 };

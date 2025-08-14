@@ -35,7 +35,7 @@ export class Scrabble extends BaseGame<State> {
 	log: Log[] = [];
 	passCount: number | null = null;
 	selected: Point | null = null;
-	winCtx?: WinCtx | { type: EndType };
+	declare winCtx?: WinCtx | { type: EndType };
 	mod: ScrabbleMods | null = null;
 
 	constructor(ctx: BaseContext) {
