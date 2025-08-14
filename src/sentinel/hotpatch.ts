@@ -18,7 +18,19 @@ import { Logger } from '@/utils/logger';
 import type { NoTranslate } from '@/i18n/types';
 import type { Sentinel } from '@/sentinel/types';
 
-export type HotpatchType = 'code' | 'data' | string;
+export type HotpatchType =
+	| 'code'
+	| 'sentinel'
+	| 'logger'
+	| 'i18n'
+	| 'showdown'
+	| 'data'
+	| 'roomconfig'
+	| 'cron'
+	| 'secrets'
+	| 'commands'
+	| 'web'
+	| string;
 
 export async function hotpatch(this: Sentinel, hotpatchType: HotpatchType, by: string | symbol): Promise<void> {
 	if (!hotpatchType) throw new TypeError('Missing hotpatchType');
@@ -108,6 +120,14 @@ export async function hotpatch(this: Sentinel, hotpatchType: HotpatchType, by: s
 				const commandsRegister = registers.list.find(register => register.label === 'commands')!;
 				await cachebustDir(fsPath('ps', 'commands'));
 				await commandsRegister.reload([]);
+				break;
+			}
+
+			case 'web': {
+				const oldServer = await (await import('@/web')).default;
+				await cachebustDir(fsPath('web'));
+				oldServer!.close();
+				await import('@/web');
 				break;
 			}
 

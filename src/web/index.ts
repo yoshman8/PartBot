@@ -9,13 +9,17 @@ import loadBundles from '@/web/loaders/bundles';
 import loadStatic from '@/web/loaders/static';
 import loadUI from '@/web/loaders/ui';
 
+import type { Server } from 'http';
+
 const app = express();
 
 app.use(urlencoded({ extended: true }));
 app.use(json());
 
+let server: Promise<Server> | null = null;
+
 if (IS_ENABLED.WEB) {
-	Promise.resolve(connection)
+	server = Promise.resolve(connection)
 		.then(() => loadStatic(app))
 		.then(() => loadAPI(app))
 		.then(() => loadBundles(app))
@@ -23,4 +27,4 @@ if (IS_ENABLED.WEB) {
 		.then(() => app.listen(port, () => Logger.log(`Web is running!`)));
 }
 
-export default app;
+export default server;

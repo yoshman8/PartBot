@@ -6,6 +6,7 @@ import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { mapValues } from '@/utils/mapValues';
 
 import type { ScrabbleDexEntry } from '@/database/games';
 import type { ToTranslate, TranslationFn } from '@/i18n/types';
@@ -76,7 +77,10 @@ export const command: PSCommand[] = [
 		async run({ message, broadcastHTML, $T }) {
 			const allEntries = await getScrabbleDex();
 			const results = allEntries!.filter(entry => entry.by === message.author.id);
-			const grouped = results.map(res => res.pokemon.toUpperCase()).groupBy(mon => mon.length);
+			const grouped = mapValues(
+				results.map(res => res.pokemon.toUpperCase()).groupBy(mon => mon.length),
+				mons => mons?.sort()
+			);
 
 			if (!results.length) throw new ChatError("You don't have any entries yet!" as ToTranslate);
 
@@ -87,7 +91,7 @@ export const command: PSCommand[] = [
 						if (mons)
 							return (
 								<p>
-									{length} ({mons.length}): {mons.list($T)}
+									{length} ({mons.length}): {mons.sort().list($T)}
 								</p>
 							);
 					})}
