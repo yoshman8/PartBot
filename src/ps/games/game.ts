@@ -16,7 +16,7 @@ import { sample, useRNG } from '@/utils/random';
 import { Timer } from '@/utils/timer';
 
 import type { GameModel } from '@/database/games';
-import type { NoTranslate, PSRoomTranslated, ToTranslate, TranslatedText, TranslationFn } from '@/i18n/types';
+import type { NoTranslate, PSRoomTranslated, TranslatedText, TranslationFn } from '@/i18n/types';
 import type { ActionResponse, BaseLog, BaseState, EndType, Meta, Player } from '@/ps/games/types';
 import type { EmbedBuilder } from 'discord.js';
 import type { Client, User } from 'ps-client';
@@ -328,8 +328,15 @@ export class BaseGame<State extends BaseState> {
 				this.room.privateSend(
 					newPlayer.id,
 					// eslint-disable-next-line max-len -- Welp
-					`Hi, you've already played ${playedToday} games of ${this.meta.name} today! You can play more, but you won't get UGO points for them.` as ToTranslate
+					`Hi, you've already played ${playedToday} games of ${this.meta.name} today! You can play more, but you won't get UGO points for them until the count resets at midnight UTC.` as NoTranslate
 				);
+			else {
+				this.room.privateSend(
+					newPlayer.id,
+					(`Hi, this is game #${playedToday + 1} of ${this.meta.name} that you've joined today.` +
+						` Only the first ${this.meta.ugo.cap} games will count for UGO points.`) as NoTranslate
+				);
+			}
 		}
 		if (this.meta.players === 'single' || (Array.isArray(availableSlots) && availableSlots.length === 1) || availableSlots === 1) {
 			// Join was successful and game is now full
@@ -551,42 +558,58 @@ export class BaseGame<State extends BaseState> {
 					this.room.send(this.$T('GAME.UPLOAD_FAILED', { id: this.id }));
 				});
 		}
+
 		// UGO-CODE
 		if (checkUGO(this) && this.winCtx) {
-			const winners = !('type' in this.winCtx)
-				? []
-				: this.winCtx.type === 'win'
-					? 'winner' in this.winCtx
-						? [this.winCtx.winner.turn]
-						: 'winnerIds' in this.winCtx
-							? (this.winCtx.winnerIds as string[])
-							: []
-					: this.winCtx.type === 'draw'
-						? Object.values(this.players).map(player => player.turn)
-						: [];
-			const allPlayers = Object.values(this.players);
-			const players = allPlayers.filter(player => player.out).map(player => player.turn);
+			if (this.winCtx.type === 'win' || this.winCtx.type === 'draw') {
+				const winners = !('type' in this.winCtx)
+					? []
+					: this.winCtx.type === 'win'
+						? 'winner' in this.winCtx
+							? [this.winCtx.winner.turn]
+							: 'winnerIds' in this.winCtx
+								? (this.winCtx.winnerIds as string[])
+								: []
+						: this.winCtx.type === 'draw'
+							? Object.values(this.players).map(player => player.turn)
+							: [];
+				const allPlayers = Object.values(this.players);
+				const players = allPlayers.filter(player => !player.out).map(player => player.turn);
 
-			const pointsToAdd: Record<string, number> = {};
+				const pointsToAdd: Record<string, number> = {};
 
-			if (winners.length === 1) {
-				pointsToAdd[this.players[winners[0]].name] =
-					typeof this.meta.ugo.points.win === 'function' ? this.meta.ugo.points.win(allPlayers.length) : this.meta.ugo.points.win;
-			} else if (winners.length > 1) {
-				winners.forEach(winner => (pointsToAdd[this.players[winner].name] = this.meta.ugo.points.draw ?? this.meta.ugo.points.loss));
-			}
-
-			players.forEach(turn => {
-				if (!winners.includes(turn)) {
-					pointsToAdd[this.players[turn].name] = this.meta.ugo.points.loss;
+				if (winners.length === 1) {
+					pointsToAdd[this.players[winners[0]].name] =
+						typeof this.meta.ugo.points.win === 'function' ? this.meta.ugo.points.win(allPlayers.length) : this.meta.ugo.points.win;
+				} else if (winners.length > 1) {
+					winners.forEach(winner => (pointsToAdd[this.players[winner].name] = this.meta.ugo.points.draw ?? this.meta.ugo.points.loss));
 				}
-			});
 
-			Object.keys(pointsToAdd).forEach(user => {
-				if (getUGOPlayed(this.meta.id, user) > this.meta.ugo.cap) delete pointsToAdd[user];
-			});
+				players.forEach(turn => {
+					if (!winners.includes(turn)) {
+						pointsToAdd[this.players[turn].name] = this.meta.ugo.points.loss;
+					}
+				});
 
-			addUGOPoints.call(this.parent, pointsToAdd, this.meta.id);
+				Object.keys(pointsToAdd).forEach(user => {
+					if (getUGOPlayed(this.meta.id, user) > this.meta.ugo.cap) delete pointsToAdd[user];
+				});
+
+				Object.entries(pointsToAdd).forEach(([user, points]) => {
+					this.room.privateSend(user, `You have received ${points} points for ${this.meta.name} in Board Games!` as NoTranslate);
+				});
+
+				addUGOPoints.call(this.parent, pointsToAdd, this.meta.id);
+			} else {
+				if (type === 'dq' || type === 'force') {
+					Object.values(this.players).forEach(player => {
+						if (!player.out) {
+							this.room.privateSend(player.id, 'This game will not count towards your daily cap.' as NoTranslate);
+							setUGOPlayed(this.meta.id, player.id, prev => prev - 1);
+						}
+					});
+				}
+			}
 		}
 
 		// Delete from cache

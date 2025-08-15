@@ -7,6 +7,7 @@ export const meta: Meta = {
 	name: 'Connect Four',
 	id: GamesList.ConnectFour,
 	aliases: ['c4'],
+	abbr: 'C4',
 	players: 'many',
 
 	turns: {

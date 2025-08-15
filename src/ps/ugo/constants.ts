@@ -15,6 +15,7 @@ export const BG_STRUCHNI_MODIFIER = 0.15;
 export const CHAIN_REACTION_META = {
 	id: 'chainreaction',
 	name: 'Chain Reaction',
+	abbr: 'CR',
 	ugo: {
 		cap: 20,
 		points: {

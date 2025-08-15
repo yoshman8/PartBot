@@ -7,6 +7,7 @@ export const meta: Meta = {
 	name: 'Battleship',
 	id: GamesList.Battleship,
 	aliases: ['bs'],
+	abbr: 'BS',
 	players: 'many',
 
 	turns: {

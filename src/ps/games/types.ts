@@ -15,7 +15,7 @@ export type Meta = Readonly<
 		name: string;
 		id: GamesList;
 		aliases?: readonly string[];
-		/** Only for single-player games. Required for those. */
+		/** Required for single-player games. Otherwise only shown in leaderboards. */
 		abbr?: string;
 
 		players: 'single' | 'many';

@@ -7,6 +7,7 @@ export const meta: Meta = {
 	name: 'Snakes & Ladders',
 	id: GamesList.SnakesLadders,
 	aliases: ['sl', 'snakesandladders', 'snakesnladders', 'snakes', 'snek'],
+	abbr: 'Snakes',
 
 	players: 'many',
 	minSize: 2,

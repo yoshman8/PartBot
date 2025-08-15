@@ -16,6 +16,7 @@ export function getUGOPlayed(game: UGOBoardGames, player: string): number {
 	const playerId = toId(player);
 	return UGO_PLAYED.get()[playerId]?.[game] ?? 0;
 }
+
 export function setUGOPlayed(game: UGOBoardGames, player: string, count: number | ((prevCount: number) => number)): void {
 	const playerId = toId(player);
 	const current = UGO_PLAYED.get();
@@ -23,6 +24,7 @@ export function setUGOPlayed(game: UGOBoardGames, player: string, count: number 
 	(current[playerId] ??= {})[game] = typeof count === 'function' ? count(currentCount) : count;
 	UGO_PLAYED.set(current);
 }
+
 export async function resetUGOPlayed(): Promise<string> {
 	const backup = UGO_PLAYED.get();
 	const url = await uploadToPastie(JSON.stringify(backup));
@@ -30,10 +32,7 @@ export async function resetUGOPlayed(): Promise<string> {
 	return url;
 }
 
-export const UGO_POINTS = usePersistedCache('ugoPoints');
-export function getUGOPoints(player: string): { total: number; breakdown: Partial<Record<UGOBoardGames, number>> } {
-	const playerId = toId(player);
-	const data = UGO_POINTS.get()[playerId] ?? {};
+function parsePoints(data: Partial<Record<UGOBoardGames, number>>): UGOUserPoints {
 	const games = Object.fromEntries(BOARD_GAMES_STRUCHNI_ORDER.map(game => [game, data[game] ?? 0])) as Partial<
 		Record<UGOBoardGames, number>
 	>;
@@ -43,18 +42,36 @@ export function getUGOPoints(player: string): { total: number; breakdown: Partia
 			.sortBy(null, 'desc')
 			.reduce((sum, gamePoints, index) => sum + gamePoints * (1 + index * BG_STRUCHNI_MODIFIER))
 	);
-
 	return { total: points, breakdown: data };
 }
+
+export type UGOUserPoints = { total: number; breakdown: Partial<Record<UGOBoardGames, number>> };
+export const UGO_POINTS = usePersistedCache('ugoPoints');
+
+export function getUGOPoints(player: string): UGOUserPoints {
+	const data = (UGO_POINTS.get()[toId(player)] ?? { points: {} }).points;
+	return parsePoints(data);
+}
+
+export function getAllUGOPoints(): Record<string, UGOUserPoints> {
+	const data = UGO_POINTS.get();
+	return Object.fromEntries(
+		Object.values(data).map(({ name, points }) => {
+			return [name, parsePoints(points)];
+		})
+	);
+}
+
 export function addUGOPoints(this: Client, pointsData: Record<string, number>, game: UGOBoardGames, bypassBonus?: boolean): void {
 	const bonus = !bypassBonus && UGO_2025_SPOTLIGHTS.some(date => Temporal.Now.plainDateISO(TimeZone.GMT).equals(date)) ? 1.5 : 1;
 	const current = UGO_POINTS.get();
 
 	const commit = mapValues(pointsData, (points, player) => {
 		const playerId = toId(player);
-		const updatedPoints = ((current[playerId] ??= {})?.[game] ?? 0) + Math.floor(points * bonus);
+		const updatedPoints = ((current[playerId] ??= { name: '', points: {} }).points?.[game] ?? 0) + Math.floor(points * bonus);
 
-		current[playerId][game] = updatedPoints;
+		current[playerId].name = player.trim();
+		current[playerId].points[game] = updatedPoints;
 		return updatedPoints;
 	});
 	UGO_POINTS.set(current);
