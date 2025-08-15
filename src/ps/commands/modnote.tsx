@@ -48,7 +48,7 @@ export const command: PSCommand = {
 			help: 'Sends a modnote to the given room.',
 			syntax: 'CMD [room], [message]',
 			async run({ arg, message, $T, run }) {
-				const [target, content] = arg.lazySplit(/[,|]/, 1);
+				const [target, content = 'Hi!'] = arg.lazySplit(/[,|]/, 1);
 				const targetRoom = message.parent.getRoom(target);
 				if (!targetRoom) throw new ChatError($T('INVALID_ROOM_ID'));
 				const userInRoom = targetRoom.users.find(user => toId(user) === message.author.id);
@@ -114,6 +114,6 @@ export const command: PSCommand = {
 			);
 			return;
 		}
-		return run(`modnote send ${arg ?? 'Hi!'}`);
+		return run(`modnote send ${arg}`);
 	},
 };
