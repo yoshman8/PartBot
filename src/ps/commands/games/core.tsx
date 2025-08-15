@@ -328,15 +328,15 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 					if (!game.started) game.signups();
 				},
 			},
-			forcewin: {
+			...conditionalCommand(Game.meta.players === 'many', {
 				name: 'forcewin',
 				aliases: ['fwin', 'win'],
 				help: 'Forces the winner of a game.',
 				perms: 'driver',
 				syntax: 'CMD [#id], [user]',
-				async run({ arg, message, $T }) {
-					const [_gameId, _userId] = arg.lazySplit(',', 1);
-					const gameId = '#' + toId(_gameId);
+				async run({ arg, $T }) {
+					const [_gameId, _userId = ''] = arg.lazySplit(',', 1);
+					const gameId = '#' + toId(_gameId).toUpperCase();
 					const userId = toId(_userId);
 					if (!userId) throw new ChatError('You must specify the game ID for forcewin!' as ToTranslate);
 					const game = PSGames[Game.meta.id]?.[gameId];
@@ -345,9 +345,9 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 					if (!player) throw new ChatError($T('GAME.IMPOSTOR_ALERT'));
 
 					// UGO-CODE
-					// TODO
+					game.forceWin(player);
 				},
-			},
+			}),
 			rejoin: {
 				name: 'rejoin',
 				aliases: ['rj'],

@@ -81,6 +81,7 @@ export default {
 		STASHED: 'Successfully stashed game {{id}}.',
 		SUB: '{{out}} has been subbed with {{in}}!',
 		DQ: '{{player}} has been disqualified from the game.',
+		FORCE_WIN: '{{player}} was given the win for game {{id}}!',
 		FORFEIT: 'You have forfeited the game.',
 		REMOVED: '{{player}} has been removed from the game.',
 		LEFT: 'You have left the game.',

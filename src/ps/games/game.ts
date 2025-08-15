@@ -86,6 +86,7 @@ export class BaseGame<State extends BaseState> {
 	mod?: string | null;
 
 	winCtx?: { type: 'win'; winner: Player } | { type: 'win'; winnerIds: string[] } | { type: 'draw' } | { type: string };
+	forcewinPlayers?: string[];
 
 	// Game-provided methods:
 	render(side: State['turn'] | null): ReactElement;
@@ -510,14 +511,26 @@ export class BaseGame<State extends BaseState> {
 		return `${process.env.WEB_URL}/${this.meta.id}/${this.id.replace(/^#/, '')}`;
 	}
 
-	forceWin(_player: Player): void {
+	forceWin(player: Player): void {
 		if (!this.started) this.throw('GAME.NOT_STARTED');
-		this.end('force');
-		// TODO
+		this.forcewinPlayers = Object.values(this.players)
+			.filter(activePlayer => activePlayer.id !== player.id && !activePlayer.out)
+			.map(activePlayer => activePlayer.turn);
+		this.forcewinPlayers.forEach(turn => (this.players[turn].out = true));
+		this.end('dq');
 	}
 
 	end(type?: EndType): void {
-		const message = this.onEnd(type);
+		let message = this.onEnd(type);
+		// Override message for forcewin
+		if (type === 'dq' && this.forcewinPlayers) {
+			const lastPlayers = Object.values(this.players).filter(player => !player.out);
+			if (lastPlayers.length !== 1) {
+				Logger.errorLog(new Error(JSON.stringify({ players: this.players, state: this.state })));
+				throw new Error(`Found ${lastPlayers.length} winners in a forcewin!`);
+			}
+			message = this.$T('GAME.FORCE_WIN', { player: lastPlayers[0].name, id: this.id });
+		}
 		this.clearTimer();
 		this.update();
 		if (this.started && (this.meta.players === 'many' || this.canBroadcastFinish?.())) {
@@ -563,7 +576,9 @@ export class BaseGame<State extends BaseState> {
 		if (checkUGO(this) && this.winCtx) {
 			if (this.winCtx.type === 'win' || this.winCtx.type === 'draw' || type === 'dq') {
 				const allPlayers = Object.values(this.players);
-				const players = allPlayers.filter(player => !player.out).map(player => player.turn);
+				const players = allPlayers
+					.filter(player => !player.out || this.forcewinPlayers?.includes(player.turn))
+					.map(player => player.turn);
 
 				const winners =
 					type === 'dq' && players.length === 1
