@@ -24,7 +24,7 @@ export function renderCloseSignups(this: Mastermind): ReactElement {
 			{this.setBy ? (
 				`${this.setBy.name} has set a code for ${player}.`
 			) : !hasGuessed ? (
-				<Form value={`${this.renderCtx.simpleMsg} audience {code}`}>
+				<Form value={`${this.renderCtx.simpleMsg} audience ${this.id}, {code}`}>
 					<label htmlFor="choosecode">Set Code: </label>
 					<input type="text" id="choosecode" name="code" style={{ width: 30 }} /> &nbsp;&nbsp;
 					<input type="submit" value="Set" />
