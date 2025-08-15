@@ -3,6 +3,7 @@ import { type ReactElement } from 'react';
 import { BaseGame } from '@/ps/games/game';
 import { render, renderCloseSignups } from '@/ps/games/lightsout/render';
 import { createGrid } from '@/ps/games/utils';
+import { isUGOActive } from '@/ps/ugo';
 import { deepClone } from '@/utils/deepClone';
 import { type Point, parsePoint, stepPoint } from '@/utils/grid';
 
@@ -50,6 +51,8 @@ export class LightsOut extends BaseGame<State> {
 	}
 
 	canBroadcastFinish(): boolean {
+		// UGO-CODE
+		if (isUGOActive()) return false;
 		return this.size[0] * this.size[1] >= 25;
 	}
 
