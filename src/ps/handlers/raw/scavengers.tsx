@@ -5,6 +5,7 @@ import { HUNT_ANNOUNCEMENTS_CHANNEL, HUNT_BY_ROLE } from '@/discord/constants/se
 import { getChannel } from '@/discord/loaders/channels';
 import { IS_ENABLED } from '@/enabled';
 import { createNonce } from '@/ps/commands/nonce';
+import { isUGOActive } from '@/ps/ugo';
 import { toId } from '@/tools';
 import { Button } from '@/utils/components/ps';
 
@@ -69,13 +70,15 @@ export function checkHunts(room: string, data: string) {
 
 export function onEndHunt(this: Client, room: string, data: string) {
 	if (!SCAVS_ROOMS.includes(room)) return;
-	const isMainRoom = room === 'scavengers';
+	const isMainRoom = room === 'groupchat-scavengers-test';
 
 	const huntEnd = data.match(HUNT_END_PATTERN) as { groups: { type: HuntType } } | null;
 
 	if (huntEnd) {
 		// Hunt ended
 		if (!isMainRoom) return;
+		if (!isUGOActive()) return;
+
 		let nonceCommand: ';addhunt' | ';addfishunt' | ';addminifishhunt' | null = null;
 
 		switch (huntEnd.groups.type) {
@@ -98,7 +101,7 @@ export function onEndHunt(this: Client, room: string, data: string) {
 			},
 			// TODO: Perms should have an inbuilt way to check a specific room
 			message => {
-				const scavs = message.parent.getRoom('Scavengers');
+				const scavs = message.parent.getRoom(room);
 				if (!scavs) return false;
 				const roomUser = scavs.users.find(user => toId(user) === message.author.id);
 				if (!roomUser) return false;
@@ -106,7 +109,7 @@ export function onEndHunt(this: Client, room: string, data: string) {
 			}
 		);
 
-		this.getRoom('Scavengers').sendHTML(
+		this.getRoom(room).sendHTML(
 			<div>
 				<Button value={`/botmsg ${this.status.username},${prefix}nonce ${nonceKey}`}>Add {huntEnd.groups.type} hunt to UGO</Button>
 			</div>,
