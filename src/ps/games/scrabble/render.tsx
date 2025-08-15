@@ -1,4 +1,4 @@
-import { Table } from '@/ps/games/render';
+import { LogEntry, Table } from '@/ps/games/render';
 import { RACK_SIZE, WIDE_LETTERS } from '@/ps/games/scrabble/constants';
 import { Button, Form, Username } from '@/utils/components/ps';
 import { type Point, coincident } from '@/utils/grid';
@@ -14,55 +14,44 @@ import type { CSSProperties, ReactElement, ReactNode } from 'react';
 // Do NOT use \u2605 for cross-browser reasons
 const STAR = '⭑';
 
-export function renderMove(logEntry: Log, { id, players, $T, renderCtx: { msg } }: Scrabble): [ReactElement, { name: string }] {
-	const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
-		<>
-			<hr />
-			{children}
-			<Button name="send" value={`${msg} watch`} style={{ float: 'right' }}>
-				{$T('GAME.LABELS.WATCH')}
-			</Button>
-			<hr />
-		</>
-	);
-
-	const playerName = players[logEntry.turn]?.name;
-	const opts = { name: `${id}-chatlog` };
+export function renderMove(logEntry: Log, game: Scrabble): [ReactElement, { name: string }] {
+	const playerName = game.players[logEntry.turn]?.name;
+	const opts = { name: `${game.id}-chatlog` };
 
 	switch (logEntry.action) {
 		case 'play':
 			const words = Object.entries(logEntry.ctx.words);
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					<Username name={playerName} clickable /> played{' '}
 					{words.length === 1 && !logEntry.ctx.points.bingo
 						? words[0][0]
-						: words.map(([word, points]) => `${word} (${points})`).list($T)}{' '}
+						: words.map(([word, points]) => `${word} (${points})`).list(game.$T)}{' '}
 					for {logEntry.ctx.points.total} points!
 					{logEntry.ctx.points.bingo ? ' BINGO!' : null}
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 		case 'exchange':
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					<Username name={playerName} clickable /> exchanged {logEntry.ctx.tiles.length} tiles.
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 		case 'pass':
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					<Username name={playerName} clickable /> passed.
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 		default:
-			Logger.log('Scrabble had some weird move', logEntry, players);
+			Logger.log('Scrabble had some weird move', logEntry, game.players);
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					Well <i>something</i> happened, I think! Someone go poke PartMan
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 	}

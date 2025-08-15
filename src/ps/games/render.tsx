@@ -1,11 +1,38 @@
 import { Button } from '@/utils/components/ps';
 
-import type { BaseGame } from '@/ps/games/game';
+import type { BaseGame, CommonGame } from '@/ps/games/game';
 import type { BaseState } from '@/ps/games/types';
 import type { CSSProperties, HTMLProps, ReactElement, ReactNode } from 'react';
 
 export function Small({ children }: { children: ReactNode }): ReactElement {
 	return <div style={{ zoom: '60%' }}>{children}</div>;
+}
+
+export function LogEntry({
+	game: {
+		id,
+		meta: { name: game },
+		renderCtx: { msg },
+		$T,
+	},
+	children,
+}: {
+	game: CommonGame;
+	children: ReactNode;
+}): ReactElement {
+	return (
+		<>
+			<hr />
+			<div style={{ display: 'inline-block' }}>
+				<small>{game + id}</small>
+				{children}
+			</div>
+			<Button name="send" value={`${msg} watch`} style={{ float: 'right' }}>
+				{$T('GAME.LABELS.WATCH')}
+			</Button>
+			<hr />
+		</>
+	);
 }
 
 export function renderSignups<State extends BaseState>(this: BaseGame<State>, staff: boolean): ReactElement | null {

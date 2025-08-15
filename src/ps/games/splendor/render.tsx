@@ -1,3 +1,4 @@
+import { LogEntry } from '@/ps/games/render';
 import { ACTIONS, AllTokenTypes, MAX_TOKEN_COUNT, TOKEN_TYPE, TokenTypes, VIEW_ACTION_TYPE } from '@/ps/games/splendor/constants';
 import metadata from '@/ps/games/splendor/metadata.json';
 import { Username } from '@/utils/components';
@@ -26,21 +27,18 @@ const TOKEN_COLOURS: Record<TOKEN_TYPE, string> = {
 	[TOKEN_TYPE.WATER]: '#1996e2',
 };
 
-export function renderLog(logEntry: Log, { id, players, $T, renderCtx: { msg } }: Splendor): [ReactElement, { name: string }] {
+export function renderLog(logEntry: Log, game: Splendor): [ReactElement, { name: string }] {
 	const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
-		<>
-			<hr />
+		<LogEntry game={game}>
 			{children}
-			{logEntry.ctx?.trainers?.length ? ` ${logEntry.ctx.trainers.map(id => metadata.trainers[id].name).list($T)} joined them!` : null}
-			<Button name="send" value={`${msg} watch`} style={{ float: 'right' }}>
-				{$T('GAME.LABELS.WATCH')}
-			</Button>
-			<hr />
-		</>
+			{logEntry.ctx?.trainers?.length
+				? ` ${logEntry.ctx.trainers.map(id => metadata.trainers[id].name).list(game.$T)} joined them!`
+				: null}
+		</LogEntry>
 	);
 
-	const playerName = players[logEntry.turn]?.name;
-	const opts = { name: `${id}-chatlog` };
+	const playerName = game.players[logEntry.turn]?.name;
+	const opts = { name: `${game.id}-chatlog` };
 
 	switch (logEntry.action) {
 		case ACTIONS.BUY:
@@ -88,7 +86,7 @@ export function renderLog(logEntry: Log, { id, players, $T, renderCtx: { msg } }
 				opts,
 			];
 		default:
-			Logger.log('Splendor had some weird move', logEntry, players);
+			Logger.log('Splendor had some weird move', logEntry, game.players);
 			return [
 				<Wrapper>
 					Well <i>something</i> happened, I think! Someone go poke PartMan
