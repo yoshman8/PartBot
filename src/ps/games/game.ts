@@ -561,20 +561,24 @@ export class BaseGame<State extends BaseState> {
 
 		// UGO-CODE
 		if (checkUGO(this) && this.winCtx) {
-			if (this.winCtx.type === 'win' || this.winCtx.type === 'draw') {
-				const winners = !('type' in this.winCtx)
-					? []
-					: this.winCtx.type === 'win'
-						? 'winner' in this.winCtx
-							? [this.winCtx.winner.turn]
-							: 'winnerIds' in this.winCtx
-								? (this.winCtx.winnerIds as string[])
-								: []
-						: this.winCtx.type === 'draw'
-							? Object.values(this.players).map(player => player.turn)
-							: [];
+			if (this.winCtx.type === 'win' || this.winCtx.type === 'draw' || type === 'dq') {
 				const allPlayers = Object.values(this.players);
 				const players = allPlayers.filter(player => !player.out).map(player => player.turn);
+
+				const winners =
+					type === 'dq' && players.length === 1
+						? players
+						: !('type' in this.winCtx)
+							? []
+							: this.winCtx.type === 'win'
+								? 'winner' in this.winCtx
+									? [this.winCtx.winner.turn]
+									: 'winnerIds' in this.winCtx
+										? (this.winCtx.winnerIds as string[])
+										: []
+								: this.winCtx.type === 'draw'
+									? Object.values(this.players).map(player => player.turn)
+									: [];
 
 				const pointsToAdd: Record<string, number> = {};
 
@@ -601,7 +605,7 @@ export class BaseGame<State extends BaseState> {
 
 				addUGOPoints.call(this.parent, pointsToAdd, this.meta.id);
 			} else {
-				if (type === 'dq' || type === 'force') {
+				if (type === 'force') {
 					Object.values(this.players).forEach(player => {
 						if (!player.out) {
 							this.room.privateSend(player.id, 'This game will not count towards your daily cap.' as NoTranslate);
