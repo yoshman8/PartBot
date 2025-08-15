@@ -5,6 +5,7 @@ import { parseMod } from '@/ps/games/mods';
 import { checkWord } from '@/ps/games/scrabble/checker';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
+import { isUGOActive } from '@/ps/ugo';
 import { CHAIN_REACTION_META } from '@/ps/ugo/constants';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
@@ -112,6 +113,7 @@ export const command: PSCommand[] = [
 		perms: message => message.author.id === 'partprofessor',
 		categories: ['game'],
 		async run({ arg, message }) {
+			if (!isUGOActive()) throw new ChatError("UGO isn't active!" as ToTranslate);
 			const players = arg.split(',');
 			const winner = players[0];
 

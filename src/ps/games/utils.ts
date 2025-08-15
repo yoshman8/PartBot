@@ -1,4 +1,5 @@
 import { usePersistedCache } from '@/cache/persisted';
+import { isUGOActive } from '@/ps/ugo';
 
 import type { CommonGame } from '@/ps/games/game';
 import type { Meta } from '@/ps/games/types';
@@ -24,5 +25,6 @@ export function createGrid<T>(x: number, y: number, fill: (x: number, y: number)
 export function checkUGO(
 	game: CommonGame
 ): game is CommonGame & { meta: Meta & { id: UGOBoardGames; ugo: NonNullable<Meta['ugo']> } } {
+	if (isUGOActive()) return false;
 	return game.roomid === 'boardgames' && !!game.meta.ugo;
 }
