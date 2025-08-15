@@ -1,22 +1,39 @@
 import { unescapeHTML } from 'ps-client/tools';
 
+import { prefix } from '@/config/ps';
 import { HUNT_ANNOUNCEMENTS_CHANNEL, HUNT_BY_ROLE } from '@/discord/constants/servers/scavengers';
 import { getChannel } from '@/discord/loaders/channels';
 import { IS_ENABLED } from '@/enabled';
+import { createNonce } from '@/ps/commands/nonce';
+import { toId } from '@/tools';
+import { Button } from '@/utils/components/ps';
+
+import type { Client } from 'ps-client';
+
+const SCAVS_ROOMS = ['scavengers', 'treasuretown', 'groupchat-scavengers-partmantesting', 'groupchat-scavengers-test'];
+
+type HuntType = 'regular' | 'official' | 'practice' | 'recycled' | 'unrated' | 'mini';
 
 const HUNT_START_PATTERN =
 	// eslint-disable-next-line max-len -- Regular Expression
 	/^<div class="broadcast-blue"><strong>A new (?<type>regular|official|practice|recycled|unrated|mini) scavenger hunt by <em>(?<maker>.*)<\/em> has been started(?<qcer>(?: by <em>(.*)<\/em>)?)\.<\/strong><div style="[^"]*"><strong><em>Hint #1:<\/em> .*<\/strong><\/div>\(To answer, use <kbd>\/scavenge <em>ANSWER<\/em><\/kbd>\)<\/div>$/;
+const HUNT_END_PATTERN =
+	// eslint-disable-next-line max-len -- Regular Expression
+	/^<div class="broadcast-blue"><strong>The (?<type>regular|official|practice|recycled|unrated|mini) scavenger hunt by <em>(?<maker>.*)<\/em> was ended/;
+
+function isStaff(userString: string): boolean {
+	return /^[%@*#]/.test(userString);
+}
 
 export function checkHunts(room: string, data: string) {
-	if (!['scavengers', 'treasuretown', 'groupchat-scavengers-partmantesting'].includes(room)) return;
+	if (!SCAVS_ROOMS.includes(room)) return;
 	if (!IS_ENABLED.DISCORD) return;
 	const huntChannel = getChannel(HUNT_ANNOUNCEMENTS_CHANNEL);
 	if (!huntChannel) return;
 	const isMainRoom = room === 'scavengers';
 	const huntStart = data.match(HUNT_START_PATTERN) as {
 		groups: {
-			type: 'regular' | 'official' | 'practice' | 'recycled' | 'unrated' | 'mini';
+			type: HuntType;
 			maker: string;
 			qcer?: string;
 		};
@@ -47,5 +64,53 @@ export function checkHunts(room: string, data: string) {
 			return post(`An unrated hunt by ${maker} has been started${sideRoom}!`);
 		default:
 			return post(`A ${huntType} hunt has been started${sideRoom} but I have no idea what that is`);
+	}
+}
+
+export function onEndHunt(this: Client, room: string, data: string) {
+	if (!SCAVS_ROOMS.includes(room)) return;
+	const isMainRoom = room === 'scavengers';
+
+	const huntEnd = data.match(HUNT_END_PATTERN) as { groups: { type: HuntType } } | null;
+
+	if (huntEnd) {
+		// Hunt ended
+		if (!isMainRoom) return;
+		let nonceCommand: ';addhunt' | ';addfishunt' | ';addminifishhunt' | null = null;
+
+		switch (huntEnd.groups.type) {
+			case 'regular':
+				nonceCommand = ';addhunt';
+				break;
+			case 'official':
+				nonceCommand = ';addfishunt';
+				break;
+			case 'mini':
+				nonceCommand = ';addminifishhunt';
+				break;
+		}
+
+		if (!nonceCommand) return;
+
+		const nonceKey = createNonce(
+			() => {
+				this.addUser('UGO').send(nonceCommand);
+			},
+			// TODO: Perms should have an inbuilt way to check a specific room
+			message => {
+				const scavs = message.parent.getRoom('Scavengers');
+				if (!scavs) return false;
+				const roomUser = scavs.users.find(user => toId(user) === message.author.id);
+				if (!roomUser) return false;
+				return isStaff(roomUser);
+			}
+		);
+
+		this.getRoom('Scavengers').sendHTML(
+			<div>
+				<Button value={`/botmsg ${this.status.username},${prefix}nonce ${nonceKey}`}>Add {huntEnd.groups.type} hunt to UGO</Button>
+			</div>,
+			{ rank: '%' }
+		);
 	}
 }

@@ -394,8 +394,7 @@ export class Scrabble extends BaseGame<State> {
 		const bestPlayer = winnerPlayers.sortBy(player => player.best?.points ?? 0, 'desc')[0];
 		if (!bestPlayer?.best) return null;
 		const title = `${bestPlayer.name}: ${bestPlayer.best.asText} [${bestPlayer.best.points}]`;
-		return new EmbedBuilder().setColor('#ccc5a8').setAuthor({ name: 'Scrabble - Room Match' }).setTitle(title);
-		// .setURL(this.getURL()) // TODO
+		return new EmbedBuilder().setColor('#ccc5a8').setAuthor({ name: 'Scrabble - Room Match' }).setTitle(title).setURL(this.getURL());
 	}
 
 	readFromBoard([x, y]: Point, safe?: boolean): BoardTile | null {

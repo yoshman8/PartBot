@@ -140,6 +140,7 @@ export const command: PSCommand[] = [
 			);
 		},
 	},
+	// TODO: Use PSNonces
 	{
 		name: 'addnonce',
 		help: null,
