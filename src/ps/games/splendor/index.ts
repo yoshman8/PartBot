@@ -25,7 +25,7 @@ export { meta } from '@/ps/games/splendor/meta';
 
 export class Splendor extends BaseGame<State> {
 	log: Log[] = [];
-	winCtx?: WinCtx | { type: EndType };
+	declare winCtx?: WinCtx | { type: EndType };
 
 	constructor(ctx: BaseContext) {
 		super(ctx);
@@ -214,6 +214,21 @@ export class Splendor extends BaseGame<State> {
 				this.update(user.id);
 				return;
 			}
+			case VIEW_ACTION_TYPE.CLICK_DECK: {
+				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
+					throw new ChatError('You need to discard tokens!' as ToTranslate);
+				if (!['1', '2', '3'].includes(actionCtx)) throw new ChatError('Which tier did you click on?' as ToTranslate);
+				const tier = +actionCtx as 1 | 2 | 3;
+				if (this.state.board.cards[tier].deck.length === 0)
+					throw new ChatError(`The deck for tier ${tier} cards is empty!` as ToTranslate);
+
+				const canReserve = this.canReserve(player);
+				if (!canReserve) throw new ChatError('You cannot reserve more than 3 cards at a time.' as ToTranslate);
+
+				this.state.actionState = { action: VIEW_ACTION_TYPE.CLICK_DECK, tier };
+				this.update(user.id);
+				return;
+			}
 
 			case VIEW_ACTION_TYPE.TOO_MANY_TOKENS: {
 				if (this.state.actionState.action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
@@ -262,26 +277,47 @@ export class Splendor extends BaseGame<State> {
 			case ACTIONS.RESERVE: {
 				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
 					throw new ChatError('You have too many tokens!' as ToTranslate);
-				const getCard = this.findWildCard(actionCtx);
-				if (!getCard.success) throw new ChatError(getCard.error);
-
 				if (!this.canReserve(player)) {
 					throw new ChatError(
 						('You cannot reserve a card.' +
 							'You may only reserve a card if a Dragon token is available AND you have less than three cards currently reserved.') as ToTranslate
 					);
 				}
-				const card = getCard.data;
 
-				playerData.reserved.push(card);
+				const deckReserve = ['1', '2', '3'].includes(actionCtx) ? +actionCtx : null;
+				let reservedId: string;
+				if (deckReserve) {
+					const tier = deckReserve as 1 | 2 | 3;
+					if (this.state.board.cards[tier].deck.length === 0)
+						throw new ChatError(`The deck for tier ${tier} cards is empty!` as ToTranslate);
 
-				const stage = this.state.board.cards[card.tier];
-				stage.wild.remove(card);
-				stage.wild.push(...stage.deck.splice(0, 1));
+					const [card] = this.state.board.cards[tier].deck.splice(0, 1);
+					playerData.reserved.push(card);
+
+					reservedId = card.id;
+				} else {
+					const getCard = this.findWildCard(actionCtx);
+					if (!getCard.success) throw new ChatError(getCard.error);
+
+					const card = getCard.data;
+
+					playerData.reserved.push(card);
+
+					const stage = this.state.board.cards[card.tier];
+					stage.wild.remove(card);
+					stage.wild.push(...stage.deck.splice(0, 1));
+
+					reservedId = card.id;
+				}
 
 				this.getTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
 
-				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.RESERVE, ctx: { id: card.id } };
+				logEntry = {
+					turn: player.turn,
+					time: new Date(),
+					action: ACTIONS.RESERVE,
+					ctx: { id: reservedId, deck: deckReserve },
+				};
 				break;
 			}
 

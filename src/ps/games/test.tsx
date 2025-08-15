@@ -14,6 +14,7 @@ export const test: () => Promise<string> = async () => {
 		const { render } = await import('@/ps/games/splendor/render');
 		const { default: metadata } = (await import('@/ps/games/splendor/metadata.json')) as unknown as { default: Metadata };
 
+		// @ts-ignore
 		const MOCK_RENDER_CTX: RenderCtx = {
 			id: '#TEMP',
 			header: 'Your turn!',
@@ -48,24 +49,30 @@ export const test: () => Promise<string> = async () => {
 					[TOKEN_TYPE.COLORLESS]: 2,
 				},
 			},
-			view: {
-				type: 'player',
-				active: true,
-				self: 'partman',
-				action: VIEW_ACTION_TYPE.CLICK_WILD,
-				id: 'klang',
-				canBuy: true,
-				preset: {
-					[TOKEN_TYPE.GRASS]: 2,
-					[TOKEN_TYPE.WATER]: 1,
-					[TOKEN_TYPE.FIRE]: 0,
-					[TOKEN_TYPE.COLORLESS]: 0,
-					[TOKEN_TYPE.DARK]: 0,
-					[TOKEN_TYPE.DRAGON]: 0,
-				},
-				canReserve: true,
-				// preset: null,
-			},
+			view: 1
+				? {
+						type: 'player',
+						active: false,
+						self: 'partman',
+					}
+				: {
+						type: 'player',
+						active: true,
+						self: 'partman',
+						action: VIEW_ACTION_TYPE.CLICK_WILD,
+						id: 'klang',
+						canBuy: true,
+						preset: {
+							[TOKEN_TYPE.GRASS]: 2,
+							[TOKEN_TYPE.WATER]: 1,
+							[TOKEN_TYPE.FIRE]: 0,
+							[TOKEN_TYPE.COLORLESS]: 0,
+							[TOKEN_TYPE.DARK]: 0,
+							[TOKEN_TYPE.DRAGON]: 0,
+						},
+						canReserve: true,
+						// preset: null,
+					},
 			turns: ['partbot', 'partman'],
 			players: {
 				partbot: {

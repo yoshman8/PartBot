@@ -57,7 +57,7 @@ export function renderLog(logEntry: Log, { id, players, $T, renderCtx: { msg } }
 			const card = metadata.pokemon[logEntry.ctx.id];
 			return [
 				<Wrapper>
-					<Username name={playerName} clickable /> reserved {card.name}.
+					<Username name={playerName} clickable /> reserved {logEntry.ctx.deck ? `a Tier ${logEntry.ctx.deck} card` : card.name}.
 				</Wrapper>,
 				opts,
 			];
@@ -198,7 +198,7 @@ function CardWrapper({
 }): ReactElement {
 	if (!onClick) return <div style={style}>{children}</div>;
 	return (
-		<Button value={onClick} style={style}>
+		<Button value={onClick} style={{ cursor: 'pointer', ...style }}>
 			{children}
 		</Button>
 	);
@@ -306,25 +306,34 @@ export function PokemonCard({
 	);
 }
 
-function FlippedCard({ data, count }: { data: Card; count: number }): ReactElement {
+function FlippedCard({
+	data,
+	count,
+	onClick,
+}: {
+	data: { tier: number };
+	count: number | null;
+	onClick?: string | undefined;
+}): ReactElement {
 	return (
-		<div style={getCardStyles(getArtUrl('other', `back-${data.tier}.png`))}>
-			<div
-				style={{
-					position: 'relative',
-					top: 96,
-					background: '#1119',
-					borderRadius: 12,
-					color: 'white',
-					textShadow: '0 0 2px #000',
-					display: 'inline-block',
-					padding: '0 8px 8px',
-					fontSize: 72,
-				}}
-			>
-				×<b>{count}</b>
-			</div>
-		</div>
+		<CardWrapper style={getCardStyles(getArtUrl('other', `back-${data.tier}.png`))} onClick={onClick}>
+			{count ? (
+				<div
+					style={{
+						background: '#1119',
+						borderRadius: 12,
+						color: 'white',
+						textShadow: '0 0 2px #000',
+						display: 'inline-block',
+						padding: '0 8px 8px',
+						fontSize: 72,
+						...(!onClick ? { position: 'relative', top: 96 } : {}),
+					}}
+				>
+					×<b>{count}</b>
+				</div>
+			) : null}
+		</CardWrapper>
 	);
 }
 
@@ -354,7 +363,7 @@ export function Stack({
 					cards.map((card, index) =>
 						hidden ? (
 							index === 0 ? (
-								<FlippedCard data={card} count={cards.length} />
+								<FlippedCard data={card} count={cards.length} onClick={onClick} />
 							) : null
 						) : (
 							<PokemonCard data={card} reserved={reserved} onClick={onClick} stackIndex={index} />
@@ -444,6 +453,34 @@ function WildCardInput({ action, onClick }: { action: ViewType; onClick: string 
 	);
 }
 
+function DeckReserveInput({ action, onClick }: { action: ViewType; onClick: string }): ReactElement {
+	if (!action.active || action.action !== VIEW_ACTION_TYPE.CLICK_DECK) return <></>;
+	return (
+		<div style={{ borderRadius: 12, padding: 12, background: '#1119' }}>
+			<FlippedCard data={{ tier: action.tier }} count={null} />
+			<div
+				style={{
+					display: 'inline-block',
+					verticalAlign: 'top',
+					border: '1px solid',
+					borderRadius: 12,
+					padding: 24,
+					margin: 12,
+				}}
+			>
+				<Button
+					value={`${onClick} ! ${ACTIONS.RESERVE} ${action.tier}`}
+					style={{
+						zoom: '240%',
+					}}
+				>
+					{'Reserve!' as ToTranslate}
+				</Button>
+			</div>
+		</div>
+	);
+}
+
 function ReservedCardInput({ card, preset, onClick }: { preset: TokenCount; card: Card; onClick: string }): ReactElement {
 	const typesToInclude = (Object.keys(card.cost) as TOKEN_TYPE[]).concat([TOKEN_TYPE.DRAGON]);
 	const typesToShow = AllTokenTypes.filter(type => typesToInclude.includes(type));
@@ -496,22 +533,34 @@ export function BaseBoard({ board, view, onClick }: { board: Board; view: ViewTy
 				)}
 			</div>
 			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD ? <WildCardInput action={view} onClick={onClick!} /> : null}
+			{view.active && view.action === VIEW_ACTION_TYPE.CLICK_DECK ? <DeckReserveInput action={view} onClick={onClick!} /> : null}
 			<div style={{ height: 48 }} />
-			{[board.cards[3], board.cards[2], board.cards[1]].map(({ wild, deck }) => (
-				<div style={{ whiteSpace: 'nowrap', overflow: 'auto' }}>
-					{wild.map(card => (
-						<PokemonCard
-							data={card}
+			{([3, 2, 1] as const).map(tier => {
+				const { wild, deck } = board.cards[tier];
+				return (
+					<div style={{ whiteSpace: 'nowrap', overflow: 'auto' }}>
+						{wild.map(card => (
+							<PokemonCard
+								data={card}
+								onClick={
+									onClick && !(view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD && card.id === view.id)
+										? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_WILD}`
+										: undefined
+								}
+							/>
+						))}
+						<Stack
+							cards={deck}
+							hidden
 							onClick={
-								onClick && !(view.active && view.action === VIEW_ACTION_TYPE.CLICK_WILD && card.id === view.id)
-									? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_WILD}`
+								onClick && !(view.active && view.action === VIEW_ACTION_TYPE.CLICK_DECK && view.tier === tier)
+									? `${onClick} ! ${VIEW_ACTION_TYPE.CLICK_DECK} ${tier}`
 									: undefined
 							}
 						/>
-					))}
-					<Stack cards={deck} hidden />
-				</div>
-			))}
+					</div>
+				);
+			})}
 		</>
 	);
 }

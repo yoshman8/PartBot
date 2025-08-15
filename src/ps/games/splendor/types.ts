@@ -61,6 +61,7 @@ export type ActionState =
 			| { canBuy: true; preset: TokenCount }
 			| { canBuy: false; preset: null }
 	  ))
+	| { action: VIEW_ACTION_TYPE.CLICK_DECK; tier: 1 | 2 | 3 }
 	| { action: VIEW_ACTION_TYPE.CLICK_RESERVE; id: string; preset: TokenCount | null }
 	| { action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS; discard: number };
 

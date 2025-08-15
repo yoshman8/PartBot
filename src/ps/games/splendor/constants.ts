@@ -21,6 +21,7 @@ export enum ACTIONS {
 export enum VIEW_ACTION_TYPE {
 	NONE = 'none',
 	CLICK_WILD = 'wild',
+	CLICK_DECK = 'deck',
 	CLICK_RESERVE = 'payback',
 	CLICK_TOKENS = 'tokens',
 	TOO_MANY_TOKENS = 'discard',
