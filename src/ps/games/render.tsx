@@ -25,6 +25,7 @@ export function LogEntry({
 			<hr />
 			<div style={{ display: 'inline-block' }}>
 				<small>{game + id}</small>
+				<br />
 				{children}
 			</div>
 			<Button name="send" value={`${msg} watch`} style={{ float: 'right' }}>

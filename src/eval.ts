@@ -11,6 +11,7 @@ import { ansiToHtml } from '@/utils/ansiToHtml';
 import { cachebust as _cachebust } from '@/utils/cachebust';
 import { $ as _$ } from '@/utils/child_process';
 import { fsPath as _fsPath } from '@/utils/fsPath';
+import { jsxToHTML as _jsxToHTML } from '@/utils/jsxToHTML';
 import { Logger } from '@/utils/logger';
 
 import type { PSCommandContext } from '@/types/chat';
@@ -26,12 +27,13 @@ const path = _path;
 const Tools = _Tools;
 const $ = _$;
 const Sentinel = _Sentinel;
+const jsxToHTML = _jsxToHTML;
 
 // Allow storing eval results
 const E: Record<string, unknown> = {};
 
 // Storing in context for eval()
-const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, Tools, $, Sentinel, E];
+const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, Tools, $, Sentinel, E, jsxToHTML];
 
 export type EvalModes = 'COLOR_OUTPUT' | 'FULL_OUTPUT' | 'ABBR_OUTPUT' | 'NO_OUTPUT';
 export type EvalOutput = {
