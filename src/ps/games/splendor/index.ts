@@ -171,11 +171,15 @@ export class Splendor extends BaseGame<State> {
 		// ACTIONS are actual actions, and will end the turn and stuff if valid. Use 'break'.
 		switch (action) {
 			case VIEW_ACTION_TYPE.CLICK_TOKENS: {
+				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
+					throw new ChatError('You need to discard tokens!' as ToTranslate);
 				this.state.actionState = { action: VIEW_ACTION_TYPE.CLICK_TOKENS };
 				this.update(user.id);
 				return;
 			}
 			case VIEW_ACTION_TYPE.CLICK_RESERVE: {
+				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
+					throw new ChatError('You need to discard tokens!' as ToTranslate);
 				const card = this.lookupCard(actionCtx);
 				if (!card) throw new ChatError(`${actionCtx} is not available to reserve.` as ToTranslate);
 
@@ -190,6 +194,8 @@ export class Splendor extends BaseGame<State> {
 				return;
 			}
 			case VIEW_ACTION_TYPE.CLICK_WILD: {
+				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
+					throw new ChatError('You need to discard tokens!' as ToTranslate);
 				const lookupCard = this.findWildCard(actionCtx);
 				if (!lookupCard.success) throw new ChatError(`${actionCtx} is not available to buy.` as ToTranslate);
 
