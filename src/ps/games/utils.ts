@@ -27,6 +27,6 @@ export function createGrid<T>(x: number, y: number, fill: (x: number, y: number)
 export function checkUGO(
 	game: CommonGame
 ): game is CommonGame & { meta: Meta & { id: UGOBoardGames; ugo: NonNullable<Meta['ugo']> } } {
-	if (isUGOActive()) return false;
+	if (!isUGOActive()) return false;
 	return game.roomid === 'boardgames' && !!game.meta.ugo;
 }
