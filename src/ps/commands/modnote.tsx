@@ -114,6 +114,6 @@ export const command: PSCommand = {
 			);
 			return;
 		}
-		return run(`modnote send ${arg}`);
+		return run(`modnote send ${arg ?? 'Hi!'}`);
 	},
 };
