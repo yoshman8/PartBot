@@ -310,7 +310,6 @@ export class Splendor extends BaseGame<State> {
 					reservedId = card.id;
 				}
 
-				this.receiveTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
 				const willReceiveDragon = this.state.board.tokens[TOKEN_TYPE.DRAGON] > 0;
 				if (willReceiveDragon) this.receiveTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
 				else this.room.privateSend(player.id, 'You reserved a card, but there were no Dragon tokens left to receive.' as ToTranslate);
