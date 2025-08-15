@@ -316,6 +316,10 @@ export class Scrabble extends BaseGame<State> {
 			return this.$T('GAME.ENDED', { game: this.meta.name, id: this.id });
 		}
 
+		Object.keys(this.players).forEach(playerId => {
+			this.state.score[playerId] -= this.state.racks[playerId].map(tile => this.points[tile]).sum();
+		});
+
 		const winners = Object.entries(this.state.score)
 			.map(([id, score]) => ({
 				...this.players[id],
@@ -324,9 +328,6 @@ export class Scrabble extends BaseGame<State> {
 			.sortBy(entry => entry.score, 'desc')
 			.filter((entry, _, list) => entry.score === list[0].score);
 
-		Object.keys(this.players).forEach(playerId => {
-			this.state.score[playerId] -= this.state.racks[playerId].map(tile => this.points[tile]).sum();
-		});
 		this.winCtx = {
 			type: 'win',
 			winnerIds: winners.map(winner => winner.id),
@@ -346,7 +347,7 @@ export class Scrabble extends BaseGame<State> {
 	}
 
 	render(side: string | null) {
-		const isActive = !!side && side === this.turn;
+		const isActive = !!this.winCtx && !!side && side === this.turn;
 		const ctx: RenderCtx = {
 			id: this.id,
 			baseBoard: this.state.baseBoard,

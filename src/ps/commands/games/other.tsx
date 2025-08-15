@@ -50,13 +50,14 @@ export function renderUGOBoardGamesLeaderboard(data: Record<string, UGOUserPoint
 					headers={[
 						'#',
 						$T('COMMANDS.POINTS.HEADERS.USER'),
-						'Total',
+						'Total Points',
 						...BOARD_GAMES_STRUCHNI_ORDER.map(gameId =>
 							gameId in Games
 								? (Games[gameId as GamesList].meta.abbr ?? Games[gameId as GamesList].meta.name)
 								: CHAIN_REACTION_META.abbr
 						),
 					]}
+					style={{ width: 640 }}
 					data={sortedData}
 					styles={LB_STYLES.orange}
 				/>
