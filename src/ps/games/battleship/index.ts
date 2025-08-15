@@ -18,7 +18,7 @@ export { meta } from '@/ps/games/battleship/meta';
 const HITS_TO_WIN = Ships.map(ship => ship.size).sum();
 
 export class Battleship extends BaseGame<State> {
-	winCtx?: WinCtx | { type: EndType };
+	declare winCtx?: WinCtx | { type: EndType };
 	constructor(ctx: BaseContext) {
 		super(ctx);
 		super.persist(ctx);

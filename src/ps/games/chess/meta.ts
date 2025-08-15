@@ -21,4 +21,14 @@ export const meta: Meta = {
 
 	themes: CHESS_THEMES,
 	defaultTheme,
+
+	// UGO-CODE
+	ugo: {
+		cap: 20,
+		points: {
+			win: 12,
+			draw: 9,
+			loss: 7,
+		},
+	},
 };

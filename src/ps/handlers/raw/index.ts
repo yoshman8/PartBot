@@ -1,7 +1,10 @@
-import { checkHunts } from '@/ps/handlers/raw/scavengers';
+import { checkHunts, onEndHunt } from '@/ps/handlers/raw/scavengers';
 
-export function rawHandler(room: string, data: string, isIntro: boolean): void {
+import type { Client } from 'ps-client';
+
+export function rawHandler(this: Client, room: string, data: string, isIntro: boolean): void {
 	if (isIntro) return;
 	// Hunts
 	checkHunts(room, data);
+	onEndHunt.call(this, room, data);
 }

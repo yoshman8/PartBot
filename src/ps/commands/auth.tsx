@@ -35,7 +35,7 @@ export const command: PSCommand[] = IS_ENABLED.DB
 	? [
 			{
 				name: 'promote',
-				help: 'Promotes a user.',
+				help: 'Promotes a user internally. Internal ranks affect PartBot commands and have no effect on PS.',
 				syntax: 'CMD [rank], [users...]',
 				categories: ['utility'],
 				extendedAliases: {

@@ -1,15 +1,23 @@
+import { addUGOPoints, getAllUGOPoints, getUGOPlayed, setUGOPlayed } from '@/cache/ugo';
 import { getScrabbleDex } from '@/database/games';
 import { Board } from '@/ps/commands/points';
+import { Games } from '@/ps/games';
 import { parseMod } from '@/ps/games/mods';
 import { checkWord } from '@/ps/games/scrabble/checker';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
+import { LB_STYLES } from '@/ps/other/leaderboardStyles';
+import { isUGOActive } from '@/ps/ugo';
+import { BOARD_GAMES_STRUCHNI_ORDER, CHAIN_REACTION_META } from '@/ps/ugo/constants';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
-import { mapValues } from '@/utils/mapValues';
+import { mapValues } from '@/utils/map';
+import { rankedSort } from '@/utils/rankedSort';
 
+import type { UGOUserPoints } from '@/cache/ugo';
 import type { ScrabbleDexEntry } from '@/database/games';
 import type { ToTranslate, TranslationFn } from '@/i18n/types';
+import type { GamesList } from '@/ps/games/types';
 import type { PSCommand } from '@/types/chat';
 import type { ReactElement } from 'react';
 
@@ -21,23 +29,41 @@ export function renderScrabbleDexLeaderboard(entries: ScrabbleDexEntry[], $T: Tr
 		const points = uniqueMons.map(mon => Math.max(1, mon.length - 4)).sum();
 		return { name, count, points };
 	});
-	const sortedData = usersData
-		.sortBy(({ count, points }) => [points, count], 'desc')
-		.map(({ name, count, points }, index, data) => {
-			let rank = index;
+	const sortedData = rankedSort(
+		usersData,
+		({ count, points }) => [points, count],
+		({ name, count, points }) => [name, count, points]
+	);
+	return <Board headers={['#', $T('COMMANDS.POINTS.HEADERS.USER'), 'Unique', 'Points']} data={sortedData} styles={LB_STYLES.orange} />;
+}
 
-			const getPointsKey = (entry: { count: number; points: number }): string => [entry.count, entry.points].join(',');
-			const userPointsKey = getPointsKey({ count, points });
-
-			while (rank > 0) {
-				const prev = data[rank - 1];
-				if (getPointsKey(prev) !== userPointsKey) break;
-				rank--;
-			}
-
-			return [rank + 1, name, count, points];
-		});
-	return <Board headers={['#', $T('COMMANDS.POINTS.HEADERS.USER'), 'Unique', 'Points']} data={sortedData} />;
+export function renderUGOBoardGamesLeaderboard(data: Record<string, UGOUserPoints>, $T: TranslationFn): ReactElement {
+	const sortedData = rankedSort(
+		Object.entries(data),
+		([_name, entry]) => entry.total,
+		([name, entry]) => [name, entry.total, ...BOARD_GAMES_STRUCHNI_ORDER.map(gameId => entry.breakdown[gameId] ?? 0)]
+	);
+	return (
+		<center>
+			<div style={{ margin: 48, overflowX: 'auto' }}>
+				<Board
+					headers={[
+						'#',
+						$T('COMMANDS.POINTS.HEADERS.USER'),
+						'Total Points',
+						...BOARD_GAMES_STRUCHNI_ORDER.map(gameId =>
+							gameId in Games
+								? (Games[gameId as GamesList].meta.abbr ?? Games[gameId as GamesList].meta.name)
+								: CHAIN_REACTION_META.abbr
+						),
+					]}
+					style={{ width: 640 }}
+					data={sortedData}
+					styles={LB_STYLES.orange}
+				/>
+			</div>
+		</center>
+	);
 }
 
 export const command: PSCommand[] = [
@@ -100,6 +126,34 @@ export const command: PSCommand[] = [
 				</details>,
 				{ name: `scrabbledex-${message.author.id}` }
 			);
+		},
+	},
+	{
+		name: 'ugoexternal',
+		help: 'Adds points for external UGO games.',
+		syntax: 'CMD [winner], [...others]',
+		flags: { allowPMs: true },
+		perms: message => message.author.id === 'partprofessor',
+		categories: ['game'],
+		async run({ arg, message }) {
+			if (!isUGOActive()) throw new ChatError("UGO isn't active!" as ToTranslate);
+			const players = arg.split(',');
+			const winner = players[0];
+
+			const pointsData = Object.fromEntries(
+				players
+					.filter(player => {
+						const prevCount = getUGOPlayed(CHAIN_REACTION_META.id, player);
+						setUGOPlayed(CHAIN_REACTION_META.id, player, prevCount + 1);
+						return prevCount <= CHAIN_REACTION_META.ugo.cap;
+					})
+					.map(player => [
+						player.trim(),
+						player === winner ? CHAIN_REACTION_META.ugo.points.win(players.length) : CHAIN_REACTION_META.ugo.points.loss,
+					])
+			);
+
+			addUGOPoints.call(message.parent, pointsData, CHAIN_REACTION_META.id);
 		},
 	},
 ];

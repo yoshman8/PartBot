@@ -8,4 +8,7 @@ export const meta: Meta = {
 	aliases: ['mm'],
 	abbr: 'mm',
 	players: 'single',
+
+	// UGO-CODE
+	ugo: null
 };

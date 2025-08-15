@@ -43,8 +43,8 @@ export function sameRowOrCol(point: Point, ref: Point): boolean {
 export function rangePoints(from: Point, to: Point, length?: number): Point[] {
 	let count: number | undefined = length;
 	if (!length) {
-		const xDist = to[0] - from[0];
-		const yDist = to[1] - from[1];
+		const xDist = Math.abs(to[0] - from[0]);
+		const yDist = Math.abs(to[1] - from[1]);
 		if (xDist && yDist) throw new TypeError(`length was not provided for a range between points ${from} -> ${to}`);
 		if (xDist === 0 && yDist === 0) return [to];
 		count = (xDist || yDist) + 1;

@@ -9,6 +9,7 @@ export const meta: Meta = {
 	name: 'Scrabble',
 	id: GamesList.Scrabble,
 	aliases: ['scrab'],
+	abbr: 'Scrab',
 
 	players: 'many',
 	minSize: 2,
@@ -22,4 +23,14 @@ export const meta: Meta = {
 	autostart: false,
 	pokeTimer: fromHumanTime('1 min'),
 	timer: fromHumanTime('5 min'),
+
+	// UGO-CODE
+	ugo: {
+		cap: 6,
+		points: {
+			win: 20,
+			draw: 15,
+			loss: 12,
+		},
+	},
 };

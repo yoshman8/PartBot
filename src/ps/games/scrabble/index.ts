@@ -35,7 +35,7 @@ export class Scrabble extends BaseGame<State> {
 	log: Log[] = [];
 	passCount: number | null = null;
 	selected: Point | null = null;
-	winCtx?: WinCtx | { type: EndType };
+	declare winCtx?: WinCtx | { type: EndType };
 	mod: ScrabbleMods | null = null;
 
 	constructor(ctx: BaseContext) {
@@ -316,6 +316,10 @@ export class Scrabble extends BaseGame<State> {
 			return this.$T('GAME.ENDED', { game: this.meta.name, id: this.id });
 		}
 
+		Object.keys(this.players).forEach(playerId => {
+			this.state.score[playerId] -= this.state.racks[playerId].map(tile => this.points[tile]).sum();
+		});
+
 		const winners = Object.entries(this.state.score)
 			.map(([id, score]) => ({
 				...this.players[id],
@@ -324,9 +328,6 @@ export class Scrabble extends BaseGame<State> {
 			.sortBy(entry => entry.score, 'desc')
 			.filter((entry, _, list) => entry.score === list[0].score);
 
-		Object.keys(this.players).forEach(playerId => {
-			this.state.score[playerId] -= this.state.racks[playerId].map(tile => this.points[tile]).sum();
-		});
 		this.winCtx = {
 			type: 'win',
 			winnerIds: winners.map(winner => winner.id),
@@ -346,7 +347,7 @@ export class Scrabble extends BaseGame<State> {
 	}
 
 	render(side: string | null) {
-		const isActive = !!side && side === this.turn;
+		const isActive = !!this.winCtx && !!side && side === this.turn;
 		const ctx: RenderCtx = {
 			id: this.id,
 			baseBoard: this.state.baseBoard,
@@ -393,8 +394,7 @@ export class Scrabble extends BaseGame<State> {
 		const bestPlayer = winnerPlayers.sortBy(player => player.best?.points ?? 0, 'desc')[0];
 		if (!bestPlayer?.best) return null;
 		const title = `${bestPlayer.name}: ${bestPlayer.best.asText} [${bestPlayer.best.points}]`;
-		return new EmbedBuilder().setColor('#ccc5a8').setAuthor({ name: 'Scrabble - Room Match' }).setTitle(title);
-		// .setURL(this.getURL()) // TODO
+		return new EmbedBuilder().setColor('#ccc5a8').setAuthor({ name: 'Scrabble - Room Match' }).setTitle(title).setURL(this.getURL());
 	}
 
 	readFromBoard([x, y]: Point, safe?: boolean): BoardTile | null {

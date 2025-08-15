@@ -19,7 +19,7 @@ export type Log = Satisfies<
 		  }
 		| {
 				action: ACTIONS.RESERVE;
-				ctx: { id: string; deck: number | null; trainers?: string[] };
+				ctx: { id: string; gotDragon?: boolean; deck: number | null; trainers?: string[] };
 		  }
 		| {
 				action: ACTIONS.DRAW;

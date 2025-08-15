@@ -137,7 +137,7 @@ export class Splendor extends BaseGame<State> {
 		return { success: true, data: foundCard };
 	}
 
-	getTokens(tokens: Partial<TokenCount>, playerData: PlayerData): void {
+	receiveTokens(tokens: Partial<TokenCount>, playerData: PlayerData): void {
 		const bank = this.state.board.tokens;
 		(Object.entries(tokens) as [TOKEN_TYPE, number][]).forEach(([tokenType, count]) => {
 			if (count > bank[tokenType]) {
@@ -310,13 +310,16 @@ export class Splendor extends BaseGame<State> {
 					reservedId = card.id;
 				}
 
-				this.getTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
+				this.receiveTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
+				const willReceiveDragon = this.state.board.tokens[TOKEN_TYPE.DRAGON] > 0;
+				if (willReceiveDragon) this.receiveTokens({ [TOKEN_TYPE.DRAGON]: 1 }, playerData);
+				else this.room.privateSend(player.id, 'You reserved a card, but there were no Dragon tokens left to receive.' as ToTranslate);
 
 				logEntry = {
 					turn: player.turn,
 					time: new Date(),
 					action: ACTIONS.RESERVE,
-					ctx: { id: reservedId, deck: deckReserve },
+					ctx: { id: reservedId, deck: deckReserve, gotDragon: willReceiveDragon },
 				};
 				break;
 			}
@@ -348,7 +351,7 @@ export class Splendor extends BaseGame<State> {
 				const tokens = this.parseTokens(actionCtx);
 				const validateTokens = this.getTokenIssues(tokens);
 				if (!validateTokens.success) throw new ChatError(validateTokens.error);
-				this.getTokens(tokens, playerData);
+				this.receiveTokens(tokens, playerData);
 
 				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.DRAW, ctx: { tokens } };
 				break;
@@ -416,7 +419,7 @@ export class Splendor extends BaseGame<State> {
 	}
 
 	canReserve(player: Player): boolean {
-		return this.state.playerData[player.turn].reserved.length < MAX_RESERVE_COUNT && this.state.board.tokens[TOKEN_TYPE.DRAGON] > 0;
+		return this.state.playerData[player.turn].reserved.length < MAX_RESERVE_COUNT;
 	}
 
 	/**

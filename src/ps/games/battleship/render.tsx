@@ -1,5 +1,5 @@
 import { SHIP_DATA, Ships } from '@/ps/games/battleship/constants';
-import { type CellRenderer, Table } from '@/ps/games/render';
+import { type CellRenderer, LogEntry, Table } from '@/ps/games/render';
 import { createGrid } from '@/ps/games/utils';
 import { Username } from '@/utils/components';
 import { Button, Form } from '@/utils/components/ps';
@@ -21,53 +21,42 @@ import type {
 	WinCtx,
 } from '@/ps/games/battleship/types';
 import type { EndType, Player } from '@/ps/games/types';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 
 const EMPTY_BOARD: null[][] = createGrid(10, 10, () => null);
 
-export function renderMove(logEntry: Log, { id, players, $T, renderCtx: { msg } }: Battleship): [ReactElement, { name: string }] {
-	const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
-		<>
-			<hr />
-			{children}
-			<Button name="send" value={`${msg} watch`} style={{ float: 'right' }}>
-				{$T('GAME.LABELS.WATCH')}
-			</Button>
-			<hr />
-		</>
-	);
-
-	const playerName = players[logEntry.turn]?.name;
-	const opts = { name: `${id}-chatlog` };
+export function renderMove(logEntry: Log, game: Battleship): [ReactElement, { name: string }] {
+	const playerName = game.players[logEntry.turn]?.name;
+	const opts = { name: `${game.id}-chatlog` };
 
 	switch (logEntry.action) {
 		case 'set':
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					<Username name={playerName} clickable /> set their ships!
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 		case 'hit':
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					<Username name={playerName} clickable /> hit the enemy {logEntry.ctx.ship}!
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 		case 'miss':
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					<Username name={playerName} clickable /> missed.
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 		default:
-			Logger.log('Battleship had some weird move', logEntry, players);
+			Logger.log('Battleship had some weird move', logEntry, game.players);
 			return [
-				<Wrapper>
+				<LogEntry game={game}>
 					Well <i>something</i> happened, I think! Someone go poke PartMan
-				</Wrapper>,
+				</LogEntry>,
 				opts,
 			];
 	}

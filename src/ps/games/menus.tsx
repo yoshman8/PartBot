@@ -24,7 +24,7 @@ export function renderMenu(room: PSRoomTranslated, meta: Meta, isStaff: boolean)
 							<>
 								{Object.values(game.players)
 									.map(player => {
-										const username = <Username name={player.name} />;
+										const username = <Username name={player.name} clickable />;
 										return player.out ? <s>{username}</s> : username;
 									})
 									.space('/')}
@@ -36,7 +36,7 @@ export function renderMenu(room: PSRoomTranslated, meta: Meta, isStaff: boolean)
 							game.turns
 								.map(turn =>
 									game.players[turn] ? (
-										<Username name={game.players[turn].name} />
+										<Username name={game.players[turn].name} clickable />
 									) : (
 										<Button value={`${cmd} join ${turn}`}>{$T('GAME.LABELS.JOIN_SIDE', { side: turn })}</Button>
 									)
@@ -45,7 +45,7 @@ export function renderMenu(room: PSRoomTranslated, meta: Meta, isStaff: boolean)
 						) : (
 							<>
 								{Object.values(game.players)
-									.map(player => <Username name={player.name} />)
+									.map(player => <Username name={player.name} clickable />)
 									.space(', ')}
 								{Object.keys(game.players).length < game.meta.maxSize! ? (
 									<Button value={`${cmd} join`} style={{ marginLeft: 10 }}>

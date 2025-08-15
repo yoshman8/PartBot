@@ -291,7 +291,7 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 				name: 'forfeit',
 				aliases: ['f', 'ff', 'leave', 'l'],
 				help: 'Forfeits a game, or leaves one in signups.',
-				syntax: 'CMD #id',
+				syntax: 'CMD [#id]',
 				async run({ message, arg, $T }) {
 					const { game } = getGame(arg, { action: 'leave', user: message.author.id }, { room: message.target, $T });
 					if (game.started) {
@@ -316,7 +316,7 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 				aliases: ['dq', 'yeet'],
 				help: 'Disqualifies a user.',
 				perms: Symbol.for('games.manage'),
-				syntax: 'CMD [game ref?], user',
+				syntax: 'CMD [game ref?], [user]',
 				async run({ message, arg, $T }) {
 					const { game, ctx } = getGame(arg, { action: 'leave' }, { room: message.target, $T });
 					const res = game.removePlayer(toId(ctx));
@@ -326,6 +326,26 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 						if (res.data.cb) res.data.cb();
 					}
 					if (!game.started) game.signups();
+				},
+			},
+			forcewin: {
+				name: 'forcewin',
+				aliases: ['fwin', 'win'],
+				help: 'Forces the winner of a game.',
+				perms: 'driver',
+				syntax: 'CMD [#id], [user]',
+				async run({ arg, message, $T }) {
+					const [_gameId, _userId] = arg.lazySplit(',', 1);
+					const gameId = '#' + toId(_gameId);
+					const userId = toId(_userId);
+					if (!userId) throw new ChatError('You must specify the game ID for forcewin!' as ToTranslate);
+					const game = PSGames[Game.meta.id]?.[gameId];
+					if (!game) throw new ChatError($T('GAME.NOT_FOUND'));
+					const player = game.getPlayer(userId);
+					if (!player) throw new ChatError($T('GAME.IMPOSTOR_ALERT'));
+
+					// UGO-CODE
+					// TODO
 				},
 			},
 			rejoin: {

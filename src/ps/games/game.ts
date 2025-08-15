@@ -1,11 +1,13 @@
 import { PSGames } from '@/cache';
 import { gameCache } from '@/cache/games';
+import { addUGOPoints, getUGOPlayed, setUGOPlayed } from '@/cache/ugo';
 import { isGlobalBot, prefix } from '@/config/ps';
 import { uploadGame } from '@/database/games';
 import { BOT_LOG_CHANNEL } from '@/discord/constants/servers/boardgames';
 import { getChannel } from '@/discord/loaders/channels';
 import { IS_ENABLED } from '@/enabled';
 import { Small, renderCloseSignups, renderSignups } from '@/ps/games/render';
+import { checkUGO } from '@/ps/games/utils';
 import { toHumanTime, toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { Logger } from '@/utils/logger';
@@ -82,6 +84,8 @@ export class BaseGame<State extends BaseState> {
 
 	theme?: string;
 	mod?: string | null;
+
+	winCtx?: { type: 'win'; winner: Player } | { type: 'win'; winnerIds: string[] } | { type: 'draw' } | { type: string };
 
 	// Game-provided methods:
 	render(side: State['turn'] | null): ReactElement;
@@ -277,7 +281,6 @@ export class BaseGame<State extends BaseState> {
 			if (staffHTML) this.room.sendHTML(staffHTML, { name: this.id, rank: '+', change: true });
 		}
 	}
-	// TODO: Handle max players state
 	renderCloseSignups?(): ReactElement;
 	closeSignups(change = true): void {
 		const closeSignupsHTML = (this.renderCloseSignups ?? renderCloseSignups).bind(this)();
@@ -318,6 +321,23 @@ export class BaseGame<State extends BaseState> {
 			if (!onAddPlayer.success) return onAddPlayer;
 		}
 		this.players[newPlayer.turn] = newPlayer;
+		// UGO-CODE
+		if (checkUGO(this)) {
+			const playedToday = getUGOPlayed(this.meta.id, newPlayer.id);
+			if (playedToday >= this.meta.ugo.cap)
+				this.room.privateSend(
+					newPlayer.id,
+					// eslint-disable-next-line max-len -- Welp
+					`Hi, you've already played ${playedToday} games of ${this.meta.name} today! You can play more, but you won't get UGO points for them until the count resets at midnight UTC.` as NoTranslate
+				);
+			else {
+				this.room.privateSend(
+					newPlayer.id,
+					(`Hi, this is game #${playedToday + 1} of ${this.meta.name} that you've joined today.` +
+						` Only the first ${this.meta.ugo.cap} games will count for UGO points.`) as NoTranslate
+				);
+			}
+		}
 		if (this.meta.players === 'single' || (Array.isArray(availableSlots) && availableSlots.length === 1) || availableSlots === 1) {
 			// Join was successful and game is now full
 			if (this.meta.players === 'single' || this.meta.autostart) this.start();
@@ -387,6 +407,10 @@ export class BaseGame<State extends BaseState> {
 		if (this.turn === turn) this.turn = newTurn;
 		this.spectators.remove(oldPlayer.id, withPlayer.id);
 		this.onAfterReplacePlayer?.(this.players[newTurn]);
+		if (checkUGO(this)) {
+			setUGOPlayed(this.meta.id, withPlayer.id, prev => prev + 1);
+			setUGOPlayed(this.meta.id, oldPlayer.id, prev => prev - 1);
+		}
 		this.backup();
 		return { success: true, data: this.$T('GAME.SUB', { in: withPlayer.name, out: oldPlayer.name }) };
 	}
@@ -423,6 +447,11 @@ export class BaseGame<State extends BaseState> {
 		this.setTimer('Game started');
 		this.onAfterStart?.();
 		this.backup();
+		if (checkUGO(this)) {
+			Object.values(this.players).forEach(player => {
+				setUGOPlayed(this.meta.id, player.id, prev => prev + 1);
+			});
+		}
 		return { success: true, data: null };
 	}
 
@@ -461,7 +490,7 @@ export class BaseGame<State extends BaseState> {
 	update(user?: string): void {
 		if (!this.started) return;
 		if (user) {
-			const asPlayer = Object.values(this.players).find(player => player.id === user);
+			const asPlayer = this.getPlayer(user);
 			if (asPlayer && !asPlayer.out) return this.sendHTML(asPlayer.id, this.render(asPlayer.turn));
 			if (this.spectators.includes(user)) return this.sendHTML(user, this.render(null));
 			this.throw('GAME.NON_PLAYER_OR_SPEC');
@@ -479,6 +508,12 @@ export class BaseGame<State extends BaseState> {
 	getURL(): Promise<string | null> | string | null {
 		if (this.meta.players === 'single') return null;
 		return `${process.env.WEB_URL}/${this.meta.id}/${this.id.replace(/^#/, '')}`;
+	}
+
+	forceWin(_player: Player): void {
+		if (!this.started) this.throw('GAME.NOT_STARTED');
+		this.end('force');
+		// TODO
 	}
 
 	end(type?: EndType): void {
@@ -523,6 +558,64 @@ export class BaseGame<State extends BaseState> {
 					this.room.send(this.$T('GAME.UPLOAD_FAILED', { id: this.id }));
 				});
 		}
+
+		// UGO-CODE
+		if (checkUGO(this) && this.winCtx) {
+			if (this.winCtx.type === 'win' || this.winCtx.type === 'draw' || type === 'dq') {
+				const allPlayers = Object.values(this.players);
+				const players = allPlayers.filter(player => !player.out).map(player => player.turn);
+
+				const winners =
+					type === 'dq' && players.length === 1
+						? players
+						: !('type' in this.winCtx)
+							? []
+							: this.winCtx.type === 'win'
+								? 'winner' in this.winCtx
+									? [this.winCtx.winner.turn]
+									: 'winnerIds' in this.winCtx
+										? (this.winCtx.winnerIds as string[])
+										: []
+								: this.winCtx.type === 'draw'
+									? Object.values(this.players).map(player => player.turn)
+									: [];
+
+				const pointsToAdd: Record<string, number> = {};
+
+				if (winners.length === 1) {
+					pointsToAdd[this.players[winners[0]].name] =
+						typeof this.meta.ugo.points.win === 'function' ? this.meta.ugo.points.win(allPlayers.length) : this.meta.ugo.points.win;
+				} else if (winners.length > 1) {
+					winners.forEach(winner => (pointsToAdd[this.players[winner].name] = this.meta.ugo.points.draw ?? this.meta.ugo.points.loss));
+				}
+
+				players.forEach(turn => {
+					if (!winners.includes(turn)) {
+						pointsToAdd[this.players[turn].name] = this.meta.ugo.points.loss;
+					}
+				});
+
+				Object.keys(pointsToAdd).forEach(user => {
+					if (getUGOPlayed(this.meta.id, user) > this.meta.ugo.cap) delete pointsToAdd[user];
+				});
+
+				Object.entries(pointsToAdd).forEach(([user, points]) => {
+					this.room.privateSend(user, `You have received ${points} points for ${this.meta.name} in Board Games!` as NoTranslate);
+				});
+
+				addUGOPoints.call(this.parent, pointsToAdd, this.meta.id);
+			} else {
+				if (type === 'force') {
+					Object.values(this.players).forEach(player => {
+						if (!player.out) {
+							this.room.privateSend(player.id, 'This game will not count towards your daily cap.' as NoTranslate);
+							setUGOPlayed(this.meta.id, player.id, prev => prev - 1);
+						}
+					});
+				}
+			}
+		}
+
 		// Delete from cache
 		delete PSGames[this.meta.id]![this.id];
 		gameCache.delete(this.id);
