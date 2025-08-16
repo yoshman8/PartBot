@@ -587,7 +587,7 @@ export class BaseGame<State extends BaseState> {
 							? []
 							: this.winCtx.type === 'win'
 								? 'winner' in this.winCtx
-									? [this.winCtx.winner.turn]
+									? [this.winCtx.winner.turn ?? this.winCtx.winner.id]
 									: 'winnerIds' in this.winCtx
 										? (this.winCtx.winnerIds as string[])
 										: []
