@@ -1,6 +1,7 @@
 import { uploadToPastie } from 'ps-client/tools';
 
 import { PSPointsNonce, PSRoomConfigs } from '@/cache';
+import { getAllUGOPoints } from '@/cache/ugo';
 import {
 	type BulkPointsDataInput,
 	type Model as PointsModel,
@@ -11,6 +12,7 @@ import {
 	resetPoints,
 } from '@/database/points';
 import { IS_ENABLED } from '@/enabled';
+import { renderUGOBoardGamesLeaderboard } from '@/ps/commands/games/other';
 import { LB_COMMON_STYLES as COMMON_STYLES, LB_STYLES } from '@/ps/other/leaderboardStyles';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
@@ -242,6 +244,13 @@ export const command: PSCommand[] = [
 		aliases: ['lb'],
 		categories: ['points'],
 		async run({ message, $T, args, broadcastHTML }) {
+			// UGO-CODE
+			if (message.target.roomid === 'boardgames') {
+				// Overload for Board Games
+				const data = getAllUGOPoints();
+				message.author.pageHTML(renderUGOBoardGamesLeaderboard(data, $T), { name: 'ugo' });
+				return;
+			}
 			if (!IS_ENABLED.DB) throw new ChatError($T('DISABLED.DB'));
 			// TODO: Maybe have some helper function to parse room name if not given
 			const room = message.parent.getRoom(message.type === 'chat' ? message.target.id : (args.shift() ?? ''));
