@@ -62,7 +62,7 @@ export class Scrabble extends BaseGame<State> {
 			const defaultMod = ScrabbleMods.POKEMON;
 			const applyMons = this.applyMod(defaultMod);
 			if (!applyMons.success) throw new Error(applyMons.error);
-			this.room.send(`Game #${this.id} had ${ScrabbleModData[defaultMod].name} applied automatically!` as ToTranslate);
+			this.room.send(`Game ${this.id} had ${ScrabbleModData[defaultMod].name} applied automatically!` as ToTranslate);
 		}
 		this.state.baseBoard = BaseBoard;
 		this.state.board = createGrid<BoardTile | null>(BaseBoard.length, BaseBoard[0].length, () => null);
