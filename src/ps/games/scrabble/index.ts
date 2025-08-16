@@ -10,15 +10,15 @@ import {
 	PLAY_ACTION_PATTERN,
 	RACK_SIZE,
 	SELECT_ACTION_PATTERN,
+	ScrabbleMods,
 } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
 import { render, renderMove } from '@/ps/games/scrabble/render';
-import { createGrid } from '@/ps/games/utils';
+import { checkUGO, createGrid } from '@/ps/games/utils';
 import { type Point, coincident, flipPoint, multiStepPoint, rangePoints, stepPoint } from '@/utils/grid';
 
-import type { TranslatedText } from '@/i18n/types';
+import type { ToTranslate, TranslatedText } from '@/i18n/types';
 import type { BaseContext } from '@/ps/games/game';
-import type { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import type { Log } from '@/ps/games/scrabble/logs';
 import type { BoardTile, Bonus, BonusReducer, Points, RenderCtx, State, WinCtx, Word, WordScore } from '@/ps/games/scrabble/types';
 import type { ActionResponse, EndType } from '@/ps/games/types';
@@ -48,12 +48,22 @@ export class Scrabble extends BaseGame<State> {
 	}
 
 	applyMod(mod: ScrabbleMods): ActionResponse<TranslatedText> {
+		// UGO-CODE
+		if (checkUGO(this) && ![ScrabbleMods.POKEMON, ScrabbleMods.CRAZYMONS].includes(mod))
+			return { success: false, error: 'The only mods allowed during UGO are Pokémon and Crazymons!' as ToTranslate };
 		this.mod = mod;
 		this.points = ScrabbleModData[mod].points ?? LETTER_POINTS;
 		return { success: true, data: this.$T('GAME.APPLIED_MOD', { mod: ScrabbleModData[mod].name, id: this.id }) };
 	}
 
 	onStart(): ActionResponse {
+		// UGO-CODE
+		if (checkUGO(this) && !this.mod) {
+			const defaultMod = ScrabbleMods.POKEMON;
+			const applyMons = this.applyMod(defaultMod);
+			if (!applyMons.success) throw new Error(applyMons.error);
+			this.room.send(`Game #${this.id} had ${ScrabbleModData[defaultMod].name} applied automatically!` as ToTranslate);
+		}
 		this.state.baseBoard = BaseBoard;
 		this.state.board = createGrid<BoardTile | null>(BaseBoard.length, BaseBoard[0].length, () => null);
 		this.state.bag = Object.entries((this.mod ? ScrabbleModData[this.mod].counts : null) ?? LETTER_COUNTS)
