@@ -23,9 +23,7 @@ import type { PSCommand } from '@/types/chat';
 import type { ReactElement } from 'react';
 
 export function renderScrabbleDexLeaderboard(entries: ScrabbleDexEntry[], $T: TranslationFn): ReactElement {
-	const usersData = Object.values(
-		entries.filter(entry => entry.won).groupBy(entry => entry.by) as Record<string, ScrabbleDexEntry[]>
-	).map(entries => {
+	const usersData = Object.values(entries.groupBy(entry => entry.by) as Record<string, ScrabbleDexEntry[]>).map(entries => {
 		const name = entries.findLast(entry => entry.byName)?.byName ?? entries[0].by;
 		const uniqueMons = entries.map(entry => entry.pokemon).unique();
 		const count = uniqueMons.length;

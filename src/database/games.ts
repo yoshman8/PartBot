@@ -138,5 +138,6 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 					});
 				})
 				.flat();
-		});
+		})
+		.filter(entry => entry.won);
 }
