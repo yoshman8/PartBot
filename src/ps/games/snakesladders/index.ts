@@ -100,7 +100,7 @@ export class SnakesLadders extends BaseGame<State> {
 		this.log.push({ turn: player, time: new Date(), action: 'roll', ctx: dice });
 
 		if (final === 100) {
-			this.winCtx = { type: 'win', winner: { ...this.players[current], board: this.state.board } };
+			this.winCtx = { type: 'win', winner: { ...this.players[player], board: this.state.board } };
 			this.end();
 			return;
 		}
