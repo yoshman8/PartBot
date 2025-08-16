@@ -8,7 +8,7 @@ const baseConsoleError = console.error.bind(console);
 
 const keyWarningPattern = 'Warning: Each child in a list should have a unique "key" prop.';
 const valueFieldPattern = 'Warning: You provided a `value` prop to a form field without an `onChange` handler.';
-const checkedFieldPattern = 'Warning: You provided a `value` prop to a form field without an `onChange` handler.';
+const checkedFieldPattern = 'Warning: You provided a `checked` prop to a form field without an `onChange` handler.';
 
 console.error = function (...args) {
 	if (
