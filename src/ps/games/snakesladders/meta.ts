@@ -13,7 +13,7 @@ export const meta: Meta = {
 	minSize: 2,
 	maxSize: 4,
 
-	autostart: false,
+	autostart: true,
 	pokeTimer: fromHumanTime('30 sec'),
 	timer: fromHumanTime('45 sec'),
 

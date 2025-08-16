@@ -20,7 +20,7 @@ export const meta: Meta = {
 		data: ScrabbleModData,
 	},
 
-	autostart: false,
+	autostart: true,
 	pokeTimer: fromHumanTime('1 min'),
 	timer: fromHumanTime('5 min'),
 
