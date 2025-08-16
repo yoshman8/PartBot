@@ -1,5 +1,6 @@
-import { addUGOPoints, getAllUGOPoints, getUGOPlayed, setUGOPlayed } from '@/cache/ugo';
+import { addUGOPoints, getUGOPlayed, setUGOPlayed } from '@/cache/ugo';
 import { getScrabbleDex } from '@/database/games';
+import { IS_ENABLED } from '@/enabled';
 import { Board } from '@/ps/commands/points';
 import { Games } from '@/ps/games';
 import { parseMod } from '@/ps/games/mods';
@@ -97,11 +98,25 @@ export const command: PSCommand[] = [
 	},
 	{
 		name: 'scrabbledex',
-		help: "Shows a user's current Scrabble Dex for UGO.",
+		help: "Shows a user's current ScrabbleDex for UGO.",
 		syntax: 'CMD [user?]',
 		flags: { allowPMs: true },
 		categories: ['game'],
+		children: {
+			leaderboard: {
+				name: 'leaderboard',
+				help: 'Shows the current ScrabbleDex leaderboard for UGO.',
+				syntax: 'CMD',
+				aliases: ['board', 'lb', 'top'],
+				async run({ message, $T }) {
+					if (!IS_ENABLED.DB) throw new ChatError($T('DISABLED.DB'));
+					const entries = await getScrabbleDex();
+					message.author.pageHTML(renderScrabbleDexLeaderboard(entries!, $T), { name: 'scrabbledex' });
+				},
+			},
+		},
 		async run({ message, broadcastHTML, arg, $T }) {
+			if (!IS_ENABLED.DB) throw new ChatError($T('DISABLED.DB'));
 			const target = toId(arg) || message.author.id;
 			const allEntries = await getScrabbleDex();
 			const results = allEntries!.filter(entry => entry.by === target);
