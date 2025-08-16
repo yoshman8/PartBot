@@ -35,7 +35,14 @@ export function renderScrabbleDexLeaderboard(entries: ScrabbleDexEntry[], $T: Tr
 		({ count, points }) => [points, count],
 		({ name, count, points }) => [name, count, points]
 	);
-	return <Board headers={['#', $T('COMMANDS.POINTS.HEADERS.USER'), 'Unique', 'Points']} data={sortedData} styles={LB_STYLES.orange} />;
+	return (
+		<Board
+			headers={['#', $T('COMMANDS.POINTS.HEADERS.USER'), 'Unique', 'Points']}
+			data={sortedData}
+			asPage
+			styles={LB_STYLES.orange}
+		/>
+	);
 }
 
 export function renderUGOBoardGamesLeaderboard(data: Record<string, UGOUserPoints>, $T: TranslationFn): ReactElement {
@@ -58,8 +65,9 @@ export function renderUGOBoardGamesLeaderboard(data: Record<string, UGOUserPoint
 								: CHAIN_REACTION_META.abbr
 						),
 					]}
-					style={{ width: 640 }}
 					data={sortedData}
+					asPage
+					style={{ width: 640 }}
 					styles={LB_STYLES.orange}
 				/>
 			</div>
