@@ -70,7 +70,7 @@ export function checkHunts(room: string, data: string) {
 
 export function onEndHunt(this: Client, room: string, data: string) {
 	if (!SCAVS_ROOMS.includes(room)) return;
-	const isMainRoom = room === 'groupchat-scavengers-test';
+	const isMainRoom = room === 'scavengers';
 
 	const huntEnd = data.match(HUNT_END_PATTERN) as { groups: { type: HuntType } } | null;
 
