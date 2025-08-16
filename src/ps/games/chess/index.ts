@@ -184,11 +184,9 @@ export class Chess extends BaseGame<State> {
 			id: this.id,
 			turn: this.turn!,
 			theme: this.meta.themes[this.theme!].colors,
-			small: false,
 		};
 		if (this.winCtx) {
 			ctx.header = this.$T('GAME.GAME_ENDED');
-			if (side === null) ctx.small = true; // chatroom
 		} else if (side === this.turn) {
 			ctx.header = this.$T('GAME.YOUR_TURN');
 			if (this.selected) {

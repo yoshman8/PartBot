@@ -13,7 +13,7 @@ export const CHESS_THEMES: Record<string, Theme<ThemeColours>> = {
 			B: '#9c5624',
 			sel: '#87cefa',
 			hl: '#adff2fa5',
-			last: '#ff3300180',
+			last: '#ff330080',
 		},
 	},
 	snow: {
@@ -25,7 +25,7 @@ export const CHESS_THEMES: Record<string, Theme<ThemeColours>> = {
 			B: '#ddd',
 			sel: '#99e6e6',
 			hl: '#c2ff6666',
-			last: '#ff330080',
+			last: '#ff330019',
 		},
 	},
 	ocean: {

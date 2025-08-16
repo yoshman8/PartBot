@@ -36,7 +36,7 @@ function adaptBoard(board: BoardCell[][], flip: boolean): BoardCell[][] {
 }
 
 export function renderBoard(this: This, ctx: RenderCtx) {
-	const size = ctx.small ? 30 : 45;
+	const size = 45;
 	const flip = ctx.side === 'B';
 
 	const Cell: CellRenderer<BoardCell> = ({ cell, i, j }) => {

@@ -29,7 +29,6 @@ export type RenderCtx = {
 	dimHeader?: boolean;
 	promotion?: boolean;
 	theme: ThemeColours;
-	small?: boolean;
 };
 
 export type WinCtx = ({ type: 'win' } & Record<'winner' | 'loser', { name: string; id: string; turn: string }>) | { type: 'draw' };
