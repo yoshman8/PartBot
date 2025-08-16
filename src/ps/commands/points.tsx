@@ -39,16 +39,18 @@ function getPointsType(input: string, roomPoints: NonNullable<PSRoomConfig['poin
 export function Board({
 	headers,
 	data,
+	asPage = false,
 	style,
 	styles = {},
 }: {
 	headers: (string | { hover: string; title: string })[];
 	data: (string | number)[][];
+	asPage?: boolean;
 	style?: CSSProperties;
 	styles?: { header?: CSSProperties; odd?: CSSProperties; even?: CSSProperties };
 }): ReactElement {
 	return (
-		<div style={{ maxHeight: 320, overflowY: 'scroll' }}>
+		<div style={{ ...(!asPage ? { maxHeight: 320 } : undefined), overflowY: 'scroll' }}>
 			<center>
 				<table style={{ borderCollapse: 'collapse', borderSpacing: 0, borderColor: '#aaa', ...style }}>
 					<colgroup>
