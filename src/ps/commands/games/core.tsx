@@ -147,7 +147,7 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 		flags: {
 			routePMs: true,
 		},
-		help: 'Game module.',
+		help: `Game module for ${Game.meta.name}. See subcommands.`,
 		syntax: 'CMD',
 		async run({ run, command }) {
 			return run(`help ${command.join(' ')}`);

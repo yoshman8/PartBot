@@ -145,10 +145,14 @@ export const command: PSCommand = {
 	aliases: ['h'],
 	flags: { allowPMs: true },
 	categories: ['utility'],
-	async run({ message, broadcastHTML, args, checkPermissions, $T }) {
+	async run({ message, broadcastHTML, args, checkPermissions, $T, calledFrom }) {
+		const sendHTML = (HTML: ReactElement) => {
+			if (calledFrom) return message.replyHTML(HTML);
+			else return broadcastHTML(HTML);
+		};
 		const Bot = message.parent;
 		if (!args.length) {
-			return broadcastHTML(
+			return sendHTML(
 				<center className="infobox">
 					<div style={{ maxWidth: 400 }}>
 						<p>
@@ -183,7 +187,7 @@ export const command: PSCommand = {
 		if (command.perms && !checkPermissions(command.perms))
 			throw new ChatError($T(command.flags?.conceal ? 'COMMANDS.HELP.COULD_NOT_FIND_COMMAND' : 'ACCESS_DENIED'));
 		if (command.help) {
-			broadcastHTML(
+			sendHTML(
 				<div className="infobox" style={{ padding: 8 }}>
 					{closeEnough ? (
 						<>
