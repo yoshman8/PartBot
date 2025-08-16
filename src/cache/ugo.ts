@@ -72,7 +72,7 @@ export function addUGOPoints(this: Client, pointsData: Record<string, number>, g
 
 		current[playerId].name = player.trim();
 		current[playerId].points[game] = updatedPoints;
-		return updatedPoints;
+		return parsePoints(current[playerId].points).total;
 	});
 	UGO_POINTS.set(current);
 
