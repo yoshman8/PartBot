@@ -245,7 +245,7 @@ export const command: PSCommand[] = [
 		categories: ['points'],
 		async run({ message, $T, args, broadcastHTML }) {
 			// UGO-CODE
-			if (message.target.roomid === 'boardgames') {
+			if (['boardgames', 'ugo'].includes(message.target.roomid)) {
 				// Overload for Board Games
 				const data = getAllUGOPoints();
 				message.author.pageHTML(renderUGOBoardGamesLeaderboard(data, $T), { name: 'ugo' });
