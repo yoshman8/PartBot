@@ -1,5 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
-
 import { PSCommands, PSPointsNonce, PSRoomConfigs } from '@/cache';
 import { prefix } from '@/config/ps';
 import { type BulkPointsDataInput, bulkAddPoints } from '@/database/points';
@@ -13,6 +11,7 @@ import { toId } from '@/tools';
 import { Username } from '@/utils/components';
 import { Form } from '@/utils/components/ps';
 import { Logger } from '@/utils/logger';
+import { mapValues } from '@/utils/map';
 import { pluralize } from '@/utils/pluralize';
 import { randomString } from '@/utils/random';
 
@@ -49,12 +48,11 @@ export type BracketTree = {
 };
 
 function labelPoints(data: Record<string, number>, pointsType: string): Record<string, Record<string, number>> {
-	// TODO: Add mapValues
-	return Object.fromEntries(Object.entries(data).map(([user, amount]) => [user, { [pointsType]: amount }]));
+	return mapValues(data, amount => ({ [pointsType]: amount }));
 }
 
 function toBulkData(data: Record<string, Record<string, number>>): BulkPointsDataInput {
-	return Object.fromEntries(Object.entries(data).map(([user, points]) => [user, { id: toId(user), name: user, points }]));
+	return mapValues(data, (points, user) => ({ id: toId(user), name: user, points }));
 }
 
 export function tourHandler(this: Client, roomId: string, line: string, isIntro?: boolean): void {
