@@ -155,7 +155,7 @@ export const command: PSCommand[] = [
 		name: 'ugoexternal',
 		help: 'Adds points for external UGO games.',
 		syntax: 'CMD [winner], [...others]',
-		flags: { allowPMs: true },
+		flags: { allowPMs: true, pmOnly: true },
 		perms: message => message.author.id === 'partprofessor',
 		categories: ['game'],
 		async run({ arg, message }) {
