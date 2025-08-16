@@ -141,7 +141,7 @@ export class Splendor extends BaseGame<State> {
 		const bank = this.state.board.tokens;
 		(Object.entries(tokens) as [TOKEN_TYPE, number][]).forEach(([tokenType, count]) => {
 			if (count > bank[tokenType]) {
-				throw new Error(`Tried to get ${count} ${metadata.types[tokenType].name} tokens (bank had ${playerData.tokens[tokenType]})!`);
+				throw new Error(`Tried to receive ${count} ${metadata.types[tokenType].name} tokens (bank had ${bank[tokenType]})!`);
 			}
 			bank[tokenType] -= count;
 			playerData.tokens[tokenType] += count;
