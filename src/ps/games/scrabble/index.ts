@@ -347,7 +347,7 @@ export class Scrabble extends BaseGame<State> {
 	}
 
 	render(side: string | null) {
-		const isActive = !!this.winCtx && !!side && side === this.turn;
+		const isActive = !this.winCtx && !!side && side === this.turn;
 		const ctx: RenderCtx = {
 			id: this.id,
 			baseBoard: this.state.baseBoard,
