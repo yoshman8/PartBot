@@ -20,6 +20,7 @@ export type RenderCtx = {
 	id: string;
 	side: Turn | null;
 	turn: Turn;
+	lastMove: Move | null;
 	board: ReturnType<Chess['board']>;
 	selected?: Square | null;
 	isActive: boolean;

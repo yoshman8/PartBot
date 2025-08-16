@@ -1,7 +1,7 @@
 import { Table } from '@/ps/games/render';
 import { Button, Form } from '@/utils/components/ps';
 
-import type { RenderCtx, Turn } from '@/ps/games/chess/types';
+import type { RenderCtx } from '@/ps/games/chess/types';
 import type { CellRenderer } from '@/ps/games/render';
 import type { Chess, Square } from 'chess.js';
 import type { ReactElement } from 'react';
@@ -51,7 +51,7 @@ export function renderBoard(this: This, ctx: RenderCtx) {
 
 		let overlay = 'none';
 		if (action && ctx.theme.hl) overlay = ctx.theme.hl;
-		// TODO: Last move
+		else if (ctx.theme.last && (ctx.lastMove?.from === square || ctx.lastMove?.to === square)) overlay = ctx.theme.last;
 
 		const label = cell?.type ? `${cell.color}${cell.type}` : null;
 
@@ -64,9 +64,11 @@ export function renderBoard(this: This, ctx: RenderCtx) {
 					>
 						{label ? <img src={PIECE_IMAGES[label]} height={size} width={size} alt={label} /> : null}
 					</Button>
-				) : label ? (
-					<img src={PIECE_IMAGES[label]} height={size} width={size} alt={label} style={{ display: 'block' }} />
-				) : null}
+				) : (
+					<div style={{ background: overlay, height: size, width: size, padding: 0 }}>
+						{label ? <img src={PIECE_IMAGES[label]} height={size} width={size} alt={label} style={{ display: 'block' }} /> : null}
+					</div>
+				)}
 			</td>
 		);
 	};

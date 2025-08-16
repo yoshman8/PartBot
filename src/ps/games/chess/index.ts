@@ -179,6 +179,7 @@ export class Chess extends BaseGame<State> {
 			showMoves: side === this.turn ? this.showMoves : [],
 			selected: side === this.turn ? this.selected : null,
 			isActive: side === this.turn,
+			lastMove: this.lib.history({ verbose: true }).at(-1) ?? null,
 			side,
 			id: this.id,
 			turn: this.turn!,
