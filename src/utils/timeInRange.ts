@@ -21,6 +21,6 @@ export function instantInRange(
 		Temporal.Instant,
 		Temporal.Instant,
 	];
-	if (Temporal.Instant.compare(...range)) return Temporal.Instant.compare(time, range[0]) === 0;
+	if (Temporal.Instant.compare(...range) === 0) return Temporal.Instant.compare(time, range[0]) === 0;
 	return Temporal.Instant.compare(time, range[0]) === 1 && Temporal.Instant.compare(time, range[1]) === -1;
 }
