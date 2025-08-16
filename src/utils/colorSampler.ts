@@ -1,8 +1,8 @@
 import '@/globals';
 
-import { HexToOklch, normalizeHue } from '@/utils/colour';
+import { HexToOklch, normalizeHue } from '@/utils/color';
 
-import type { Hex, Oklch } from '@/utils/colour';
+import type { Hex, Oklch } from '@/utils/color';
 
 function oklchDiff({ H: H1, C: C1 }: Oklch, { H: H2, C: C2 }: Oklch): number {
 	if (!C1 || !C2) return 0;
@@ -30,7 +30,7 @@ function getPreferenceList(
 	return prefs;
 }
 
-export function colourSampler(
+export function colorSampler(
 	users: User[],
 	availableColors: Hex[],
 	distance: (color1: Hex, color2: Hex) => number = (hex1, hex2) => oklchDiff(HexToOklch(hex1), HexToOklch(hex2))
@@ -39,11 +39,9 @@ export function colourSampler(
 	if (inputColors.length > availableColors.length)
 		throw new Error(`Insufficient colours (needed ${inputColors.length} but had ${availableColors.length})!`);
 
-	// Preference lists for users and items using symmetric affinity
 	const userPrefs = getPreferenceList(users, availableColors, distance) as Map<string, Hex[]>;
 	const itemPrefs = getPreferenceList(availableColors, users, (item, user) => distance(user, item)) as Map<Hex, User[]>;
 
-	// Initialize matches and tracking of proposal indices
 	const userMatches = new Map<string, Hex | null>();
 	const itemMatches = new Map<Hex, string | null>();
 	const userNextProposalIndex = new Map<string, number>();

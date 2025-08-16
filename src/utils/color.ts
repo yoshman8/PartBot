@@ -173,8 +173,6 @@ export function HexToOklch(hex: Hex): Oklch {
 
 // endregion Conversion Methods
 
-// region Stringifiers
-
 /**
  * Converts a number to a decimal as needed with default precision 4
  */
@@ -182,17 +180,19 @@ function n(num: number): string {
 	return num.toFixed(4).replace(/(?<=\.\d+)0+$|\.0+/, '');
 }
 
-export function RgbToRgbString({ R, G, B, a }: Rgb): RgbString {
+// region Stringifiers
+
+export function RgbToString({ R, G, B, a }: Rgb): RgbString {
 	const rgbString = `${n(R)}, ${n(G)}, ${n(B)}`;
 	return (typeof a === 'number' ? `rgba(${rgbString}, ${n(a * 100)}%)` : `rgb(${rgbString})`) as RgbString;
 }
 
-export function HslToHslString({ H, S, L, a }: Hsl): HslString {
+export function HslToString({ H, S, L, a }: Hsl): HslString {
 	const hslString = `${n(H)}, ${n(S)}%, ${n(L)}%`;
 	return (typeof a === 'number' ? `hsla(${hslString}, ${n(a * 100)}%)` : `hsl(${hslString})`) as HslString;
 }
 
-export function OklchToOklchString({ L, C, H, a }: Oklch): OklchString {
+export function OklchToString({ L, C, H, a }: Oklch): OklchString {
 	return `oklch(${n(L)} ${n(C)} ${n(H)}${typeof a === 'number' ? ` ${n(a * 100)}%` : ''})` as OklchString;
 }
 
