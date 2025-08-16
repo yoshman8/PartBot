@@ -28,6 +28,7 @@ const schema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	seed: Number,
 	players: {
 		type: Map,
 		of: {
@@ -68,6 +69,7 @@ export interface GameModel {
 	game: string;
 	mod?: string | null | undefined;
 	room: string;
+	seed?: number | null;
 	players: Map<string, Player>;
 	created: Date;
 	started: Date | null;

@@ -554,6 +554,7 @@ export class BaseGame<State extends BaseState> {
 				game: this.meta.id,
 				mod: this.mod,
 				room: this.roomid,
+				seed: this.seed,
 				players: new Map(Object.entries(this.players)),
 				log: this.log.map(entry => JSON.stringify(entry)),
 				created: this.createdAt,
