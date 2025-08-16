@@ -4,6 +4,7 @@ import { Button } from '@/utils/components/ps';
 import type { LightsOut } from '@/ps/games/lightsout/index';
 import type { State } from '@/ps/games/lightsout/types';
 import type { ReactElement } from 'react';
+import { pluralize } from '@/utils/pluralize';
 
 export function renderCloseSignups(this: LightsOut): ReactElement {
 	const player = Object.values(this.players)[0].name;
@@ -47,7 +48,7 @@ type This = { msg: string; simpleMsg: string };
 export function render(
 	this: This,
 	data: State,
-	{ size, player, ended }: { size: [number, number]; ended: boolean; player: boolean }
+	{ size, player, ended, genClicks }: { size: [number, number]; ended: boolean; player: boolean; genClicks: number }
 ): ReactElement {
 	const Cell: CellRenderer<boolean> = ({ cell, i, j }) => (
 		<td>
@@ -64,13 +65,19 @@ export function render(
 	const board = ended && !player ? data.original : data.board;
 
 	return (
-		<center style={ended && !player ? { maxHeight: 200, overflowY: 'scroll' } : {}}>
-			<Table board={board} labels={null} Cell={Cell} style={{ border: 'none', background: '#111' }} />
-			{ended && player ? (
-				<Button name="send" value={`${this.simpleMsg} create ${size.join(' ')}`}>
-					Play Again
-				</Button>
-			) : null}
-		</center>
+		<>
+			<small style={{ float: 'right', padding: '4px 12px' }}>
+				My solution: <b>{pluralize(genClicks, { singular: 'move', plural: 'moves' })}</b>
+			</small>
+			<br />
+			<center style={ended && !player ? { maxHeight: 200, overflowY: 'scroll' } : {}}>
+				<Table board={board} labels={null} Cell={Cell} style={{ border: 'none', background: '#111' }} />
+				{ended && player ? (
+					<Button name="send" value={`${this.simpleMsg} create ${size.join(' ')}`}>
+						Play Again
+					</Button>
+				) : null}
+			</center>
+		</>
 	);
 }

@@ -98,6 +98,11 @@ export class LightsOut extends BaseGame<State> {
 	}
 
 	render(asPlayer: string | null): ReactElement {
-		return render.bind(this.renderCtx)(this.state, { size: this.size, player: !!asPlayer, ended: this.ended });
+		return render.bind(this.renderCtx)(this.state, {
+			size: this.size,
+			player: !!asPlayer,
+			ended: this.ended,
+			genClicks: this.state.genClicks,
+		});
 	}
 }
