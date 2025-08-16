@@ -25,7 +25,7 @@ export type Meta = Readonly<
 
 		mods?: Readonly<{ list: ModEnum<string>; data: ModData<string> }>;
 
-		/** @default Assume true */
+		/** Whether the game will only start automatically. */
 		autostart?: boolean;
 		timer?: number | false;
 		pokeTimer?: number | false | undefined;

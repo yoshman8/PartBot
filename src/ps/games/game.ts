@@ -341,7 +341,7 @@ export class BaseGame<State extends BaseState> {
 		}
 		if (this.meta.players === 'single' || (Array.isArray(availableSlots) && availableSlots.length === 1) || availableSlots === 1) {
 			// Join was successful and game is now full
-			if (this.meta.players === 'single' || this.meta.autostart) this.start();
+			if (this.meta.players === 'single') this.start();
 			this.onAfterAddPlayer?.(newPlayer);
 			this.backup();
 			return { success: true, data: { started: true, as: newPlayer.turn } };
