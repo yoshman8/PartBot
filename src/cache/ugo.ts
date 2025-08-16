@@ -5,6 +5,7 @@ import { usePersistedCache } from '@/cache/persisted';
 import { TimeZone } from '@/ps/handlers/cron/constants';
 import { BG_STRUCHNI_MODIFIER, BOARD_GAMES_STRUCHNI_ORDER, UGO_2025_SPOTLIGHTS } from '@/ps/ugo/constants';
 import { toId } from '@/tools';
+import { Logger } from '@/utils/logger';
 import { mapValues } from '@/utils/map';
 
 import type { UGOBoardGames } from '@/ps/ugo/constants';
@@ -77,6 +78,8 @@ export function addUGOPoints(this: Client, pointsData: Record<string, number>, g
 	UGO_POINTS.set(current);
 
 	uploadToPastie(JSON.stringify(commit, null, 2)).then(url => {
-		this.addUser('UGO').send(`;setpointsfromjson boardgames, ${url}`);
+		const command = `;setpointsfromjson boardgames, ${url}`;
+		if (process.env.NODE_ENV === 'development') Logger.log(command);
+		else this.addUser('UGO').send(command);
 	});
 }
