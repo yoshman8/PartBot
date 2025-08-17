@@ -44,6 +44,7 @@ export class Chess extends BaseGame<State> {
 
 		this.lib.setHeader('Event', `Room Match ${this.id}`);
 		this.lib.setHeader('Site', `https://play.pokemonshowdown.com/${this.roomid}`);
+		this.state.pgn = '';
 	}
 
 	onStart(): ActionResponse {
