@@ -114,7 +114,7 @@ export class ConnectFour extends BaseGame<State> {
 				.setColor('#0080ff')
 				.setAuthor({ name: 'Connect Four - Room Match' })
 				.setTitle(title)
-				// .setURL // TODO: Link game logs on Web
+				.setURL(await this.getURL())
 				.addFields([
 					{
 						name: '\u200b',
