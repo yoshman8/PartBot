@@ -389,10 +389,6 @@ export class Scrabble extends BaseGame<State> {
 		return render.bind(this.renderCtx)(ctx);
 	}
 
-	getURL() {
-		return null;
-	}
-
 	// TODO: Fix Discord embeds
 	async renderEmbed(): Promise<EmbedBuilder | null> {
 		const winners = this.winCtx && this.winCtx.type === 'win' ? this.winCtx.winnerIds : null;
@@ -404,7 +400,11 @@ export class Scrabble extends BaseGame<State> {
 		const bestPlayer = winnerPlayers.sortBy(player => player.best?.points ?? 0, 'desc')[0];
 		if (!bestPlayer?.best) return null;
 		const title = `${bestPlayer.name}: ${bestPlayer.best.asText} [${bestPlayer.best.points}]`;
-		return new EmbedBuilder().setColor('#ccc5a8').setAuthor({ name: 'Scrabble - Room Match' }).setTitle(title).setURL(this.getURL());
+		return new EmbedBuilder()
+			.setColor('#ccc5a8')
+			.setAuthor({ name: 'Scrabble - Room Match' })
+			.setTitle(title)
+			.setURL(await this.getURL());
 	}
 
 	readFromBoard([x, y]: Point, safe?: boolean): BoardTile | null {
