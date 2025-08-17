@@ -17,7 +17,7 @@ declare global {
 		filterMap<X>(cb: (element: T, index: number, thisArray: T[]) => X | undefined): X[];
 		list($T?: TranslationFn | string): string;
 		random(rng?: RNGSource): T | null;
-		remove(...toRemove: T[]): T[];
+		remove(...toRemove: T[]): boolean;
 		sample(amount: number, rng?: RNGSource): T[];
 		shuffle(rng?: RNGSource): T[];
 		/** Default order is ascending */

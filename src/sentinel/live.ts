@@ -7,6 +7,7 @@ import { parse } from '@/ps/handlers/commands/parse';
 import { permissions } from '@/ps/handlers/commands/permissions';
 import { spoof } from '@/ps/handlers/commands/spoof';
 import { interfaceHandler } from '@/ps/handlers/interface';
+import { joinRoomHandler } from '@/ps/handlers/joinRooms';
 import { joinHandler, leaveHandler, nickHandler } from '@/ps/handlers/joins';
 import { notifyHandler } from '@/ps/handlers/notifications';
 import { rawHandler } from '@/ps/handlers/raw';
@@ -29,6 +30,7 @@ export const LivePSHandlers = {
 	autoResHandler,
 	commandHandler,
 	interfaceHandler,
+	joinRoomHandler,
 	joinHandler,
 	leaveHandler,
 	nickHandler,

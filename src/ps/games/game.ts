@@ -102,7 +102,7 @@ export class BaseGame<State extends BaseState> {
 
 	onAddPlayer?(user: User, ctx: string): ActionResponse;
 	onAfterAddPlayer?(player: Player): void;
-	onLeavePlayer?(player: Player, ctx: string | User): ActionResponse<'end' | null>;
+	onRemovePlayer?(player: Player, ctx: string | User): ActionResponse<'end' | null>;
 	onForfeitPlayer?(player: Player, ctx: string | User): ActionResponse;
 	onReplacePlayer?(turn: BaseState['turn'], withPlayer: User): ActionResponse;
 	onAfterReplacePlayer?(player: Player): void;
@@ -375,7 +375,7 @@ export class BaseGame<State extends BaseState> {
 				},
 			};
 		}
-		const removePlayer = this.onLeavePlayer?.(player, ctx);
+		const removePlayer = this.onRemovePlayer?.(player, ctx);
 		if (removePlayer?.success === false) return removePlayer;
 		delete this.players[player.turn];
 		return {

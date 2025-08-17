@@ -99,7 +99,7 @@ export class Splendor extends BaseGame<State> {
 		return { success: true, data: null };
 	}
 
-	onLeavePlayer(player: Player): ActionResponse<'end' | null> {
+	onRemovePlayer(player: Player): ActionResponse<'end' | null> {
 		if (this.started) {
 			this.state.playerData[player.turn].out = true;
 

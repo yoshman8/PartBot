@@ -18,6 +18,7 @@ PS.on('message', msg => registerEvent(PS, 'interfaceHandler')(msg));
 PS.on('message', msg => registerEvent(PS, 'autoResHandler')(msg));
 
 PS.on('join', registerEvent(PS, 'joinHandler'));
+PS.on('joinRoom', registerEvent(PS, 'joinRoomHandler'));
 PS.on('name', registerEvent(PS, 'nickHandler'));
 PS.on('leave', registerEvent(PS, 'leaveHandler'));
 PS.on('notify', registerEvent(PS, 'notifyHandler'));
