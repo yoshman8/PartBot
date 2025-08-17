@@ -9,8 +9,10 @@ export default async function init() {
 	await connection;
 	await loadCommands();
 	if (IS_ENABLED.DB) {
-		await loadAlts();
-		await loadSeens();
+		if (process.env.NODE_ENV !== 'development') {
+			await loadAlts();
+			await loadSeens();
+		}
 		await loadRoomConfigs();
 	}
 }

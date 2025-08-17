@@ -68,6 +68,7 @@ export type ActionResponse<T = null> = { success: true; data: T } | { success: f
 export type EndType = 'regular' | 'force' | 'dq' | 'loss';
 
 export type BaseLog = { action: string; time: Date; turn: string | null; ctx: unknown };
+export type BaseLogAction = { action: 'dq' | 'forfeit' | 'skip'; turn: string; ctx: null } & BaseLog;
 
 export type CommonLog<Turn extends string = string> = Satisfies<
 	BaseLog,

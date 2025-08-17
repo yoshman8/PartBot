@@ -13,7 +13,7 @@ import type { Log as ScrabbleLog } from '@/ps/games/scrabble/logs';
 import type { WinCtx as ScrabbleWinCtx } from '@/ps/games/scrabble/types';
 import type { Player } from '@/ps/games/types';
 
-const schema = new mongoose.Schema({
+const schema = new mongoose.Schema<GameModel>({
 	id: {
 		type: String,
 		required: true,
@@ -44,6 +44,7 @@ const schema = new mongoose.Schema({
 				type: String,
 				required: true,
 			},
+			out: Boolean,
 		},
 		required: true,
 	},
@@ -117,6 +118,14 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 			const winCtx = game.winCtx as ScrabbleWinCtx | undefined;
 			const winners = winCtx?.type === 'win' ? winCtx.winnerIds : [];
 			const logs = game.log.map<ScrabbleLog>(log => JSON.parse(log));
+			if (winCtx?.type === 'dq') {
+				const leftUsers = logs.filter(log => log.action === 'dq' || log.action === 'forfeit').map(log => log.turn);
+				winners.push(
+					...Object.values(game.players)
+						.map(player => player.turn)
+						.filter(player => !leftUsers.includes(player))
+				);
+			}
 			return logs
 				.filterMap<ScrabbleDexEntry[]>(log => {
 					if (log.action !== 'play') return;
