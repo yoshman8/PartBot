@@ -50,7 +50,7 @@ export function renderUGOBoardGamesLeaderboard(data: Record<string, UGOUserPoint
 		Object.entries(data),
 		([_name, entry]) => entry.total,
 		([name, entry]) => [name, entry.total, ...BOARD_GAMES_STRUCHNI_ORDER.map(gameId => entry.breakdown[gameId] ?? 0)]
-	);
+	).slice(0, 30);
 	return (
 		<center>
 			<div style={{ margin: 48, overflowX: 'auto' }}>
