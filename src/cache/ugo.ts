@@ -15,13 +15,13 @@ export const UGO_PLAYED = usePersistedCache('ugoCap');
 
 export function getUGOPlayed(game: UGOBoardGames, player: string): number {
 	const playerId = toId(player);
-	return UGO_PLAYED.get()[playerId]?.[game] ?? 0;
+	return Math.max(UGO_PLAYED.get()[playerId]?.[game] ?? 0, 0);
 }
 
 export function setUGOPlayed(game: UGOBoardGames, player: string, count: number | ((prevCount: number) => number)): void {
 	const playerId = toId(player);
 	const current = UGO_PLAYED.get();
-	const currentCount = current[playerId]?.[game] ?? 0;
+	const currentCount = Math.max(current[playerId]?.[game] ?? 0, 0);
 	(current[playerId] ??= {})[game] = typeof count === 'function' ? count(currentCount) : count;
 	UGO_PLAYED.set(current);
 }
