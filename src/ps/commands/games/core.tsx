@@ -226,6 +226,7 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 				perms: Symbol.for('games.create'),
 				async run({ message, arg, $T }): Promise<void> {
 					const { game } = getGame(arg, { action: 'start', user: message.author.id }, { room: message.target, $T });
+					if (game.started) throw new ChatError($T('GAME.ALREADY_STARTED'));
 					if (!game.startable()) throw new ChatError($T('GAME.CANNOT_START'));
 					game.start();
 					game.closeSignups(false);
