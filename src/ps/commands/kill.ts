@@ -20,9 +20,11 @@ export const command: PSCommand = {
 		await Promise.any([message.reply(';-;' as NoTranslate), sleep('2s')]);
 
 		// Note which games are currently open
-		const openGames = (Object.keys(Games) as GamesList[]).flatMap(gameType =>
-			Object.values(PSGames[gameType] ?? {}).map(game => ({ gameType: game.meta.id, id: game.id, roomid: game.roomid }))
-		);
+		const openGames = (Object.keys(Games) as GamesList[])
+			.flatMap(gameType =>
+				Object.values(PSGames[gameType] ?? {}).map(game => ({ gameType: game.meta.id, id: game.id, roomid: game.roomid }))
+			)
+			.filter(game => Games[game.gameType].meta.players === 'many');
 		openGamesCache.set(openGames);
 
 		process.exit();
