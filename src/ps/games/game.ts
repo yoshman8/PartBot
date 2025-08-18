@@ -208,6 +208,7 @@ export class BaseGame<State extends BaseState> {
 
 	setTimer(comment: string): void {
 		if (!this.timerLength || !this.pokeTimerLength) return;
+		if (this.endedAt) return;
 		this.clearTimer();
 
 		const turn = this.turn!;
