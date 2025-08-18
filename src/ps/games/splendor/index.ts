@@ -381,7 +381,7 @@ export class Splendor extends BaseGame<State> {
 
 		this.state.actionState = { action: VIEW_ACTION_TYPE.NONE };
 
-		if (this.gameCanEnd()) this.end();
+		if (this.gameCanEnd()) return this.end();
 		else if (Object.values(playerData.tokens).sum() > MAX_TOKEN_COUNT) {
 			const count = Object.values(playerData.tokens).sum();
 			this.state.actionState = { action: VIEW_ACTION_TYPE.TOO_MANY_TOKENS, discard: count - MAX_TOKEN_COUNT };

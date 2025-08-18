@@ -113,8 +113,7 @@ export class SnakesLadders extends BaseGame<State> {
 
 		if (final === 100) {
 			this.winCtx = { type: 'win', winner: { ...this.players[player], board: this.state.board } };
-			this.end();
-			return;
+			return this.end();
 		}
 
 		this.frames = frameNums.map(pos => this.render(null, pos));

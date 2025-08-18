@@ -120,7 +120,7 @@ export class Battleship extends BaseGame<State> {
 				if (this.state.board.attacks[player.turn].flat().filter(hit => hit).length >= HITS_TO_WIN) {
 					// Game ends
 					this.winCtx = { type: 'win', winner: player, loser: this.players[opponent] };
-					this.end();
+					return this.end();
 				}
 				this.endTurn();
 				this.update();
