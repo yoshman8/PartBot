@@ -57,7 +57,7 @@ export function renderSignups<State extends BaseState>(this: BaseGame<State>, st
 					{this.$T('GAME.LABELS.RANDOM')}
 				</Button>
 			) : null}
-			{!this.sides ? <Button value={`${this.renderCtx.msg} join`}>Join</Button> : null}
+			{!this.sides ? <Button value={`${this.renderCtx.msg} join`}>{this.$T('GAME.LABELS.JOIN')}</Button> : null}
 			{staff && startable ? (
 				<Button value={`${this.renderCtx.msg} start`} style={{ marginLeft: 8 }}>
 					{this.$T('GAME.LABELS.START')}
