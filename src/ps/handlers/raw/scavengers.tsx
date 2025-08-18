@@ -79,14 +79,14 @@ export function onEndHunt(this: Client, room: string, data: string) {
 		if (!isMainRoom) return;
 		if (!isUGOActive()) return;
 
-		let nonceCommand: ';addhunt' | ';addfishunt' | ';addminifishhunt' | null = null;
+		let nonceCommand: ';addhunt' | ';addfishhunt' | ';addminifishhunt' | null = null;
 
 		switch (huntEnd.groups.type) {
 			case 'regular':
 				nonceCommand = ';addhunt';
 				break;
 			case 'official':
-				nonceCommand = ';addfishunt';
+				nonceCommand = ';addfishhunt';
 				break;
 			case 'mini':
 				nonceCommand = ';addminifishhunt';
