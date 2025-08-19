@@ -3,7 +3,7 @@ import type { TranslatedText } from '@/i18n/types';
 import type { Games } from '@/ps/games';
 import type { CommonGame } from '@/ps/games/game';
 import type { PSCronJobManager } from '@/ps/handlers/cron';
-import type { DiscCommand, PSCommand } from '@/types/chat';
+import type { DiscordCommand, PSCommand } from '@/types/chat';
 import type { Perms } from '@/types/perms';
 import type { PSRoomConfig } from '@/types/ps';
 import type { Timer } from '@/utils/timer';
@@ -34,5 +34,5 @@ export const PSPointsNonce: Partial<{ [key: string]: Record<string, Record<strin
 export const PSGames: { [key in keyof Games]?: Record<string, CommonGame> } = {};
 
 // Discord
-export const DiscCommands: { [key: string]: DiscCommand & { path: string; isAlias?: boolean; slash: SlashCommandBuilder } } = {};
+export const DiscCommands: { [key: string]: DiscordCommand & { path: string; isAlias?: boolean; slash: SlashCommandBuilder } } = {};
 export const DiscGames: { judgement: Record<string, JudgementGame> } = { judgement: {} };

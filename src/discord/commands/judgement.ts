@@ -5,7 +5,7 @@ import { clientId } from '@/config/discord';
 import { ChatError } from '@/utils/chatError';
 
 import type { NoTranslate } from '@/i18n/types';
-import type { DiscCommand } from '@/types/chat';
+import type { DiscordCommand } from '@/types/chat';
 
 type History = {
 	round: number;
@@ -35,7 +35,7 @@ const Judgement = DiscGames.judgement;
 
 const userMenu = new UserSelectMenuBuilder().setCustomId('judgment_user_selector').setMinValues(4).setMaxValues(5);
 
-export const command: DiscCommand[] = [
+export const command: DiscordCommand[] = [
 	{
 		name: 'judgement',
 		desc: 'Creates a game',

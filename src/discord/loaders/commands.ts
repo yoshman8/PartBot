@@ -8,7 +8,7 @@ import { cachebust } from '@/utils/cachebust';
 import { fsPath } from '@/utils/fsPath';
 import { Logger } from '@/utils/logger';
 
-import type { DiscCommand } from '@/types/chat';
+import type { DiscordCommand } from '@/types/chat';
 
 const restClient = new REST().setToken(token);
 
@@ -41,7 +41,7 @@ export async function loadCommands(): Promise<void> {
 	await Promise.all(
 		commands.map(async commandFile => {
 			const requirePath = fsPath('discord', 'commands', commandFile);
-			const { command: commandEntries }: { command: DiscCommand | DiscCommand[] } = await import(requirePath);
+			const { command: commandEntries }: { command: DiscordCommand | DiscordCommand[] } = await import(requirePath);
 			if (!commandEntries) return;
 			const commands = Array.isArray(commandEntries) ? commandEntries : [commandEntries];
 			commands.forEach(command =>

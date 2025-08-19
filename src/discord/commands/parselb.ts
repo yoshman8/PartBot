@@ -6,11 +6,11 @@ import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 
 import type { NoTranslate } from '@/i18n/types';
-import type { DiscCommand } from '@/types/chat';
+import type { DiscordCommand } from '@/types/chat';
 
 const ROOM = 'hindi';
 
-export const command: DiscCommand = {
+export const command: DiscordCommand = {
 	name: 'parselb',
 	desc: 'Updates tour points for Hindi via JSON.',
 	servers: [SERVER_ID],

@@ -17,6 +17,7 @@ import { Logger } from '@/utils/logger';
 
 import type { PSCommandContext } from '@/types/chat';
 import type { PSMessage } from '@/types/ps';
+import type { Interaction } from 'discord.js';
 
 // Exporting into side variables for eval lookup; this gets garbage-collected otherwise
 const cache = _cache;
@@ -37,7 +38,7 @@ const E: Record<string, unknown> = {};
 // Storing in context for eval()
 const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, Tools, $, Sentinel, E, jsxToHTML, paste];
 
-export type EvalModes = 'COLOR_OUTPUT' | 'FULL_OUTPUT' | 'ABBR_OUTPUT' | 'NO_OUTPUT';
+export type EvalModes = 'COLOR_OUTPUT_HTML' | 'COLOR_OUTPUT_ANSI' | 'FULL_OUTPUT' | 'ABBR_OUTPUT' | 'NO_OUTPUT';
 export type EvalOutput = {
 	success: boolean;
 	output: string;
@@ -45,12 +46,13 @@ export type EvalOutput = {
 
 export function formatValue(value: unknown, mode: EvalModes): string {
 	switch (mode) {
-		case 'COLOR_OUTPUT':
+		case 'COLOR_OUTPUT_ANSI':
+		case 'COLOR_OUTPUT_HTML':
 		case 'FULL_OUTPUT': {
-			const color = mode === 'COLOR_OUTPUT';
+			const color = mode === 'COLOR_OUTPUT_HTML' || mode === 'COLOR_OUTPUT_ANSI';
 			// TODO Stringify functions and render with syntax highlighting
 			const inspection = inspect(value, { depth: 2, colors: color, numericSeparator: true });
-			return color
+			return mode === 'COLOR_OUTPUT_HTML'
 				? ansiToHtml(inspection)
 						.replace(/\t/g, '&nbsp;'.repeat(4)) // Fill out tabs
 						.replace(/ (?= |$)/g, '&nbsp;') // Fill out multi-spaces
@@ -104,10 +106,12 @@ export function formatValue(value: unknown, mode: EvalModes): string {
 export async function evaluate(
 	code: string,
 	mode: EvalModes,
-	passedContext: {
-		message: PSMessage;
-		context: PSCommandContext;
-	} // Add Discord case here, eventually
+	passedContext:
+		| {
+				message: PSMessage;
+				context: PSCommandContext;
+		  }
+		| { message: Interaction; context: null }
 ): Promise<EvalOutput> {
 	let success: boolean, value: unknown;
 	try {

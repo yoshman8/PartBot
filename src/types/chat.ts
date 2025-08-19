@@ -159,7 +159,7 @@ export type PSCommand = {
 export type PSCommandChild = Omit<PSCommand, 'extendedAliases' | 'static' | 'categories'>;
 
 // Will need to update this to work with slash commands
-export type DiscCommand = {
+export type DiscordCommand = {
 	/**
 	 * Name of the command.
 	 */

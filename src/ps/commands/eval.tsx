@@ -18,7 +18,7 @@ export const command: PSCommand = {
 			originalCommand: [originalCommand],
 			$T,
 		} = context;
-		const res = await evaluate(arg, originalCommand === 'exec' ? 'ABBR_OUTPUT' : 'COLOR_OUTPUT', { message, context });
+		const res = await evaluate(arg, originalCommand === 'exec' ? 'ABBR_OUTPUT' : 'COLOR_OUTPUT_HTML', { message, context });
 		if (originalCommand !== 'exec') {
 			let outputHTML = res.output;
 			if (outputHTML.length > MAX_CHAT_HTML_LENGTH) {

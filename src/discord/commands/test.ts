@@ -1,6 +1,6 @@
-import type { DiscCommand } from '@/types/chat';
+import type { DiscordCommand } from '@/types/chat';
 
-export const command: DiscCommand = {
+export const command: DiscordCommand = {
 	name: 'test',
 	desc: 'Test command',
 	run(interaction) {

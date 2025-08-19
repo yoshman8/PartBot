@@ -1,9 +1,9 @@
 import { updatePokemonGOCache } from '@/cache/pokemonGo';
 import { BOT_CHANNEL_ID, SERVER_ID } from '@/discord/constants/servers/pokemongo';
 
-import type { DiscCommand } from '@/types/chat';
+import type { DiscordCommand } from '@/types/chat';
 
-export const command: DiscCommand = {
+export const command: DiscordCommand = {
 	name: 'godb',
 	desc: 'Updates the Pokémon GO database on PartBot.',
 	servers: [SERVER_ID],
