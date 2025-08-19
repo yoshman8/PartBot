@@ -48,7 +48,11 @@ export type RenderCtx = {
 	turn: string;
 	selected?: Point | null;
 };
-export type WinCtx = { type: 'win'; winnerIds: string[]; score: State['score'] } | { type: 'draw' } | { type: 'dq' };
+export type WinCtx =
+	| { type: 'win'; winnerIds: string[]; score: State['score'] }
+	| { type: 'draw' }
+	| { type: 'dq' }
+	| { type: 'regular' };
 
 export type Word = { word: string; baseScore: number; bonuses: BonusReducer[] };
 export type WordScore = [times: number, plus: number];

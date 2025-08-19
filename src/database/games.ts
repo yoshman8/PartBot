@@ -118,13 +118,26 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 			const winCtx = game.winCtx as ScrabbleWinCtx | undefined;
 			const winners = winCtx?.type === 'win' ? winCtx.winnerIds : [];
 			const logs = game.log.map<ScrabbleLog>(log => JSON.parse(log));
-			if (winCtx?.type === 'dq') {
+			if (winCtx?.type === 'dq' || winCtx?.type === 'regular') {
 				const leftUsers = logs.filter(log => log.action === 'dq' || log.action === 'forfeit').map(log => log.turn);
-				winners.push(
-					...Object.values(game.players)
-						.map(player => player.turn)
-						.filter(player => !leftUsers.includes(player))
-				);
+				if (winCtx.type === 'dq')
+					winners.push(
+						...Object.values(game.players)
+							.map(player => player.turn)
+							.filter(player => !leftUsers.includes(player))
+					);
+				else if (winCtx.type === 'regular' && logs.filter(log => log.action === 'play').length > 20) {
+					const points: Record<string, number> = {};
+					logs.forEach(log => {
+						if (log.action === 'play') {
+							points[log.turn] ??= 0;
+							points[log.turn] += log.ctx.points.total;
+						}
+					});
+					const players = Object.entries(points).filter(([player]) => !leftUsers.includes(player));
+					const maxPoints = Math.max(...players.map(([_player, score]) => score));
+					winners.push(...players.filter(([_player, score]) => score === maxPoints).map(([player]) => player));
+				}
 			}
 			return logs
 				.filterMap<ScrabbleDexEntry[]>(log => {
