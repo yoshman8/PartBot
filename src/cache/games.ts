@@ -8,7 +8,7 @@ export type GameBackup = {
 	room: string;
 	id: string;
 	at: number;
-	game: string;
+	game: GamesList;
 	backup: string;
 };
 

@@ -58,7 +58,7 @@ export async function loadCommands(): Promise<void> {
 							.reduce<
 								PSCommandChild | undefined
 							>((commandObj, subcommand) => commandObj?.children?.[subcommand], PSCommands[aliasedTo[0]]);
-						if (!baseSubcommand) throw new Error(`Unable to find command ${lookup} aliased to ${aliasedTo}`);
+						if (!baseSubcommand) throw new Error(`Unable to find command ${lookup} aliased to ${aliasedTo.join('.')}`);
 						addAlias(baseSubcommand, [lookup], aliasedTo);
 					});
 				}

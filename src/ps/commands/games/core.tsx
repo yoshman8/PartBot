@@ -505,7 +505,7 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 					perms: Symbol.for('games.create'),
 					syntax: 'CMD',
 					async run({ message }) {
-						const HTML = renderBackups(message.target, Game.meta);
+						const HTML = renderBackups(message.target, Game.meta.id);
 						message.sendHTML(HTML, { name: `${gameId}-backups` });
 					},
 				},

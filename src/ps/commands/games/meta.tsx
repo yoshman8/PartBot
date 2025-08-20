@@ -1,6 +1,6 @@
 import { PSGames } from '@/cache';
 import { Games } from '@/ps/games';
-import { renderMenu } from '@/ps/games/menus';
+import { renderBackups, renderMenu } from '@/ps/games/menus';
 
 import type { PSCommand } from '@/types/chat';
 import type { HTMLopts } from 'ps-client/classes/common';
@@ -12,6 +12,7 @@ export const command: PSCommand = {
 	syntax: 'CMD [menu]',
 	perms: Symbol.for('games.create'),
 	categories: ['game'],
+	extendedAliases: { backups: ['games', 'backups'] },
 	async run({ run }) {
 		return run('games menu');
 	},
@@ -44,6 +45,16 @@ export const command: PSCommand = {
 				const opts: HTMLopts = { name: 'games-menu' };
 				broadcastHTML(<Menu />, opts);
 				message.target.sendHTML(<Menu staff />, { ...opts, rank: '%' });
+			},
+		},
+		backups: {
+			name: 'backups',
+			aliases: ['bu'],
+			help: 'Shows all active backups.',
+			syntax: 'CMD',
+			async run({ message }) {
+				const HTML = renderBackups(message.target, 'all');
+				message.sendHTML(HTML, { name: `all-backups` });
 			},
 		},
 	},
