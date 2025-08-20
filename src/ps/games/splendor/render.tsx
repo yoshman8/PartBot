@@ -14,7 +14,7 @@ import type { CSSProperties, ReactElement, ReactNode } from 'react';
 type This = { msg: string };
 
 function getArtUrl(type: 'pokemon' | 'trainers' | 'type' | 'other', path: string, tag: 'img' | 'bg' = 'bg'): string {
-	const baseURL = `${process.env.WEB_URL}/static/splendor/${type}/${path}`;
+	const baseURL = path.startsWith('http') ? path : `${process.env.WEB_URL}/static/splendor/${type}/${path}`;
 	return tag === 'bg' ? `url(${baseURL})` : baseURL;
 }
 

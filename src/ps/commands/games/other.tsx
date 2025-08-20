@@ -8,6 +8,7 @@ import { Small } from '@/ps/games/render';
 import { checkWord } from '@/ps/games/scrabble/checker';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
+import { TOKEN_TYPE } from '@/ps/games/splendor/constants';
 import metadata from '@/ps/games/splendor/metadata.json';
 import { PokemonCard, TrainerCard } from '@/ps/games/splendor/render';
 import { LB_STYLES } from '@/ps/other/leaderboardStyles';
@@ -21,6 +22,7 @@ import { rankedSort } from '@/utils/rankedSort';
 import type { UGOUserPoints } from '@/cache/ugo';
 import type { ScrabbleDexEntry } from '@/database/games';
 import type { ToTranslate, TranslationFn } from '@/i18n/types';
+import type { Trainer } from '@/ps/games/splendor/types';
 import type { GamesList } from '@/ps/games/types';
 import type { PSCommand } from '@/types/chat';
 import type { ReactElement } from 'react';
@@ -114,7 +116,7 @@ export const command: PSCommand[] = [
 		help: 'Shows the card info for a Splendor card.',
 		syntax: 'CMD [card name]',
 		categories: ['game'],
-		async run({ broadcastHTML, arg, $T }) {
+		async run({ message, broadcastHTML, arg, $T }) {
 			const id = toId(arg);
 			if (id === 'constructor') throw new ChatError($T('SCREW_YOU'));
 			if (id in metadata.pokemon) {
@@ -126,6 +128,19 @@ export const command: PSCommand[] = [
 				);
 			} else if (id in metadata.trainers) {
 				const card = metadata.trainers[id];
+				broadcastHTML(
+					<Small>
+						<TrainerCard data={card} />
+					</Small>
+				);
+			} else if (id === message.parent.status.userid) {
+				const card: Trainer = {
+					id,
+					name: message.parent.status.username ?? '-',
+					points: 15,
+					types: { [TOKEN_TYPE.DRAGON]: 4 },
+					art: 'https://play.pokemonshowdown.com/sprites/trainers/supernerd.png',
+				};
 				broadcastHTML(
 					<Small>
 						<TrainerCard data={card} />
