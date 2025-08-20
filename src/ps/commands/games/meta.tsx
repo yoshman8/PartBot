@@ -12,7 +12,7 @@ export const command: PSCommand = {
 	syntax: 'CMD [menu]',
 	perms: Symbol.for('games.create'),
 	categories: ['game'],
-	extendedAliases: { backups: ['games', 'backups'] },
+	extendedAliases: { backups: ['games', 'backups'], bu: ['games', 'backups'] },
 	async run({ run }) {
 		return run('games menu');
 	},
