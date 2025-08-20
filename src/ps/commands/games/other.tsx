@@ -4,9 +4,12 @@ import { IS_ENABLED } from '@/enabled';
 import { Board } from '@/ps/commands/points';
 import { Games } from '@/ps/games';
 import { parseMod } from '@/ps/games/mods';
+import { Small } from '@/ps/games/render';
 import { checkWord } from '@/ps/games/scrabble/checker';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
+import metadata from '@/ps/games/splendor/metadata.json';
+import { PokemonCard, TrainerCard } from '@/ps/games/splendor/render';
 import { LB_STYLES } from '@/ps/other/leaderboardStyles';
 import { isUGOActive } from '@/ps/ugo';
 import { BOARD_GAMES_STRUCHNI_ORDER, CHAIN_REACTION_META } from '@/ps/ugo/constants';
@@ -105,6 +108,34 @@ export const command: PSCommand[] = [
 		},
 	},
 	{
+		name: 'cardinfo',
+		aliases: ['card'],
+		extendedAliases: { 'splendor cardinfo': ['cardinfo'], 'splendor card': ['cardinfo'] },
+		help: 'Shows the card info for a Splendor card.',
+		syntax: 'CMD [card name]',
+		categories: ['game'],
+		async run({ broadcastHTML, arg, $T }) {
+			const id = toId(arg);
+			if (id === 'constructor') throw new ChatError($T('SCREW_YOU'));
+			if (id in metadata.pokemon) {
+				const card = metadata.pokemon[id];
+				broadcastHTML(
+					<Small>
+						<PokemonCard data={card} />
+					</Small>
+				);
+			} else if (id in metadata.trainers) {
+				const card = metadata.trainers[id];
+				broadcastHTML(
+					<Small>
+						<TrainerCard data={card} />
+					</Small>
+				);
+			} else throw new ChatError($T('ENTRY_NOT_FOUND'));
+		},
+	},
+	// UGO-CODE
+	{
 		name: 'scrabbledex',
 		help: "Shows a user's current ScrabbleDex for UGO.",
 		syntax: 'CMD [user?]',
@@ -151,6 +182,7 @@ export const command: PSCommand[] = [
 			);
 		},
 	},
+	// UGO-CODE
 	{
 		name: 'ugoexternal',
 		help: 'Adds points for external UGO games.',

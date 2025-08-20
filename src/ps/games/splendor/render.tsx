@@ -144,7 +144,7 @@ function TypeTokenCount({ type, count, square }: { type: TOKEN_TYPE; count: numb
 	);
 }
 
-function TrainerCard({ data }: { data: Trainer }): ReactElement {
+export function TrainerCard({ data }: { data: Trainer }): ReactElement {
 	const trainersToScooch = ['flint', 'gardenia', 'grimsley'];
 	return (
 		<div
