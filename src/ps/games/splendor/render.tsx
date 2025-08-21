@@ -702,7 +702,7 @@ export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 							padding: '8px 12px',
 							textDecoration: data.out ? 'line-through' : undefined,
 							display: 'inline-block',
-							width: 400,
+							width: 600,
 						}}
 					>
 						<Username name={data.name} clickable /> ({data.points})
