@@ -33,20 +33,22 @@ export async function resetUGOPlayed(): Promise<string> {
 	return url;
 }
 
-function parsePoints(data: Partial<Record<UGOBoardGames, number>>): UGOUserPoints {
+function parsePoints(data: Partial<UGOPoints>): UGOUserPoints {
 	const games = Object.fromEntries(BOARD_GAMES_STRUCHNI_ORDER.map(game => [game, data[game] ?? 0])) as Partial<
 		Record<UGOBoardGames, number>
 	>;
 	// Struchni
-	const points = Math.floor(
-		Object.values(games)
-			.sortBy(null, 'desc')
-			.reduce((sum, gamePoints, index) => sum + gamePoints * (1 + index * BG_STRUCHNI_MODIFIER))
-	);
+	const points =
+		Math.floor(
+			Object.values(games)
+				.sortBy(null, 'desc')
+				.reduce((sum, gamePoints, index) => sum + gamePoints * (1 + index * BG_STRUCHNI_MODIFIER))
+		) + (data.event ?? 0);
 	return { total: points, breakdown: data };
 }
 
-export type UGOUserPoints = { total: number; breakdown: Partial<Record<UGOBoardGames, number>> };
+export type UGOPoints = Record<UGOBoardGames | 'event', number>;
+export type UGOUserPoints = { total: number; breakdown: Partial<UGOPoints> };
 export const UGO_POINTS = usePersistedCache('ugoPoints');
 
 export function getUGOPoints(player: string): UGOUserPoints {
@@ -63,8 +65,8 @@ export function getAllUGOPoints(): Record<string, UGOUserPoints> {
 	);
 }
 
-export function addUGOPoints(this: Client, pointsData: Record<string, number>, game: UGOBoardGames, bypassBonus?: boolean): void {
-	const bonus = !bypassBonus && UGO_2025_SPOTLIGHTS.some(date => Temporal.Now.plainDateISO(TimeZone.GMT).equals(date)) ? 1.5 : 1;
+export function addUGOPoints(this: Client, pointsData: Record<string, number>, game: UGOBoardGames | 'event'): void {
+	const bonus = game !== 'event' && UGO_2025_SPOTLIGHTS.some(date => Temporal.Now.plainDateISO(TimeZone.GMT).equals(date)) ? 1.5 : 1;
 	const current = UGO_POINTS.get();
 
 	const commit = mapValues(pointsData, (points, player) => {

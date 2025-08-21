@@ -2,6 +2,7 @@ import { FlatCache } from 'flat-cache';
 
 import { fsPath } from '@/utils/fsPath';
 
+import type { UGOPoints } from '@/cache/ugo';
 import type { GamesList } from '@/ps/games/types';
 import type { UGOBoardGames } from '@/ps/ugo/constants';
 
@@ -9,7 +10,7 @@ type CacheTypes = {
 	gameId: number;
 	openGames: { gameType: GamesList; id: string; roomid: string }[];
 	ugoCap: Record<string, Partial<Record<UGOBoardGames, number>>>;
-	ugoPoints: Record<string, { name: string; points: Partial<Record<UGOBoardGames, number>> }>;
+	ugoPoints: Record<string, { name: string; points: Partial<UGOPoints> }>;
 };
 
 const defaults: CacheTypes = {

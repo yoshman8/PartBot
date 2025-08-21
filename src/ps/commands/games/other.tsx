@@ -1,6 +1,8 @@
 import { addUGOPoints, getUGOPlayed, setUGOPlayed } from '@/cache/ugo';
 import { getScrabbleDex } from '@/database/games';
 import { IS_ENABLED } from '@/enabled';
+import { i18n } from '@/i18n';
+import { getLanguage } from '@/i18n/language';
 import { Board } from '@/ps/commands/points';
 import { Games } from '@/ps/games';
 import { parseMod } from '@/ps/games/mods';
@@ -26,6 +28,7 @@ import type { Trainer } from '@/ps/games/splendor/types';
 import type { GamesList } from '@/ps/games/types';
 import type { PSCommand } from '@/types/chat';
 import type { ReactElement } from 'react';
+import { pluralize } from '@/utils/pluralize';
 
 export function renderScrabbleDexLeaderboard(entries: ScrabbleDexEntry[], $T: TranslationFn): ReactElement {
 	const usersData = Object.values(entries.groupBy(entry => entry.by) as Record<string, ScrabbleDexEntry[]>).map(entries => {
@@ -54,7 +57,15 @@ export function renderUGOBoardGamesLeaderboard(data: Record<string, UGOUserPoint
 	const sortedData = rankedSort(
 		Object.entries(data),
 		([_name, entry]) => entry.total,
-		([name, entry]) => [name, entry.total, ...BOARD_GAMES_STRUCHNI_ORDER.map(gameId => entry.breakdown[gameId] ?? 0)]
+		([name, entry]) => [
+			name,
+			entry.total,
+			Object.values(entry.breakdown)
+				.map(num => num ?? 0)
+				.sum(),
+			...BOARD_GAMES_STRUCHNI_ORDER.map(gameId => entry.breakdown[gameId] ?? 0),
+			entry.breakdown.event ?? 0,
+		]
 	).slice(0, 30);
 	return (
 		<center>
@@ -63,12 +74,14 @@ export function renderUGOBoardGamesLeaderboard(data: Record<string, UGOUserPoint
 					headers={[
 						'#',
 						$T('COMMANDS.POINTS.HEADERS.USER'),
+						'Points',
 						'Total Points',
 						...BOARD_GAMES_STRUCHNI_ORDER.map(gameId =>
 							gameId in Games
 								? (Games[gameId as GamesList].meta.abbr ?? Games[gameId as GamesList].meta.name)
 								: CHAIN_REACTION_META.abbr
 						),
+						'Event',
 					]}
 					data={sortedData}
 					asPage
@@ -224,6 +237,39 @@ export const command: PSCommand[] = [
 			);
 
 			addUGOPoints.call(message.parent, pointsData, CHAIN_REACTION_META.id);
+		},
+	},
+	// UGO-CODE
+	{
+		name: 'addugopoints',
+		help: 'Adds event points for UGO. These points will not count for the Struchni system.',
+		syntax: 'CMD [amount], [user]',
+		categories: ['game'],
+		flags: { allowPMs: true },
+		perms: message => {
+			function isStaff(userString: string): boolean {
+				return /^[%@*#]/.test(userString);
+			}
+			const userInRoom = message.parent.getRoom('Board Games')?.users.find(user => toId(user) === message.author.id);
+			const $T = i18n(getLanguage(message.target));
+			if (!userInRoom) throw new ChatError($T('NOT_IN_ROOM'));
+			return isStaff(userInRoom);
+		},
+		async run({ message, broadcast, arg, $T }) {
+			const [_amount, _user = ''] = arg.lazySplit(',', 1);
+			const amount = +_amount > 0 || +_amount < 0 ? +_amount : +_user > 0 || +_user < 0 ? +_user : null;
+			const user = +_amount > 0 || +_amount < 0 ? _user.trim() : +_user > 0 || +_user < 0 ? _amount.trim() : null;
+			if (!amount || !user) throw new ChatError($T('INVALID_ARGUMENTS'));
+			if (user === 'constructor') throw new ChatError($T('SCREW_YOU'));
+
+			addUGOPoints.bind(message.parent)({ [user]: amount }, 'event');
+
+			broadcast(
+				$T('COMMANDS.POINTS.ADDED_POINTS_TO_USERS', {
+					pointsText: pluralize(amount, { singular: 'UGO Event Point', plural: 'UGO Event Points' }),
+					users: user,
+				})
+			);
 		},
 	},
 ];
