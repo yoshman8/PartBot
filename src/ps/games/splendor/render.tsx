@@ -571,6 +571,7 @@ const RESOURCE_STYLES: CSSProperties = {
 	borderRadius: 8,
 	padding: '8px 12px',
 	margin: 12,
+	width: 960,
 };
 
 export function ActivePlayer({
@@ -700,6 +701,8 @@ export function PlayerSummary({ data }: { data: PlayerData }): ReactElement {
 							borderRadius: 8,
 							padding: '8px 12px',
 							textDecoration: data.out ? 'line-through' : undefined,
+							display: 'inline-block',
+							width: 400,
 						}}
 					>
 						<Username name={data.name} clickable /> ({data.points})
