@@ -103,7 +103,6 @@ export class BaseGame<State extends BaseState> {
 	onAddPlayer?(user: User, ctx: string): ActionResponse;
 	onAfterAddPlayer?(player: Player): void;
 	onRemovePlayer?(player: Player, ctx: string | User): ActionResponse<'end' | null>;
-	onForfeitPlayer?(player: Player, ctx: string | User): ActionResponse;
 	onReplacePlayer?(turn: BaseState['turn'], withPlayer: User): ActionResponse;
 	onAfterReplacePlayer?(player: Player): void;
 	onStart?(): ActionResponse;
@@ -357,9 +356,9 @@ export class BaseGame<State extends BaseState> {
 		const staffAction = typeof ctx === 'string';
 		const player = Object.values(this.players).find(p => p.id === (typeof ctx === 'string' ? ctx : ctx.id));
 		if (!player) return { success: false, error: this.$T('GAME.NOT_PLAYING') };
+		const removePlayer = this.onRemovePlayer?.(player, ctx);
+		if (removePlayer?.success === false) return removePlayer;
 		if (this.started) {
-			const forfeitPlayer = this.onForfeitPlayer?.(player, ctx);
-			if (forfeitPlayer?.success === false) return forfeitPlayer;
 			player.out = true;
 			this.spectators.push(player.id);
 			this.log.push({ action: staffAction ? 'dq' : 'forfeit', turn: player.turn, time: new Date(), ctx: null });
@@ -370,14 +369,13 @@ export class BaseGame<State extends BaseState> {
 					cb: () => {
 						const playersLeft = Object.values(this.players).filter((player: Player) => !player.out);
 						if (playersLeft.length <= 1) this.end('dq');
+						else if (removePlayer?.data === 'end') this.end();
 						else if (this.turn === player.turn) this.endTurn(); // Needs to be run AFTER consumer has finished DQing
 						this.backup();
 					},
 				},
 			};
 		}
-		const removePlayer = this.onRemovePlayer?.(player, ctx);
-		if (removePlayer?.success === false) return removePlayer;
 		delete this.players[player.turn];
 		return {
 			success: true,
