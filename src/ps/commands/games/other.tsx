@@ -192,7 +192,7 @@ export const command: PSCommand[] = [
 				mons => mons?.unique().sort()
 			);
 			const count = Object.values(grouped)
-				.map(num => num ?? 0)
+				.map(num => num?.length ?? 0)
 				.sum();
 
 			if (!results.length) throw new ChatError('No entries yet!' as ToTranslate);
