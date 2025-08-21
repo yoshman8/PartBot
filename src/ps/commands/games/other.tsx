@@ -191,12 +191,15 @@ export const command: PSCommand[] = [
 				results.map(res => res.pokemon.toUpperCase()).groupBy(mon => mon.length),
 				mons => mons?.unique().sort()
 			);
+			const count = Object.values(grouped)
+				.map(num => num ?? 0)
+				.sum();
 
-			if (!results.length) throw new ChatError("You don't have any entries yet!" as ToTranslate);
+			if (!results.length) throw new ChatError('No entries yet!' as ToTranslate);
 
 			broadcastHTML(
 				<details>
-					<summary>ScrabbleDex ({results.length} entries)</summary>
+					<summary>ScrabbleDex ({count} entries)</summary>
 					{Object.entries(grouped).filterMap(([length, mons]) => {
 						if (mons)
 							return (
