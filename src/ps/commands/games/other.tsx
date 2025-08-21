@@ -265,12 +265,12 @@ export const command: PSCommand[] = [
 
 			addUGOPoints.bind(message.parent)(Object.fromEntries(users.map(name => [name, amount])), 'event');
 
-			broadcast(
-				$T('COMMANDS.POINTS.ADDED_POINTS_TO_USERS', {
-					pointsText: pluralize(amount, { singular: 'UGO Event Point', plural: 'UGO Event Points' }),
-					users: users.list($T),
-				})
-			);
+			const log = $T('COMMANDS.POINTS.ADDED_POINTS_TO_USERS', {
+				pointsText: pluralize(amount, { singular: 'UGO Event Point', plural: 'UGO Event Points' }),
+				users: users.list($T),
+			});
+			broadcast(log);
+			message.parent.getRoom('Board Games').send(`/modnote ${log}`);
 		},
 	},
 ];
