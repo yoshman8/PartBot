@@ -19,6 +19,7 @@ import { BOARD_GAMES_STRUCHNI_ORDER, CHAIN_REACTION_META } from '@/ps/ugo/consta
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { mapValues } from '@/utils/map';
+import { pluralize } from '@/utils/pluralize';
 import { rankedSort } from '@/utils/rankedSort';
 
 import type { UGOUserPoints } from '@/cache/ugo';
@@ -28,7 +29,6 @@ import type { Trainer } from '@/ps/games/splendor/types';
 import type { GamesList } from '@/ps/games/types';
 import type { PSCommand } from '@/types/chat';
 import type { ReactElement } from 'react';
-import { pluralize } from '@/utils/pluralize';
 
 export function renderScrabbleDexLeaderboard(entries: ScrabbleDexEntry[], $T: TranslationFn): ReactElement {
 	const usersData = Object.values(entries.groupBy(entry => entry.by) as Record<string, ScrabbleDexEntry[]>).map(entries => {
@@ -243,7 +243,7 @@ export const command: PSCommand[] = [
 	{
 		name: 'addugopoints',
 		help: 'Adds event points for UGO. These points will not count for the Struchni system.',
-		syntax: 'CMD [amount], [user]',
+		syntax: 'CMD [amount], [...users]',
 		categories: ['game'],
 		flags: { allowPMs: true },
 		perms: message => {
@@ -260,14 +260,15 @@ export const command: PSCommand[] = [
 			const amount = +_amount > 0 || +_amount < 0 ? +_amount : +_user > 0 || +_user < 0 ? +_user : null;
 			const user = +_amount > 0 || +_amount < 0 ? _user.trim() : +_user > 0 || +_user < 0 ? _amount.trim() : null;
 			if (!amount || !user) throw new ChatError($T('INVALID_ARGUMENTS'));
-			if (user === 'constructor') throw new ChatError($T('SCREW_YOU'));
+			const users = user.split(',').map(name => name.trim());
+			if (users.some(name => name === 'constructor')) throw new ChatError($T('SCREW_YOU'));
 
-			addUGOPoints.bind(message.parent)({ [user]: amount }, 'event');
+			addUGOPoints.bind(message.parent)(Object.fromEntries(users.map(name => [name, amount])), 'event');
 
 			broadcast(
 				$T('COMMANDS.POINTS.ADDED_POINTS_TO_USERS', {
 					pointsText: pluralize(amount, { singular: 'UGO Event Point', plural: 'UGO Event Points' }),
-					users: user,
+					users: users.list($T),
 				})
 			);
 		},
