@@ -28,9 +28,9 @@ export const meta: Meta = {
 	ugo: {
 		cap: 6,
 		points: {
-			win: 20,
-			draw: 15,
-			loss: 12,
+			win: 25,
+			draw: 18,
+			loss: 15,
 		},
 	},
 };

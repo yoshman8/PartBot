@@ -20,11 +20,11 @@ export const meta: Meta = {
 
 	// UGO-CODE
 	ugo: {
-		cap: 20,
+		cap: 12,
 		points: {
-			win: 8,
-			draw: 6,
-			loss: 5,
+			win: 10,
+			draw: 7,
+			loss: 6,
 		},
 	},
 };

@@ -17,10 +17,10 @@ export const CHAIN_REACTION_META = {
 	name: 'Chain Reaction',
 	abbr: 'CR',
 	ugo: {
-		cap: 20,
+		cap: 12,
 		points: {
-			win: (count: number) => 4 + 4 * count,
-			loss: 4,
+			win: (count: number) => 4 + 5 * count,
+			loss: 5,
 		},
 	},
 } as const;
