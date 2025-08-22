@@ -2,6 +2,7 @@
 
 import _fsSync, { promises as _fs } from 'fs';
 import _path from 'path';
+import { uploadToPastie } from 'ps-client/tools';
 import { inspect } from 'util';
 
 import * as _cache from '@/cache';
@@ -28,12 +29,13 @@ const Tools = _Tools;
 const $ = _$;
 const Sentinel = _Sentinel;
 const jsxToHTML = _jsxToHTML;
+const paste = uploadToPastie;
 
 // Allow storing eval results
 const E: Record<string, unknown> = {};
 
 // Storing in context for eval()
-const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, Tools, $, Sentinel, E, jsxToHTML];
+const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, Tools, $, Sentinel, E, jsxToHTML, paste];
 
 export type EvalModes = 'COLOR_OUTPUT' | 'FULL_OUTPUT' | 'ABBR_OUTPUT' | 'NO_OUTPUT';
 export type EvalOutput = {
