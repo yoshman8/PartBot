@@ -19,7 +19,7 @@ export const CHAIN_REACTION_META = {
 	ugo: {
 		cap: 12,
 		points: {
-			win: (count: number) => 4 + 5 * count,
+			win: (count: number) => 4 + 4 * count,
 			loss: 5,
 		},
 	},
