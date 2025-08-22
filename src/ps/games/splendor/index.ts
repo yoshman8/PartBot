@@ -112,7 +112,7 @@ export class Splendor extends BaseGame<State> {
 
 				AllTokenTypes.forEach(tokenType => {
 					const meta = metadata.types[tokenType].startCount;
-					const reduceTokens = meta[playerCount - 2] ?? 0 - meta[playerCount - 2 - 1] ?? 0;
+					const reduceTokens = (meta[playerCount - 2] ?? 0) - (meta[playerCount - 2 - 1] ?? 0);
 					this.state.board.tokens[tokenType] += playerData.tokens[tokenType] - reduceTokens;
 					playerData.tokens[tokenType] = 0;
 					if (this.state.board.tokens[tokenType] < 0) this.state.board.tokens[tokenType] = 0;
