@@ -120,7 +120,7 @@ export async function evaluate(
 			const { log, deepLog, errorLog } = Logger;
 			// Storing in context for eval()
 			const _innerEvalContext = { message, context, log, deepLog, errorLog };
-			return eval(code);
+			return eval(code.includes('await') ? `(async () => { ${code} })()` : code);
 		})();
 		success = true;
 		value = res;
