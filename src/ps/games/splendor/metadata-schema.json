@@ -37,6 +37,9 @@
 						},
 						"art": {
 							"type": "string"
+						},
+						"attr": {
+							"type": "string"
 						}
 					},
 					"patternProperties": {
@@ -110,6 +113,26 @@
 				}
 			},
 			"required": ["colorless", "dark", "fire", "grass", "water", "dragon"]
+		},
+		"artists": {
+			"type": "object",
+			"patternProperties": {
+				".*": {
+					"type": "object",
+					"properties": {
+						"id": {
+							"type": "string"
+						},
+						"name": {
+							"type": "string"
+						},
+						"attr": {
+							"type": ["string", "null"]
+						}
+					},
+					"required": ["id", "name"]
+				}
+			}
 		}
 	},
 	"required": ["pokemon", "trainers", "types"]
