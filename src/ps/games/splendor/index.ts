@@ -459,6 +459,15 @@ export class Splendor extends BaseGame<State> {
 
 		if (input.length > 3) return { success: false, error: "You can't take that many tokens!" as ToTranslate };
 		if (input.length === 0) return { success: false, error: 'You must take at least 2 tokens!' as ToTranslate };
+		if (input.length < 3 && input.every(({ count }) => count === 1)) {
+			// Support people taking one-of-a-kind for _less_ than 3
+			// Mainly matters when either the bank doesn't have enough types or the player can't take 3 more
+			const typesInBank = TokenTypes.filter(tokenType => this.state.board.tokens[tokenType] > 0);
+			const playerTokens = Object.values(this.state.playerData[this.turn!].tokens).sum();
+			if (!(typesInBank.length < 3 || playerTokens + 3 > MAX_TOKEN_COUNT))
+				return { success: false, error: 'You should probably be taking one token of three different types...' as ToTranslate };
+			return { success: true, data: null };
+		}
 		if (input.length === 2) {
 			return { success: false, error: 'You can only take 2 from 1 type or 1 each from 3 types!' as ToTranslate };
 		}
