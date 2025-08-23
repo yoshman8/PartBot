@@ -202,6 +202,10 @@ function CardWrapper({
 	);
 }
 
+export function ArtOnlyCard({ data }: { data: Card }): ReactElement {
+	return <img src={getArtUrl('pokemon', data.art, 'img')} height={280} width={200} style={{ margin: 12 }} alt={data.name} />;
+}
+
 export function PokemonCard({
 	data,
 	reserved,

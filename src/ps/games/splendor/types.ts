@@ -8,6 +8,7 @@ export type Metadata = {
 	pokemon: Record<string, Card>;
 	trainers: Record<string, Trainer>;
 	types: Record<string, { id: TOKEN_TYPE; name: string; art: string; startCount: [number, number, number] }>;
+	artists: Record<string, { id: string; name: string; url: string | null }>;
 };
 
 export type Card = {
@@ -18,6 +19,7 @@ export type Card = {
 	points: number;
 	cost: Partial<TokenCount>;
 	art: string;
+	attr?: string;
 };
 
 export type Deck = Card[];

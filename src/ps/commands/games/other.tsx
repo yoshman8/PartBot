@@ -12,12 +12,13 @@ import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
 import { TOKEN_TYPE } from '@/ps/games/splendor/constants';
 import metadata from '@/ps/games/splendor/metadata.json';
-import { PokemonCard, TrainerCard } from '@/ps/games/splendor/render';
+import { ArtOnlyCard, PokemonCard, TrainerCard } from '@/ps/games/splendor/render';
 import { LB_STYLES } from '@/ps/other/leaderboardStyles';
 import { isUGOActive } from '@/ps/ugo';
 import { BOARD_GAMES_STRUCHNI_ORDER, CHAIN_REACTION_META } from '@/ps/ugo/constants';
 import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { Username } from '@/utils/components';
 import { mapValues } from '@/utils/map';
 import { pluralize } from '@/utils/pluralize';
 import { rankedSort } from '@/utils/rankedSort';
@@ -134,10 +135,25 @@ export const command: PSCommand[] = [
 			if (id === 'constructor') throw new ChatError($T('SCREW_YOU'));
 			if (id in metadata.pokemon) {
 				const card = metadata.pokemon[id];
+				const attr = card.attr ? metadata.artists[card.attr] : null;
 				broadcastHTML(
-					<Small>
-						<PokemonCard data={card} />
-					</Small>
+					<>
+						<Small>
+							<PokemonCard data={card} />
+							<ArtOnlyCard data={card} />
+						</Small>
+						{attr ? (
+							<>
+								Art by <Username name={attr.name} clickable />!
+								{attr.url ? (
+									<>
+										{' '}
+										Check them out at <a href={attr.url}>{attr.url}</a>!
+									</>
+								) : null}
+							</>
+						) : null}
+					</>
 				);
 			} else if (id in metadata.trainers) {
 				const card = metadata.trainers[id];
@@ -160,6 +176,37 @@ export const command: PSCommand[] = [
 					</Small>
 				);
 			} else throw new ChatError($T('ENTRY_NOT_FOUND'));
+		},
+	},
+	{
+		name: 'splendorart',
+		help: 'Displays the current user-made art used in Splendor!',
+		syntax: 'CMD',
+		extendedAliases: { 'splendor art': ['splendorart'] },
+		categories: ['game'],
+		async run({ broadcastHTML }) {
+			const customCards = Object.values(metadata.pokemon).filter(mon => mon.attr);
+			const groupedInfo = customCards.groupBy(card => card.attr!);
+			return broadcastHTML(
+				<>
+					<h3>Shoutouts to these nerds for setting up some amazing art for Splendor!</h3>
+					{Object.entries(groupedInfo).map(([attr, cards]) => {
+						const artist = metadata.artists[attr];
+						return (
+							<details open>
+								<summary>
+									<Username name={artist.name} />
+								</summary>
+								<div style={{ zoom: '40%' }}>
+									{cards!.map(card => (
+										<ArtOnlyCard data={card} />
+									))}
+								</div>
+							</details>
+						);
+					})}
+				</>
+			);
 		},
 	},
 	// UGO-CODE

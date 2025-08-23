@@ -1287,12 +1287,12 @@
 		"audiino": {
 			"id": "audiino",
 			"name": "Audiino",
-			"attr": "https://cara.app/aurumii"
+			"url": "https://cara.app/aurumii"
 		},
 		"grassystorm": {
 			"id": "grassystorm",
 			"name": "GRASSY_STORM!!~~",
-			"attr": null
+			"url": null
 		}
 	}
 }
