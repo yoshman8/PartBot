@@ -2,7 +2,6 @@
 
 import _fsSync, { promises as _fs } from 'fs';
 import _path from 'path';
-import { uploadToPastie } from 'ps-client/tools';
 import { inspect } from 'util';
 
 import * as _cache from '@/cache';
@@ -14,12 +13,13 @@ import { $ as _$ } from '@/utils/child_process';
 import { fsPath as _fsPath } from '@/utils/fsPath';
 import { jsxToHTML as _jsxToHTML } from '@/utils/jsxToHTML';
 import { Logger } from '@/utils/logger';
+import { paste as _paste } from '@/utils/paste';
 
 import type { PSCommandContext } from '@/types/chat';
 import type { PSMessage } from '@/types/ps';
 import type { Interaction } from 'discord.js';
 
-// Exporting into side variables for eval lookup; this gets garbage-collected otherwise
+// Exporting into side variables for eval lookup
 const cache = _cache;
 const cachebust = _cachebust;
 const fs = _fs;
@@ -30,7 +30,7 @@ const Tools = _Tools;
 const $ = _$;
 const Sentinel = _Sentinel;
 const jsxToHTML = _jsxToHTML;
-const paste = uploadToPastie;
+const paste = _paste;
 
 // Allow storing eval results
 const E: Record<string, unknown> = {};

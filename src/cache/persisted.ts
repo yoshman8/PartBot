@@ -8,6 +8,7 @@ import type { UGOBoardGames } from '@/ps/ugo/constants';
 
 type CacheTypes = {
 	gameId: number;
+	pasteId: number;
 	openGames: { gameType: GamesList; id: string; roomid: string }[];
 	ugoCap: Record<string, Partial<Record<UGOBoardGames, number>>>;
 	ugoPoints: Record<string, { name: string; points: Partial<UGOPoints> }>;
@@ -15,6 +16,7 @@ type CacheTypes = {
 
 const defaults: CacheTypes = {
 	gameId: 0,
+	pasteId: 0,
 	openGames: [],
 	ugoCap: {},
 	ugoPoints: {},
