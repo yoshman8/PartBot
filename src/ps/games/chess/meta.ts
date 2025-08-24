@@ -7,7 +7,7 @@ import type { Meta } from '@/ps/games/types';
 export const meta: Meta = {
 	name: 'Chess',
 	id: GamesList.Chess,
-	aliases: ['mengyisacapitalist'],
+	aliases: ['mengyisacapitalist', 'shatranj'],
 	players: 'many',
 
 	turns: {
