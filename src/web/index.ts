@@ -6,6 +6,7 @@ import { IS_ENABLED } from '@/enabled';
 import { Logger } from '@/utils/logger';
 import loadAPI from '@/web/loaders/api';
 import loadBundles from '@/web/loaders/bundles';
+import loadErrorHandler from '@/web/loaders/errors';
 import loadStatic from '@/web/loaders/static';
 import loadUI from '@/web/loaders/ui';
 
@@ -24,6 +25,7 @@ if (IS_ENABLED.WEB) {
 		.then(() => loadAPI(app))
 		.then(() => loadBundles(app))
 		.then(() => loadUI(app))
+		.then(() => loadErrorHandler(app))
 		.then(() => app.listen(port, () => Logger.log(`Web is running!`)));
 }
 
