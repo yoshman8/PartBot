@@ -934,7 +934,8 @@
 				"fire": 3,
 				"water": 3
 			},
-			"art": "shaymin.png"
+			"art": "shaymin.png",
+			"attr": "audiino"
 		},
 		"shuckle": {
 			"id": "shuckle",
