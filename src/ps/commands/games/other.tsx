@@ -16,12 +16,12 @@ import { ArtOnlyCard, PokemonCard, TrainerCard } from '@/ps/games/splendor/rende
 import { LB_STYLES } from '@/ps/other/leaderboardStyles';
 import { isUGOActive } from '@/ps/ugo';
 import { BOARD_GAMES_STRUCHNI_ORDER, CHAIN_REACTION_META } from '@/ps/ugo/constants';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { Username } from '@/utils/components';
 import { mapValues } from '@/utils/map';
 import { pluralize } from '@/utils/pluralize';
 import { rankedSort } from '@/utils/rankedSort';
+import { toId } from '@/utils/toId';
 
 import type { UGOUserPoints } from '@/cache/ugo';
 import type { ScrabbleDexEntry } from '@/database/games';

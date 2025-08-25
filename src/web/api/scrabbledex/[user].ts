@@ -1,6 +1,6 @@
 import { getScrabbleDex } from '@/database/games';
 import { IS_ENABLED } from '@/enabled';
-import { toId } from '@/tools';
+import { toId } from '@/utils/toId';
 
 import type { RequestHandler } from 'express';
 export const handler: RequestHandler = async (req, res) => {

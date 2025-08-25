@@ -1,6 +1,6 @@
 import { CHESS_THEMES, defaultTheme } from '@/ps/games/chess/themes';
 import { GamesList } from '@/ps/games/types';
-import { fromHumanTime } from '@/tools';
+import { fromHumanTime } from '@/utils/humanTime';
 
 import type { Meta } from '@/ps/games/types';
 

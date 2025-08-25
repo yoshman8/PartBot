@@ -1,7 +1,7 @@
 import { abilities, items, moves, pokedex } from 'ps-client/data';
 
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toId } from '@/utils/toId';
 
 import type { ToTranslate } from '@/i18n/types';
 import type { PSCommand } from '@/types/chat';

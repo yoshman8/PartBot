@@ -1,7 +1,7 @@
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { ScrabbleModData } from '@/ps/games/scrabble/mods';
 import { GamesList } from '@/ps/games/types';
-import { fromHumanTime } from '@/tools';
+import { fromHumanTime } from '@/utils/humanTime';
 
 import type { Meta } from '@/ps/games/types';
 

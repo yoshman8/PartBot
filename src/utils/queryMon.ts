@@ -1,6 +1,7 @@
 import { type Species, pokedex } from 'ps-client/data';
 
-import { toId } from '@/tools';
+
+import { toId } from '@/utils/toId';
 
 export function queryMon(input: string): Species | null {
 	const id = toId(input);

@@ -6,7 +6,6 @@ import { inspect } from 'util';
 
 import * as _cache from '@/cache';
 import _Sentinel from '@/sentinel';
-import * as _Tools from '@/tools';
 import { ansiToHtml } from '@/utils/ansiToHtml';
 import { cachebust as _cachebust } from '@/utils/cachebust';
 import { $ as _$ } from '@/utils/child_process';
@@ -14,6 +13,7 @@ import { fsPath as _fsPath } from '@/utils/fsPath';
 import { jsxToHTML as _jsxToHTML } from '@/utils/jsxToHTML';
 import { Logger } from '@/utils/logger';
 import { paste as _paste } from '@/utils/paste';
+import { toId as _toId } from '@/utils/toId';
 
 import type { PSCommandContext } from '@/types/chat';
 import type { PSMessage } from '@/types/ps';
@@ -26,7 +26,7 @@ const fs = _fs;
 const fsSync = _fsSync;
 const fsPath = _fsPath;
 const path = _path;
-const Tools = _Tools;
+const toId = _toId;
 const $ = _$;
 const Sentinel = _Sentinel;
 const jsxToHTML = _jsxToHTML;
@@ -36,7 +36,7 @@ const paste = _paste;
 const E: Record<string, unknown> = {};
 
 // Storing in context for eval()
-const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, Tools, $, Sentinel, E, jsxToHTML, paste];
+const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, toId, $, Sentinel, E, jsxToHTML, paste];
 
 export type EvalModes = 'COLOR_OUTPUT_HTML' | 'COLOR_OUTPUT_ANSI' | 'FULL_OUTPUT' | 'ABBR_OUTPUT' | 'NO_OUTPUT';
 export type EvalOutput = {

@@ -7,13 +7,13 @@ import { IS_ENABLED } from '@/enabled';
 import { i18n } from '@/i18n';
 import { getLanguage } from '@/i18n/language';
 import getSecretFunction from '@/secrets/functions';
-import { toId } from '@/tools';
 import { Username } from '@/utils/components';
 import { Form } from '@/utils/components/ps';
 import { Logger } from '@/utils/logger';
 import { mapValues } from '@/utils/map';
 import { pluralize } from '@/utils/pluralize';
 import { randomString } from '@/utils/random';
+import { toId } from '@/utils/toId';
 
 import type { PSCommandContext } from '@/types/chat';
 import type { RecursivePartial } from '@/types/common';

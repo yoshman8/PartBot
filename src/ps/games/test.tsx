@@ -14,7 +14,7 @@ export const test: () => Promise<string> = async () => {
 		const { render } = await import('@/ps/games/splendor/render');
 		const { default: metadata } = (await import('@/ps/games/splendor/metadata.json')) as unknown as { default: Metadata };
 
-		// @ts-ignore
+		/* @ts-ignore */ // eslint-disable-line @typescript-eslint/ban-ts-comment -- TS error only during debug script
 		const MOCK_RENDER_CTX: RenderCtx = {
 			id: '#TEMP',
 			header: 'Your turn!',

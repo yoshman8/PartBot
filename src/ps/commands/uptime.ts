@@ -1,4 +1,4 @@
-import { toHumanTime } from '@/tools';
+import { toHumanTime } from '@/utils/humanTime';
 
 import type { PSCommand } from '@/types/chat';
 

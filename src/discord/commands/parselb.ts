@@ -2,8 +2,8 @@ import { PSRoomConfigs } from '@/cache';
 import { bulkAddPoints } from '@/database/points';
 import { SERVER_ID } from '@/discord/constants/servers/hindi';
 import getSecretFunction from '@/secrets/functions';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toId } from '@/utils/toId';
 
 import type { NoTranslate } from '@/i18n/types';
 import type { DiscordCommand } from '@/types/chat';

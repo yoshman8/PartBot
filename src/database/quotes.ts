@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import { IS_ENABLED } from '@/enabled';
-import { toId } from '@/tools';
+import { toId } from '@/utils/toId';
 
 const schema = new mongoose.Schema({
 	quote: {

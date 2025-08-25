@@ -11,8 +11,8 @@ import {
 } from '@/ps/games/splendor/constants';
 import metadata from '@/ps/games/splendor/metadata.json';
 import { render, renderLog } from '@/ps/games/splendor/render';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toId } from '@/utils/toId';
 
 import type { ToTranslate, TranslatedText } from '@/i18n/types';
 import type { BaseContext } from '@/ps/games/game';

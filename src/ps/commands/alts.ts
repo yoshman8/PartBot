@@ -1,6 +1,6 @@
 import { getAlts } from '@/database/alts';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toId } from '@/utils/toId';
 
 import type { PSCommand } from '@/types/chat';
 

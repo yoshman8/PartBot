@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 import { PSRoomConfigs } from '@/cache';
 import { IS_ENABLED } from '@/enabled';
-import { toId } from '@/tools';
+import { toId } from '@/utils/toId';
 
 export type Model = { id: string; userId: string; name: string; roomId: string; points: Record<string, number> };
 type MapModel = Omit<Model, 'points'> & { points: Map<string, number> };

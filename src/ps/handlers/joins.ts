@@ -1,9 +1,10 @@
 import { PSAltCache, PSGames, PSSeenCache } from '@/cache';
 import { rename } from '@/database/alts';
 import { seeUser } from '@/database/seens';
-import { fromHumanTime, toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { debounce } from '@/utils/debounce';
+import { fromHumanTime } from '@/utils/humanTime';
+import { toId } from '@/utils/toId';
 
 import type { Client } from 'ps-client';
 

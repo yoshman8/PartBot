@@ -1,10 +1,10 @@
 import { type CellRenderer, Table } from '@/ps/games/render';
 import { Button } from '@/utils/components/ps';
+import { pluralize } from '@/utils/pluralize';
 
 import type { LightsOut } from '@/ps/games/lightsout/index';
 import type { State } from '@/ps/games/lightsout/types';
 import type { ReactElement } from 'react';
-import { pluralize } from '@/utils/pluralize';
 
 export function renderCloseSignups(this: LightsOut): ReactElement {
 	const player = Object.values(this.players)[0].name;

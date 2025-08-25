@@ -1,8 +1,8 @@
 import { GOData } from '@/cache/pokemonGo';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { PSIcon } from '@/utils/components/ps/psicon';
 import { getCP } from '@/utils/pokemonGo';
+import { toId } from '@/utils/toId';
 
 import type { PSCommand } from '@/types/chat';
 

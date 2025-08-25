@@ -1,4 +1,4 @@
-import { toId } from '@/tools';
+import { toId } from '@/utils/toId';
 
 export type ModEnum<Mod extends string> = Record<string, Mod>;
 export type BaseModEntry = { id: string; name: string; desc: string; aliases?: string[] | undefined };

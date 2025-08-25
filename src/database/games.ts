@@ -6,8 +6,8 @@ import { IS_ENABLED } from '@/enabled';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { GamesList } from '@/ps/games/types';
 import { UGO_2025_END, UGO_2025_START } from '@/ps/ugo/constants';
-import { toId } from '@/tools';
 import { instantInRange } from '@/utils/timeInRange';
+import { toId } from '@/utils/toId';
 
 import type { Log as ScrabbleLog } from '@/ps/games/scrabble/logs';
 import type { WinCtx as ScrabbleWinCtx } from '@/ps/games/scrabble/types';

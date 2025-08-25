@@ -2,12 +2,13 @@ import { PSQuoteRoomPrefs } from '@/cache';
 import { prefix } from '@/config/ps';
 import { addQuote, getAllQuotes } from '@/database/quotes';
 import { MAX_CHAT_HTML_LENGTH, MAX_PAGE_HTML_LENGTH } from '@/ps/constants';
-import { fromHumanTime, toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { Username as UsernameCustom } from '@/utils/components';
 import { Username as UsernamePS } from '@/utils/components/ps';
+import { fromHumanTime } from '@/utils/humanTime';
 import { jsxToHTML } from '@/utils/jsxToHTML';
 import { escapeRegEx } from '@/utils/regexEscape';
+import { toId } from '@/utils/toId';
 
 import type { TranslationFn } from '@/i18n/types';
 import type { PSCommand } from '@/types/chat';
@@ -155,7 +156,7 @@ function FormatQuote({
 	);
 }
 
-function FormatSmogQuote(quote: string): string {
+function _FormatSmogQuote(quote: string): string {
 	return quote
 		.split('\n')
 		.map(line => {
@@ -168,7 +169,7 @@ function FormatSmogQuote(quote: string): string {
 		.join('\n');
 }
 
-function MultiQuotes({ list, paginate, buffer }: { list: QuoteCollection; paginate?: boolean; buffer?: number }): {
+function _MultiQuotes({ list, paginate, buffer }: { list: QuoteCollection; paginate?: boolean; buffer?: number }): {
 	component: string;
 	remaining: QuoteCollection;
 } {

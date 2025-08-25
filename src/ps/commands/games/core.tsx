@@ -4,8 +4,8 @@ import { Games } from '@/ps/games';
 import { renderBackups, renderMenu } from '@/ps/games/menus';
 import { parseMod } from '@/ps/games/mods';
 import { generateId } from '@/ps/games/utils';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toId } from '@/utils/toId';
 
 import type { NoTranslate, ToTranslate, TranslationFn } from '@/i18n/types';
 import type { CommonGame } from '@/ps/games/game';

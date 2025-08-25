@@ -1,4 +1,4 @@
-import { toId } from '@/tools';
+import { toId } from '@/utils/toId';
 
 export const ranks = ['locked', 'muted', 'regular', 'whitelist', 'voice', 'driver', 'mod', 'bot', 'owner', 'admin'] as const;
 

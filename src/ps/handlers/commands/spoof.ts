@@ -2,8 +2,8 @@ import { type Client, Message, type Room } from 'ps-client';
 
 import { PSGames } from '@/cache';
 import { prefix } from '@/config/ps';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toId } from '@/utils/toId';
 
 import type { TranslationFn } from '@/i18n/types';
 import type { PSMessage } from '@/types/ps';

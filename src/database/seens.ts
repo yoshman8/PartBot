@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import { IS_ENABLED } from '@/enabled';
-import { toId } from '@/tools';
+import { toId } from '@/utils/toId';
 
 // We don't really care about storing joins (since we can just use their 'online' status)
 // Instead, we store the last time they were seen online; i.e. their leave time, not join

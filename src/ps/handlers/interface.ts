@@ -6,8 +6,8 @@ import { IS_ENABLED } from '@/enabled';
 import { i18n } from '@/i18n';
 import { getLanguage } from '@/i18n/language';
 import { renderScrabbleDexLeaderboard, renderUGOBoardGamesLeaderboard } from '@/ps/commands/games/other';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toId } from '@/utils/toId';
 
 import type { PSMessage } from '@/types/ps';
 

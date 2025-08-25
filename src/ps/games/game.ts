@@ -8,12 +8,13 @@ import { getChannel } from '@/discord/loaders/channels';
 import { IS_ENABLED } from '@/enabled';
 import { Small, renderCloseSignups, renderSignups } from '@/ps/games/render';
 import { checkUGO } from '@/ps/games/utils';
-import { toHumanTime, toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { toHumanTime } from '@/utils/humanTime';
 import { Logger } from '@/utils/logger';
 import { pick } from '@/utils/pick';
 import { sample, useRNG } from '@/utils/random';
 import { Timer } from '@/utils/timer';
+import { toId } from '@/utils/toId';
 
 import type { GameModel } from '@/database/games';
 import type { NoTranslate, PSRoomTranslated, TranslatedText, TranslationFn } from '@/i18n/types';

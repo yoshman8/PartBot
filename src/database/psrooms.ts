@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 import { PSRoomConfigs } from '@/cache';
 import { IS_ENABLED } from '@/enabled';
-import { toId } from '@/tools';
 import { Logger } from '@/utils/logger';
+import { toId } from '@/utils/toId';
 
 import type { AuthKey, PSRoomConfig } from '@/types/ps';
 

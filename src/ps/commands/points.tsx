@@ -14,10 +14,10 @@ import {
 import { IS_ENABLED } from '@/enabled';
 import { renderUGOBoardGamesLeaderboard } from '@/ps/commands/games/other';
 import { LB_COMMON_STYLES as COMMON_STYLES, LB_STYLES } from '@/ps/other/leaderboardStyles';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { Logger } from '@/utils/logger';
 import { pluralize } from '@/utils/pluralize';
+import { toId } from '@/utils/toId';
 
 import type { ToTranslate, TranslatedText } from '@/i18n/types';
 import type { PSCommand } from '@/types/chat';

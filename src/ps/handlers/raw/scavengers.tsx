@@ -6,8 +6,8 @@ import { getChannel } from '@/discord/loaders/channels';
 import { IS_ENABLED } from '@/enabled';
 import { createNonce } from '@/ps/commands/nonce';
 import { isUGOActive } from '@/ps/ugo';
-import { toId } from '@/tools';
 import { Button } from '@/utils/components/ps';
+import { toId } from '@/utils/toId';
 
 import type { Client } from 'ps-client';
 

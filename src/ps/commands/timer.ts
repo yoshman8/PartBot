@@ -1,6 +1,6 @@
 import { Timers } from '@/cache';
-import { fromHumanTime, toHumanTime } from '@/tools';
 import { ChatError } from '@/utils/chatError';
+import { fromHumanTime, toHumanTime } from '@/utils/humanTime';
 import { Timer } from '@/utils/timer';
 
 import type { PSCommand } from '@/types/chat';

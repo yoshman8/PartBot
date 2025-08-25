@@ -1,6 +1,7 @@
 import { PSNoPrefixHelp } from '@/cache';
 import { owner, prefix, username } from '@/config/ps';
-import { fromHumanTime, toId } from '@/tools';
+import { fromHumanTime } from '@/utils/humanTime';
+import { toId } from '@/utils/toId';
 
 import type { PSMessage } from '@/types/ps';
 

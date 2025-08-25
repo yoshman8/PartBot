@@ -1,9 +1,9 @@
 import { HSL, formatText } from 'ps-client/tools';
 
 import { isGlobalBot, prefix } from '@/config/ps';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { Button, Form } from '@/utils/components/ps';
+import { toId } from '@/utils/toId';
 
 import type { ToTranslate } from '@/i18n/types';
 import type { PSCommand } from '@/types/chat';

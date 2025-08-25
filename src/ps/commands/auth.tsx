@@ -1,9 +1,9 @@
 import { PSRoomConfigs } from '@/cache';
 import { deauth, updateAuth } from '@/database/psrooms';
 import { IS_ENABLED } from '@/enabled';
-import { toId } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { Username } from '@/utils/components';
+import { toId } from '@/utils/toId';
 
 import type { ToTranslate } from '@/i18n/types';
 import type { PSCommand } from '@/types/chat';

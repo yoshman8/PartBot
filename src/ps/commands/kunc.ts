@@ -4,10 +4,10 @@ import { PSKuncInProgress } from '@/cache';
 import { ShowdownData } from '@/cache/showdown';
 import { ShowdownDataKeys } from '@/cache/showdown/types';
 import { prefix } from '@/config/ps';
-import { fromHumanTime } from '@/tools';
 import { ChatError } from '@/utils/chatError';
 import { debounce } from '@/utils/debounce';
 import { DeferredPromise } from '@/utils/deferredPromise';
+import { fromHumanTime } from '@/utils/humanTime';
 import { levenshtein } from '@/utils/levenshtein';
 
 import type { NoTranslate, ToTranslate } from '@/i18n/types';
