@@ -560,7 +560,8 @@
 			"cost": {
 				"grass": 5
 			},
-			"art": "leafeon.png"
+			"art": "leafeon.png",
+			"attr": "grassystorm"
 		},
 		"litten": {
 			"id": "litten",
