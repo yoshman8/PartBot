@@ -15,19 +15,18 @@ function getSquare(x: number, y: number, flip: boolean): Square {
 type BoardCell = ReturnType<Chess['board']>[number][number];
 
 const PIECE_IMAGES: Record<string, string> = {
-	// TODO: Move these all to PartBot!
-	wk: 'https://partprofessor.partman.dev/public/chess/WK.png',
-	wq: 'https://partprofessor.partman.dev/public/chess/WQ.png',
-	wb: 'https://partprofessor.partman.dev/public/chess/WB.png',
-	wn: 'https://partprofessor.partman.dev/public/chess/WN.png',
-	wr: 'https://partprofessor.partman.dev/public/chess/WR.png',
-	wp: 'https://partprofessor.partman.dev/public/chess/WP.png',
-	bk: 'https://partprofessor.partman.dev/public/chess/BK.png',
-	bq: 'https://partprofessor.partman.dev/public/chess/BQ.png',
-	bb: 'https://partprofessor.partman.dev/public/chess/BB.png',
-	bn: 'https://partprofessor.partman.dev/public/chess/BN.png',
-	br: 'https://partprofessor.partman.dev/public/chess/BR.png',
-	bp: 'https://partprofessor.partman.dev/public/chess/BP.png',
+	wk: `${process.env.WEB_URL}/static/chess/WK.png`,
+	wq: `${process.env.WEB_URL}/static/chess/WQ.png`,
+	wb: `${process.env.WEB_URL}/static/chess/WB.png`,
+	wn: `${process.env.WEB_URL}/static/chess/WN.png`,
+	wr: `${process.env.WEB_URL}/static/chess/WR.png`,
+	wp: `${process.env.WEB_URL}/static/chess/WP.png`,
+	bk: `${process.env.WEB_URL}/static/chess/BK.png`,
+	bq: `${process.env.WEB_URL}/static/chess/BQ.png`,
+	bb: `${process.env.WEB_URL}/static/chess/BB.png`,
+	bn: `${process.env.WEB_URL}/static/chess/BN.png`,
+	br: `${process.env.WEB_URL}/static/chess/BR.png`,
+	bp: `${process.env.WEB_URL}/static/chess/BP.png`,
 };
 
 function adaptBoard(board: BoardCell[][], flip: boolean): BoardCell[][] {
