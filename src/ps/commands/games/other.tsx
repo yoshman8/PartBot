@@ -196,8 +196,14 @@ export const command: PSCommand[] = [
 							<details open>
 								<summary>
 									<Username name={artist.name} />
+									{artist.url ? (
+										<>
+											{' '}
+											(<a href={artist.url}>check them out</a>!)
+										</>
+									) : null}
 								</summary>
-								<div style={{ zoom: '40%' }}>
+								<div style={{ zoom: '40%', overflowX: 'auto', whiteSpace: 'nowrap' }}>
 									{cards!.map(card => (
 										<ArtOnlyCard data={card} />
 									))}
