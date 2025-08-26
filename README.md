@@ -38,5 +38,5 @@ Feel free to refer to the [source code](https://github.com/PartMan7/PartBot/tree
 ## Credits
 
 - [@PartMan7](https://github.com/PartMan7) (Parth Mane) - Lead Developer, Maintainer
-- [@Audiino](https://github.com/Audiino) - Maintainer, Victim of being asked to do stuff, Lead Artist
+- [@Audiino](https://github.com/Audiino) - Lead Artist, Maintainer, Victim of being asked to do stuff
 - [@zxchan](https://github.com/singiamtel) - putting up with dumb questions
