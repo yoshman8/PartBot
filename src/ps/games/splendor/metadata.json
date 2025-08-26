@@ -45,7 +45,6 @@
 			"type": "colorless",
 			"points": 2,
 			"cost": {
-				"dark": 3,
 				"fire": 5
 			},
 			"art": "audino.png"
@@ -275,6 +274,7 @@
 			"type": "colorless",
 			"points": 2,
 			"cost": {
+				"dark": 3,
 				"fire": 5
 			},
 			"art": "drampa.png"
