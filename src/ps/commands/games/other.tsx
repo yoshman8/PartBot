@@ -241,7 +241,7 @@ export const command: PSCommand[] = [
 			const allEntries = await getScrabbleDex();
 			const results = allEntries!.filter(entry => entry.by === target);
 			const grouped = mapValues(
-				results.map(res => res.pokemon.toUpperCase()).groupBy(mon => mon.length),
+				results.map(res => res.pokemonName.toUpperCase()).groupBy(mon => toId(mon).length),
 				mons => mons?.unique().sort()
 			);
 			const count = Object.values(grouped)
