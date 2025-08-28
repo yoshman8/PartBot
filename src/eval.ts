@@ -2,6 +2,7 @@
 
 import _fsSync, { promises as _fs } from 'fs';
 import _path from 'path';
+import { pokedex } from 'ps-client/data';
 import { inspect } from 'util';
 
 import * as _cache from '@/cache';
@@ -31,12 +32,13 @@ const $ = _$;
 const Sentinel = _Sentinel;
 const jsxToHTML = _jsxToHTML;
 const paste = _paste;
+const Dex = pokedex;
 
 // Allow storing eval results
 const E: Record<string, unknown> = {};
 
 // Storing in context for eval()
-const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, toId, $, Sentinel, E, jsxToHTML, paste];
+const _evalContext = [cache, cachebust, fs, fsSync, fsPath, path, toId, $, Sentinel, E, jsxToHTML, paste, Dex];
 
 export type EvalModes = 'COLOR_OUTPUT_HTML' | 'COLOR_OUTPUT_ANSI' | 'FULL_OUTPUT' | 'ABBR_OUTPUT' | 'NO_OUTPUT';
 export type EvalOutput = {
