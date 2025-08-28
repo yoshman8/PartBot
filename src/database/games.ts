@@ -145,7 +145,8 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 					const words = Object.keys(log.ctx.words).map(toId).unique();
 					return words.filterMap<ScrabbleDexEntry>(word => {
 						if (!(word in pokedex)) return;
-						const mon = pokedex[word];
+						let mon = pokedex[word];
+						if (mon.baseSpecies) mon = pokedex[toId(mon.baseSpecies)];
 						if (mon.num <= 0) return;
 						return {
 							...baseCtx,
