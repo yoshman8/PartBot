@@ -167,21 +167,20 @@ export class Splendor extends BaseGame<State> {
 		const playerData = this.state.playerData[player.turn];
 		const [action, actionCtx] = ctx.lazySplit(' ', 1);
 
+		if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS && action !== VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
+			throw new ChatError('You need to discard tokens!' as ToTranslate);
+
 		let logEntry: Log;
 		// VIEW_ACTION_TYPES update the user's state while staying on the same turn. Use 'return'.
 		// The exception to this is TOO_MANY_TOKENS, which is deferred from ACTIONS and uses 'break'.
 		// ACTIONS are actual actions, and will end the turn and stuff if valid. Use 'break'.
 		switch (action) {
 			case VIEW_ACTION_TYPE.CLICK_TOKENS: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You need to discard tokens!' as ToTranslate);
 				this.state.actionState = { action: VIEW_ACTION_TYPE.CLICK_TOKENS };
 				this.update(user.id);
 				return;
 			}
 			case VIEW_ACTION_TYPE.CLICK_RESERVE: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You need to discard tokens!' as ToTranslate);
 				const card = this.lookupCard(actionCtx);
 				if (!card) throw new ChatError(`${actionCtx} is not available to reserve.` as ToTranslate);
 
@@ -196,8 +195,6 @@ export class Splendor extends BaseGame<State> {
 				return;
 			}
 			case VIEW_ACTION_TYPE.CLICK_WILD: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You need to discard tokens!' as ToTranslate);
 				const lookupCard = this.findWildCard(actionCtx);
 				if (!lookupCard.success) throw new ChatError(`${actionCtx} is not available to buy.` as ToTranslate);
 
@@ -217,8 +214,6 @@ export class Splendor extends BaseGame<State> {
 				return;
 			}
 			case VIEW_ACTION_TYPE.CLICK_DECK: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You need to discard tokens!' as ToTranslate);
 				if (!['1', '2', '3'].includes(actionCtx)) throw new ChatError('Which tier did you click on?' as ToTranslate);
 				const tier = +actionCtx as 1 | 2 | 3;
 				if (this.state.board.cards[tier].deck.length === 0)
@@ -250,8 +245,6 @@ export class Splendor extends BaseGame<State> {
 			}
 
 			case ACTIONS.BUY: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You have too many tokens!' as ToTranslate);
 				const [mon, tokenInfo = ''] = actionCtx.lazySplit(' ', 1);
 				const getCard = this.findWildCard(mon);
 				if (!getCard.success) throw new ChatError(getCard.error);
@@ -277,8 +270,6 @@ export class Splendor extends BaseGame<State> {
 			}
 
 			case ACTIONS.RESERVE: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You have too many tokens!' as ToTranslate);
 				if (!this.canReserve(player)) {
 					throw new ChatError(
 						('You cannot reserve a card.' +
@@ -326,8 +317,6 @@ export class Splendor extends BaseGame<State> {
 			}
 
 			case ACTIONS.BUY_RESERVE: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You have too many tokens!' as ToTranslate);
 				const [mon, tokenInfo = ''] = actionCtx.lazySplit(' ', 1);
 				const baseCard = this.lookupCard(mon);
 				if (!baseCard) throw new ChatError(`${mon} is not a valid card!` as ToTranslate);
@@ -347,8 +336,6 @@ export class Splendor extends BaseGame<State> {
 			}
 
 			case ACTIONS.DRAW: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You have too many tokens!' as ToTranslate);
 				const tokens = this.parseTokens(actionCtx);
 				const validateTokens = this.getTokenIssues(tokens);
 				if (!validateTokens.success) throw new ChatError(validateTokens.error);
@@ -359,8 +346,6 @@ export class Splendor extends BaseGame<State> {
 			}
 
 			case ACTIONS.PASS: {
-				if (this.state.actionState.action === VIEW_ACTION_TYPE.TOO_MANY_TOKENS)
-					throw new ChatError('You have too many tokens!' as ToTranslate);
 				logEntry = { turn: player.turn, time: new Date(), action: ACTIONS.PASS, ctx: null };
 				break;
 			}
