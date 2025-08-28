@@ -236,7 +236,7 @@ export class Splendor extends BaseGame<State> {
 
 				if (discarding < toDiscard)
 					throw new ChatError(`You must discard at least ${toDiscard} tokens! ${discarding} isn't enough.` as ToTranslate);
-				if (!this.canAfford(tokens, playerData.tokens, null))
+				if (!this.canAfford(tokens, playerData.tokens, null, false))
 					throw new ChatError("Unfortunately it doesn't look like you don't have those to discard." as ToTranslate);
 
 				this.spendTokens(tokens, playerData);
@@ -375,7 +375,12 @@ export class Splendor extends BaseGame<State> {
 		} else this.endTurn();
 	}
 
-	canAfford(cost: Partial<TokenCount>, funds: Partial<TokenCount>, cards: Card[] | null): { recommendation: TokenCount } | false {
+	canAfford(
+		cost: Partial<TokenCount>,
+		funds: Partial<TokenCount>,
+		cards: Card[] | null,
+		allowDragons?: boolean
+	): { recommendation: TokenCount } | false {
 		const cardCounts = cards?.groupBy(card => card.type) ?? {};
 
 		const spendingPower = Object.fromEntries(
@@ -391,6 +396,7 @@ export class Splendor extends BaseGame<State> {
 		}).sum();
 
 		if (neededDragons > availableDragons) return false;
+		if (neededDragons > 0 && !allowDragons) return false;
 		return {
 			recommendation: {
 				...Object.fromEntries(
