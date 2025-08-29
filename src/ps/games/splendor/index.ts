@@ -379,7 +379,7 @@ export class Splendor extends BaseGame<State> {
 		cost: Partial<TokenCount>,
 		funds: Partial<TokenCount>,
 		cards: Card[] | null,
-		allowDragons?: boolean
+		allowDragons = true
 	): { recommendation: TokenCount } | false {
 		const cardCounts = cards?.groupBy(card => card.type) ?? {};
 
