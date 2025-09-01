@@ -1,4 +1,4 @@
-import { getGameById } from '@/database/games';
+import { getGameById, normalizeGame } from '@/database/games';
 import { IS_ENABLED } from '@/enabled';
 import { Games } from '@/ps/games';
 import { WebError } from '@/utils/webError';
@@ -10,9 +10,9 @@ export const handler: RequestHandler = async (req, res, next) => {
 	const { game: gameType, gameId } = req.params as { game: string; gameId: string };
 	if (!Object.keys(Games).includes(gameType)) return next();
 	try {
-		const game = await getGameById(gameType, gameId);
-		const serializable = game!.toJSON();
-		res.json({ ...serializable, log: serializable.log.map(entry => JSON.parse(entry)) });
+		const record = (await getGameById(gameType, gameId))!;
+		const game = normalizeGame(record);
+		res.json(game);
 	} catch (err: unknown) {
 		if (err instanceof Error) throw new WebError(err.message, 404);
 	}
