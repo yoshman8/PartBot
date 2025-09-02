@@ -5,6 +5,8 @@ import { renderBackups, renderMenu } from '@/ps/games/menus';
 import { parseMod } from '@/ps/games/mods';
 import { generateId } from '@/ps/games/utils';
 import { ChatError } from '@/utils/chatError';
+import { fromHumanTime, toHumanTime } from '@/utils/humanTime';
+import { Timer } from '@/utils/timer';
 import { toId } from '@/utils/toId';
 
 import type { NoTranslate, ToTranslate, TranslationFn } from '@/i18n/types';
@@ -218,20 +220,57 @@ export const command: PSCommand[] = Object.entries(Games).map(([_gameId, Game]):
 					}
 				},
 			},
-			...conditionalCommand(Game.meta.autostart === false, {
-				name: 'start',
-				aliases: ['s', 'go', 'g'],
-				help: 'Starts a game if it does not have an auto-start.',
-				syntax: 'CMD [id]',
-				perms: Symbol.for('games.create'),
-				async run({ message, arg, $T }): Promise<void> {
-					const { game } = getGame(arg, { action: 'start', user: message.author.id }, { room: message.target, $T });
-					if (game.started) throw new ChatError($T('GAME.ALREADY_STARTED'));
-					if (!game.startable()) throw new ChatError($T('GAME.CANNOT_START'));
-					game.start();
-					game.closeSignups(false);
+			...conditionalCommand(
+				Game.meta.autostart === false,
+				{
+					name: 'start',
+					aliases: ['s', 'go', 'g'],
+					help: 'Starts a game if it does not have an auto-start.',
+					syntax: 'CMD [id]',
+					perms: Symbol.for('games.create'),
+					async run({ message, arg, $T }): Promise<void> {
+						const { game } = getGame(arg, { action: 'start', user: message.author.id }, { room: message.target, $T });
+						if (game.started) throw new ChatError($T('GAME.ALREADY_STARTED'));
+						if (!game.startable()) throw new ChatError($T('GAME.CANNOT_START'));
+						game.start();
+						game.closeSignups(false);
+					},
 				},
-			}),
+				{
+					name: 'autostart',
+					aliases: ['as', 'auto', 'schedule'],
+					help: 'Automatically starts the target game at the given time.',
+					syntax: 'CMD [id], [time]',
+					perms: Symbol.for('games.create'),
+					async run({ message, arg, $T }): Promise<void> {
+						const { game, ctx } = getGame(arg, { action: 'start', user: message.author.id }, { room: message.target, $T });
+						const startIn = fromHumanTime(ctx);
+						if (!startIn) throw new ChatError($T('GAME.INVALID_INPUT'));
+						if (game.started) throw new ChatError($T('GAME.ALREADY_STARTED'));
+						if (game.scheduledStart) {
+							game.scheduledStart.cancel();
+							message.reply(
+								$T('COMMANDS.TIMER.CANCELLED', {
+									timeLeft: toHumanTime(game.scheduledStart.endTime - Date.now(), undefined, $T),
+									comment: ' for game autostart',
+								})
+							);
+							game.scheduledStart = null;
+						}
+						game.scheduledStart = new Timer(
+							() => {
+								if (game.started) return;
+								if (!game.startable()) return game.room.send($T('GAME.CANNOT_START'));
+								game.start();
+								game.closeSignups(false);
+							},
+							startIn,
+							'Game start queued by ${message.author.name}'
+						);
+						message.reply($T('GAME.AUTOSTART_QUEUED', { time: toHumanTime(startIn, undefined, $T) }));
+					},
+				}
+			),
 			reaction: {
 				name: 'reaction',
 				aliases: ['x', '!!'],

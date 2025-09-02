@@ -73,6 +73,7 @@ export default {
 		],
 		NOT_STARTED: 'The game has not started yet.',
 		CANNOT_START: 'Cannot start the game! Check the players.',
+		AUTOSTART_QUEUED: 'The game has been queued to start in {{time}}.',
 		NOT_WATCHING: "You aren't watching this game, though...",
 		NOW_WATCHING: 'You are now watching the game of {{game}} between {{players}}.',
 		NO_LONGER_WATCHING: 'You are no longer watching the game of {{game}} between {{players}}.',

@@ -61,6 +61,7 @@ export class BaseGame<State extends BaseState> {
 	sides: boolean;
 
 	started: boolean = false;
+	scheduledStart: Timer | null = null;
 	createdAt: Date = new Date();
 	startedAt?: Date;
 	endedAt?: Date;
@@ -452,6 +453,10 @@ export class BaseGame<State extends BaseState> {
 			Object.values(this.players).forEach(player => {
 				setUGOPlayed(this.meta.id, player.id, prev => prev + 1);
 			});
+		}
+		if (this.scheduledStart) {
+			this.scheduledStart.cancel();
+			this.scheduledStart = null;
 		}
 		return { success: true, data: null };
 	}
