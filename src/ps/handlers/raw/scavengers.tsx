@@ -32,6 +32,7 @@ export function checkHunts(room: string, data: string) {
 	const huntChannel = getChannel(HUNT_ANNOUNCEMENTS_CHANNEL);
 	if (!huntChannel) return;
 	const isMainRoom = room === 'scavengers';
+	if (!isMainRoom) return; // Temporarily disabling for Treasure Town
 	const huntStart = data.match(HUNT_START_PATTERN) as {
 		groups: {
 			type: HuntType;
