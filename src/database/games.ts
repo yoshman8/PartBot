@@ -117,9 +117,6 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 	if (!IS_ENABLED.DB) return null;
 	const scrabbleGames = await model.find({ game: GamesList.Scrabble, mod: [ScrabbleMods.CRAZYMONS, ScrabbleMods.POKEMON] }).lean();
 	return scrabbleGames
-		.filter(game => {
-			const time = Temporal.Instant.fromEpochMilliseconds(game.created.getTime());
-			return instantInRange(time, [UGO_2025_START, UGO_2025_END]);
 		})
 		.flatMap(game => {
 			const baseCtx = { gameId: game.id, mod: game.mod! };
@@ -170,5 +167,5 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 				})
 				.flat();
 		})
-		.filter(entry => entry.won);
+		.filter(() => true);
 }
