@@ -1,12 +1,9 @@
-import { Temporal } from '@js-temporal/polyfill';
 import mongoose, { type HydratedDocument } from 'mongoose';
 import { pokedex } from 'ps-client/data';
 
 import { IS_ENABLED } from '@/enabled';
 import { ScrabbleMods } from '@/ps/games/scrabble/constants';
 import { GamesList } from '@/ps/games/types';
-import { UGO_2025_END, UGO_2025_START } from '@/ps/ugo/constants';
-import { instantInRange } from '@/utils/timeInRange';
 import { toId } from '@/utils/toId';
 
 import type { Log as ScrabbleLog } from '@/ps/games/scrabble/logs';
@@ -116,55 +113,53 @@ export type ScrabbleDexEntry = {
 export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 	if (!IS_ENABLED.DB) return null;
 	const scrabbleGames = await model.find({ game: GamesList.Scrabble, mod: [ScrabbleMods.CRAZYMONS, ScrabbleMods.POKEMON] }).lean();
-	return scrabbleGames
-		.flatMap(game => {
-			const baseCtx = { gameId: game.id, mod: game.mod! };
-			const winCtx = game.winCtx as ScrabbleWinCtx | undefined;
-			const winners = winCtx?.type === 'win' ? winCtx.winnerIds : [];
-			const logs = game.log.map<ScrabbleLog>(log => JSON.parse(log));
-			if (winCtx?.type === 'dq' || winCtx?.type === 'regular') {
-				const leftUsers = logs.filter(log => log.action === 'dq' || log.action === 'forfeit').map(log => log.turn);
-				if (winCtx.type === 'dq')
-					winners.push(
-						...Object.values(game.players)
-							.map(player => player.turn)
-							.filter(player => !leftUsers.includes(player))
-					);
-				else if (winCtx.type === 'regular' && logs.filter(log => log.action === 'play').length > 20) {
-					const points: Record<string, number> = {};
-					logs.forEach(log => {
-						if (log.action === 'play') {
-							points[log.turn] ??= 0;
-							points[log.turn] += log.ctx.points.total;
-						}
-					});
-					const players = Object.entries(points).filter(([player]) => !leftUsers.includes(player));
-					const maxPoints = Math.max(...players.map(([_player, score]) => score));
-					winners.push(...players.filter(([_player, score]) => score === maxPoints).map(([player]) => player));
-				}
+	return scrabbleGames.flatMap(game => {
+		const baseCtx = { gameId: game.id, mod: game.mod! };
+		const winCtx = game.winCtx as ScrabbleWinCtx | undefined;
+		const winners = winCtx?.type === 'win' ? winCtx.winnerIds : [];
+		const logs = game.log.map<ScrabbleLog>(log => JSON.parse(log));
+		if (winCtx?.type === 'dq' || winCtx?.type === 'regular') {
+			const leftUsers = logs.filter(log => log.action === 'dq' || log.action === 'forfeit').map(log => log.turn);
+			if (winCtx.type === 'dq')
+				winners.push(
+					...Object.values(game.players)
+						.map(player => player.turn)
+						.filter(player => !leftUsers.includes(player))
+				);
+			else if (winCtx.type === 'regular' && logs.filter(log => log.action === 'play').length > 20) {
+				const points: Record<string, number> = {};
+				logs.forEach(log => {
+					if (log.action === 'play') {
+						points[log.turn] ??= 0;
+						points[log.turn] += log.ctx.points.total;
+					}
+				});
+				const players = Object.entries(points).filter(([player]) => !leftUsers.includes(player));
+				const maxPoints = Math.max(...players.map(([_player, score]) => score));
+				winners.push(...players.filter(([_player, score]) => score === maxPoints).map(([player]) => player));
 			}
-			return logs
-				.filterMap<ScrabbleDexEntry[]>(log => {
-					if (log.action !== 'play') return;
-					const words = Object.keys(log.ctx.words).map(toId).unique();
-					return words.filterMap<ScrabbleDexEntry>(word => {
-						if (!(word in pokedex)) return;
-						let mon = pokedex[word];
-						if (mon.baseSpecies) mon = pokedex[toId(mon.baseSpecies)];
-						if (mon.num <= 0) return;
-						return {
-							...baseCtx,
-							pokemon: word,
-							pokemonName: mon.name,
-							num: mon.num,
-							by: log.turn,
-							byName: game.players[log.turn]?.name ?? null,
-							at: log.time,
-							won: winners.includes(log.turn),
-						};
-					});
-				})
-				.flat();
-		})
-		.filter(() => true);
+		}
+		return logs
+			.filterMap<ScrabbleDexEntry[]>(log => {
+				if (log.action !== 'play') return;
+				const words = Object.keys(log.ctx.words).map(toId).unique();
+				return words.filterMap<ScrabbleDexEntry>(word => {
+					if (!(word in pokedex)) return;
+					let mon = pokedex[word];
+					if (mon.baseSpecies) mon = pokedex[toId(mon.baseSpecies)];
+					if (mon.num <= 0) return;
+					return {
+						...baseCtx,
+						pokemon: word,
+						pokemonName: mon.name,
+						num: mon.num,
+						by: log.turn,
+						byName: game.players[log.turn]?.name ?? null,
+						at: log.time,
+						won: winners.includes(log.turn),
+					};
+				});
+			})
+			.flat();
+	});
 }
