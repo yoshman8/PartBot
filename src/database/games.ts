@@ -117,7 +117,6 @@ export async function getScrabbleDex(): Promise<ScrabbleDexEntry[] | null> {
 	if (!IS_ENABLED.DB) return null;
 	const scrabbleGames = await model.find({ game: GamesList.Scrabble, mod: [ScrabbleMods.CRAZYMONS, ScrabbleMods.POKEMON] }).lean();
 	return scrabbleGames
-		})
 		.flatMap(game => {
 			const baseCtx = { gameId: game.id, mod: game.mod! };
 			const winCtx = game.winCtx as ScrabbleWinCtx | undefined;
