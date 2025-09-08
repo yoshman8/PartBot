@@ -8,7 +8,13 @@ export type Hex = string & { __hex: true };
  * @property B A number from 0-255 representing blue.
  * @property a A number from 0-1 representing alpha. Assumed 1 if not set.
  */
-export type Rgb = { R: number; G: number; B: number; a?: number; colorspace: 'rgba' };
+export type Rgb = {
+	R: number;
+	G: number;
+	B: number;
+	a?: number;
+	colorspace: 'rgba';
+};
 export type RgbString = string & { __rgba: true };
 
 /**
@@ -18,7 +24,28 @@ export type RgbString = string & { __rgba: true };
  * @property B A number from 0-255 representing blue.
  * @property a A number from 0-1 representing alpha. Assumed 1 if not set.
  */
-export type Lrgb = { R: number; G: number; B: number; a?: number; colorspace: 'lrgb' };
+export type Lrgb = {
+	R: number;
+	G: number;
+	B: number;
+	a?: number;
+	colorspace: 'lrgb';
+};
+
+/**
+ * CIE XYZ D50 colorspace.
+ * @property X No idea. I'm sorry.
+ * @property Y No idea. I'm sorry.
+ * @property Z No idea. I'm sorry.
+ * @property a A number from 0-1 representing alpha. Assumed 1 if not set.
+ */
+export type Xyz50 = {
+	X: number;
+	Y: number;
+	Z: number;
+	a?: number;
+	colorspace: 'xyz50';
+};
 
 /**
  * hsla() colorspace.
@@ -27,7 +54,13 @@ export type Lrgb = { R: number; G: number; B: number; a?: number; colorspace: 'l
  * @property L A number from 0-100 representing lightness.
  * @property a A number from 0-1 representing alpha. Assumed 1 if not set.
  */
-export type Hsl = { H: number; S: number; L: number; a?: number; colorspace: 'hsla' };
+export type Hsl = {
+	H: number;
+	S: number;
+	L: number;
+	a?: number;
+	colorspace: 'hsla';
+};
 export type HslString = string & { __hsla: true };
 
 /**
@@ -37,7 +70,13 @@ export type HslString = string & { __hsla: true };
  * @property B A number from ~-0.5-~0.5 representing blue (negative) - yellow (positive).
  * @property a A number from 0-1 representing alpha. Assumed 1 if not set.
  */
-export type Oklab = { L: number; A: number; B: number; a?: number; colorspace: 'oklab' };
+export type Oklab = {
+	L: number;
+	A: number;
+	B: number;
+	a?: number;
+	colorspace: 'oklab';
+};
 
 /**
  * oklch() colorspace.
@@ -46,7 +85,13 @@ export type Oklab = { L: number; A: number; B: number; a?: number; colorspace: '
  * @property H A number from 0-360 representing hue angle.
  * @property a A number from 0-1 representing alpha. Assumed 1 if not set.
  */
-export type Oklch = { L: number; C: number; H: number; a?: number; colorspace: 'oklch' };
+export type Oklch = {
+	L: number;
+	C: number;
+	H: number;
+	a?: number;
+	colorspace: 'oklch';
+};
 export type OklchString = string & { __oklch: string };
 
 // endregion Types
@@ -66,15 +111,17 @@ export function StringToHex(hex: string): Hex | null {
 }
 
 export function HexToRgb(hex: Hex): Rgb {
-	const hexVal = hex.replace(/^#?/, '#');
-	if (!StringToHex(hexVal)) return { R: 0, G: 0, B: 0, colorspace: 'rgba' };
+	const hexVal = StringToHex(hex);
+	if (!hexVal) return { R: 0, G: 0, B: 0, colorspace: 'rgba' };
 	const isShortHand = hex.length === 3 || hex.length === 4;
 
-	const R = parseInt(isShortHand ? hexVal.substring(1, 2).repeat(2) : hexVal.substring(1, 3), 16);
-	const G = parseInt(isShortHand ? hexVal.substring(2, 3).repeat(2) : hexVal.substring(3, 5), 16);
-	const B = parseInt(isShortHand ? hexVal.substring(3, 4).repeat(2) : hexVal.substring(5, 7), 16);
-	const a = parseInt(isShortHand ? hexVal.substring(4, 5).repeat(2) : hexVal.substring(7, 9), 16);
-	return { colorspace: 'rgba', R, G, B, ...(a < 255 ? { a: a / 255 } : undefined) };
+	const R = parseInt(isShortHand ? hexVal.substring(0, 1).repeat(2) : hexVal.substring(0, 2), 16);
+	const G = parseInt(isShortHand ? hexVal.substring(1, 2).repeat(2) : hexVal.substring(2, 4), 16);
+	const B = parseInt(isShortHand ? hexVal.substring(2, 3).repeat(2) : hexVal.substring(4, 6), 16);
+	const a = parseInt(isShortHand ? hexVal.substring(3, 4).repeat(2) : hexVal.substring(6, 8), 16);
+	const rgba: Rgb = { colorspace: 'rgba', R, G, B };
+	if (hex.length === 4 || hex.length === 8) rgba.a = a;
+	return rgba;
 }
 
 export function RgbToHex({ R, G, B, a }: Rgb): Hex {
@@ -131,9 +178,32 @@ export function RgbToLrgb({ R, G, B, a }: Rgb): Lrgb {
 		}
 		return (Math.sign(c) || 1) * Math.pow((abs + 0.055) / 1.055, 2.4);
 	};
-	const lrgb: Lrgb = { colorspace: 'lrgb', R: mapper(R / 255), G: mapper(G / 255), B: mapper(B / 255) };
+	const lrgb: Lrgb = {
+		colorspace: 'lrgb',
+		R: mapper(R / 255),
+		G: mapper(G / 255),
+		B: mapper(B / 255),
+	};
 	if (typeof a === 'number') lrgb.a = a;
 	return lrgb;
+}
+
+export function LrgbToRgb({ R, G, B, a }: Lrgb): Rgb {
+	const mapper = (c: number): number => {
+		const abs = Math.abs(c);
+		if (abs > 0.0031308) {
+			return Math.round((Math.sign(c) || 1) * (1.055 * Math.pow(abs, 1 / 2.4) - 0.055) * 255);
+		}
+		return Math.round(c * 12.92 * 255);
+	};
+	const rgb: Rgb = {
+		colorspace: 'rgba',
+		R: mapper(R),
+		G: mapper(G),
+		B: mapper(B),
+	};
+	if (typeof a === 'number') rgb.a = a;
+	return rgb;
 }
 
 export function LrgbToOklab({ R, G, B, a }: Lrgb): Oklab {
@@ -152,11 +222,43 @@ export function LrgbToOklab({ R, G, B, a }: Lrgb): Oklab {
 	return oklab;
 }
 
+export function OklabToLrgb({ L, A, B, a }: Oklab): Lrgb {
+	const l = Math.pow(L + 0.3963377773761749 * A + 0.2158037573099136 * B, 3);
+	const m = Math.pow(L - 0.1055613458156586 * A - 0.0638541728258133 * B, 3);
+	const s = Math.pow(L - 0.0894841775298119 * A - 1.2914855480194092 * B, 3);
+
+	const lrgb: Lrgb = {
+		colorspace: 'lrgb',
+		R: 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+		G: -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+		B: -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+	};
+
+	if (typeof a === 'number') lrgb.a = a;
+	return lrgb;
+}
+
 export function OklabToOklch({ L, A, B, a }: Oklab): Oklch {
 	const C = Math.sqrt(A ** 2 + B ** 2);
-	const oklch: Oklch = { colorspace: 'oklch', L, C, H: C ? normalizeHue((Math.atan2(B, A) * 180) / Math.PI) : 0 };
+	const oklch: Oklch = {
+		colorspace: 'oklch',
+		L,
+		C,
+		H: C ? normalizeHue((Math.atan2(B, A) * 180) / Math.PI) : 0,
+	};
 	if (typeof a === 'number') oklch.a = a;
 	return oklch;
+}
+
+export function OklchToOklab({ L, C, H, a }: Oklch): Oklab {
+	const oklab: Oklab = {
+		colorspace: 'oklab',
+		L,
+		A: C ? C * Math.cos((H * Math.PI) / 180) : 0,
+		B: C ? C * Math.sin((H * Math.PI) / 180) : 0,
+	};
+	if (typeof a === 'number') oklab.a = a;
+	return oklab;
 }
 
 export function HexToOklab(hex: Hex): Oklab {
@@ -169,6 +271,10 @@ export function RgbToOklch(rgb: Rgb): Oklch {
 
 export function HexToOklch(hex: Hex): Oklch {
 	return RgbToOklch(HexToRgb(hex));
+}
+
+export function OklchToHex(oklch: Oklch): Hex {
+	return RgbToHex(LrgbToRgb(OklabToLrgb(OklchToOklab(oklch))));
 }
 
 // endregion Conversion Methods
