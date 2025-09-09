@@ -1,3 +1,4 @@
+import { PSGames } from '@/cache';
 import { gameCache } from '@/cache/games';
 import { usePersistedCache } from '@/cache/persisted';
 import { i18n } from '@/i18n';
@@ -16,6 +17,14 @@ export function joinRoomHandler(this: Client, roomid: string, user: string, isIn
 	if (!room) return;
 
 	const $T = i18n(getLanguage(room));
+
+	// If we have any existing games, we need to update the room reference (since a new room object is created on reconnect)
+	Object.values(PSGames)
+		.flatMap(games => Object.values(games ?? {}))
+		.filter(game => game.roomid === roomid)
+		.forEach(game => {
+			game.room = room;
+		});
 
 	const allBackups = openGamesCache.get();
 	const gamesToRestore = allBackups.filter(backup => backup.roomid === roomid);
