@@ -11,12 +11,12 @@ import type { GamesList, Meta } from '@/ps/games/types';
 import type { Register } from '@/sentinel/types';
 
 const PS_EVENT_HANDLERS = {
-	'autores-handler': { imports: ['autoResHandler'], importPath: '@/ps/handlers/autores', fileName: 'autores' },
-	'interface-handler': { imports: ['interfaceHandler'], importPath: '@/ps/handlers/interface', fileName: 'interface' },
-	'joins-handler': { imports: ['joinHandler', 'leaveHandler', 'nickHandler'], importPath: '@/ps/handlers/joins', fileName: 'joins' },
-	'raw-handler': { imports: ['rawHandler'], importPath: '@/ps/handlers/raw', fileName: 'raw' },
-	'notify-handler': { imports: ['notifyHandler'], importPath: '@/ps/handlers/notifications', fileName: 'notifications' },
-	'tour-handler': { imports: ['tourHandler'], importPath: '@/ps/handlers/tours', fileName: 'tours' },
+	autoreshandler: { imports: ['autoResHandler'], importPath: '@/ps/handlers/autores', fileName: 'autores' },
+	interfacehandler: { imports: ['interfaceHandler'], importPath: '@/ps/handlers/interface', fileName: 'interface' },
+	joinshandler: { imports: ['joinHandler', 'leaveHandler', 'nickHandler'], importPath: '@/ps/handlers/joins', fileName: 'joins' },
+	rawhandler: { imports: ['rawHandler'], importPath: '@/ps/handlers/raw', fileName: 'raw' },
+	notifyhandler: { imports: ['notifyHandler'], importPath: '@/ps/handlers/notifications', fileName: 'notifications' },
+	tourhandler: { imports: ['tourHandler'], importPath: '@/ps/handlers/tours', fileName: 'tours' },
 } satisfies Record<
 	string,
 	{ imports: (keyof typeof LivePSHandlers)[]; importPath: string; fileName: string /* TODO: remove fileName */ }
