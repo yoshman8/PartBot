@@ -133,7 +133,7 @@ export async function hotpatch(this: Sentinel, hotpatchType: HotpatchType, by: s
 
 			default:
 				const register = registers.list.find(register => register.label === hotpatchType);
-				if (!register) throw new ChatError(`Hotpatch type ${hotpatchType} not found.` as NoTranslate);
+				if (!register) throw new ChatError(`Type not found.` as NoTranslate);
 				const allFiles = (await fs.readdir(fsPath(), { recursive: true, withFileTypes: true }))
 					.filter(entry => entry.isFile())
 					.map(entry => path.join(entry.parentPath, entry.name));
@@ -141,7 +141,7 @@ export async function hotpatch(this: Sentinel, hotpatchType: HotpatchType, by: s
 		}
 		Logger.log(`${hotpatchType} was hotpatched ${typeof by === 'symbol' ? `(${Symbol.keyFor(by) ?? '-'})` : `by ${by}`}`);
 	} catch (error) {
-		if (error instanceof Error) {
+		if (error instanceof Error && !(error instanceof ChatError)) {
 			Logger.log('Failed to hotpatch', hotpatchType, by, error.message);
 			Logger.errorLog(error);
 		}
