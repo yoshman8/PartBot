@@ -1,6 +1,7 @@
 import { CronJob } from 'cron';
 
 import { PSCronJobs } from '@/cache';
+import { register as registerGeneral } from '@/ps/handlers/cron/general';
 import { register as registerHindi } from '@/ps/handlers/cron/hindi';
 import { register as registerUGO } from '@/ps/handlers/cron/ugo';
 
@@ -22,6 +23,7 @@ export class PSCronJobManager {
 
 export function startPSCron(this: Client): PSCronJobManager {
 	const Jobs = new PSCronJobManager();
+	registerGeneral.call(this, Jobs);
 	registerHindi.call(this, Jobs);
 	registerUGO.call(this, Jobs);
 
