@@ -239,7 +239,7 @@ export const command: PSCommand[] = [
 			if (!IS_ENABLED.DB) throw new ChatError($T('DISABLED.DB'));
 			const target = toId(arg) || message.author.id;
 			const allEntries = await getScrabbleDex();
-			const results = allEntries!.filter(entry => entry.by);
+			const results = allEntries!.filter(entry => entry.by === target);
 			const grouped = mapValues(
 				results.map(res => res.pokemonName.toUpperCase()).groupBy(mon => toId(mon).length),
 				mons => mons?.unique().sort()
